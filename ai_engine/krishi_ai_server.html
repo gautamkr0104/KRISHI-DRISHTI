@@ -679,7 +679,7 @@
       totalScansProcessed++;
       document.getElementById("valScanCount").innerText = totalScansProcessed;
       document.getElementById("valLatency").innerText = `${latency} ms`;
-      document.getElementById("scanTimestamp").innerText = `SCAN #${scanId} &bull; ${new Date().toLocaleTimeString()}`;
+      document.getElementById("scanTimestamp").innerHTML = `SCAN #${scanId} &bull; ${new Date().toLocaleTimeString()}`;
 
       document.getElementById("diagPrimary").innerText = `${diag.crop}: ${diag.disease}`;
       document.getElementById("diagPathogen").innerText = `Pathogen: ${diag.pathogen}`;
