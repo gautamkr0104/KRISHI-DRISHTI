@@ -65,14 +65,14 @@ KRISHI-DRISHTI-OpenSource/
 ├── README.md                       # Master Project Documentation & Quickstart
 ├── .gitignore                      # Git ignore rules for Arduino & Python
 ├── firmware/
-│   ├── camera/
-│   │   └── KRISHI_DRISHTI_Camera.ino       # Camera unit firmware (Auto-Sense + Flash + SoftAP)
-│   └── controller/
-│       └── KRISHI_DRISHTI_Controller.ino   # Controller wand firmware (OLED + DHT11 + 2 Buttons)
+│   ├── KRISHI_DRISHTI_Camera/
+│   │   └── KRISHI_DRISHTI_Camera.ino       # Camera unit firmware v2.2 (Embedded AI Daemon + SoftAP + MicroSD)
+│   └── KRISHI_DRISHTI_Controller/
+│       └── KRISHI_DRISHTI_Controller.ino   # Controller wand firmware v2.1 (OLED + DHT11 + 2 Buttons)
 ├── ai_engine/
 │   ├── krishi_ai_server.html       # Headless offline AI daemon for Android (WakeLock active)
-│   ├── krishi_drishti_model.tflite # Quantized INT8 MobileNetV3 model (~1.09 MB, 942k params)
-│   ├── train_model.py              # MobileNetV3 Transfer Learning & TFLite Quantization Script
+│   ├── krishi_drishti_model.tflite # Quantized INT8 MobileNetV3 model (~1.16 MB, trained on Kaggle PlantVillage)
+│   ├── train_model.py              # Two-stage MobileNetV3 fine-tuning & TFLite quantization pipeline
 │   └── labels.json                 # Disease taxonomy, organic cures & chemical dosages
 └── docs/
     ├── CBSE_Project_Synopsis.md    # Official CBSE Exhibition Synopsis & Research Report
