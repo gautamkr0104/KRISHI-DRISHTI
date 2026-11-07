@@ -1,0 +1,20 @@
+# Arduino IDE & Build Artifacts
+*.bin
+*.hex
+*.elf
+build/
+.arduino15/
+
+# Python & AI Artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+*.h5
+*.ckpt
+
+# OS generated files
+.DS_Store
+Thumbs.db
+Desktop.ini
