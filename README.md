@@ -71,6 +71,7 @@ KRISHI-DRISHTI-OpenSource/
 │       └── KRISHI_DRISHTI_Controller.ino   # Controller wand firmware (OLED + DHT11 + 2 Buttons)
 ├── ai_engine/
 │   ├── krishi_ai_server.html       # Headless offline AI daemon for Android (WakeLock active)
+│   ├── krishi_drishti_model.tflite # Quantized INT8 MobileNetV3 model (~1.09 MB, 942k params)
 │   ├── train_model.py              # MobileNetV3 Transfer Learning & TFLite Quantization Script
 │   └── labels.json                 # Disease taxonomy, organic cures & chemical dosages
 └── docs/

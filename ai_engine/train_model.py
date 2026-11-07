@@ -72,7 +72,7 @@ def export_tflite_quantized(model, output_path="krishi_drishti_model.tflite"):
         f.write(tflite_model)
     
     size_mb = os.path.getsize(output_path) / (1024 * 1024)
-    print(f"[✓] TFLite model generated successfully! File size: {size_mb:.2f} MB")
+    print(f"[OK] TFLite model generated successfully! File size: {size_mb:.2f} MB")
 
 def export_tfjs(model, output_dir="tfjs_model"):
     """
@@ -82,7 +82,7 @@ def export_tfjs(model, output_dir="tfjs_model"):
         import tensorflowjs as tfjs
         print(f"\n[+] Exporting to TensorFlow.js: {output_dir}/...")
         tfjs.converters.save_keras_model(model, output_dir)
-        print(f"[✓] TFJS model exported for browser execution!")
+        print(f"[OK] TFJS model exported for browser execution!")
     except ImportError:
         print("\n[i] tensorflowjs package not found. Skipping tfjs export.")
         print("    Run 'pip install tensorflowjs' if client-side browser export is needed.")
