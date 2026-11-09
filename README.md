@@ -12,7 +12,7 @@
 
 Over **35% of potato and tomato crops across India are destroyed annually by foliar blights** like Late Blight (*Phytophthora infestans*, an oomycete water mold) and Early Blight (*Alternaria solani*, an ascomycete fungus). Smallholder and marginal farmers often lack access to expensive laboratory diagnostic equipment (₹25,000+) or reliable cloud connectivity in rural fields with poor cellular reception.
 
-**KRISHI-DRISHTI** is an ultra-low-cost (< ₹1,500 INR / $18 total), **100% offline-first agritech screening system** designed for rural field environments.
+**KRISHI-DRISHTI** is an ultra-low-cost (~₹1,514 INR / $18 USD total), **100% offline-first agritech screening system** designed for rural field environments.
 
 Instead of relying on cloud APIs or expensive 5G connectivity, KRISHI-DRISHTI uses a **handheld wireless telemetry wand**, an **ESP32-CAM optical capture unit**, and an ordinary budget smartphone (e.g. Samsung Galaxy A03) acting as an **invisible, headless edge AI co-processor** operating over a dedicated local Wi-Fi mesh.
 
@@ -86,7 +86,7 @@ KRISHI-DRISHTI/
 
 ---
 
-## 💰 Bill of Materials (BOM) — Under ₹1,500 Total
+## 💰 Bill of Materials (BOM) — Field Prototype (~₹1,514 Total)
 
 | Component | Purpose | Unit Cost (INR) | Sourcing |
 | :--- | :--- | :--- | :--- |
@@ -114,7 +114,7 @@ Trained on the **New Plant Diseases Dataset (Augmented 87K, Solanaceae Partition
 | **Potato Healthy Tissue F1** | **0.9824** | Precision: 98.46%, Recall: 98.03% |
 | **Tomato Healthy Tissue F1** | **0.9531** | Precision: 91.57%, Recall: 99.38% |
 | **Model Size (TFLite)** | **2.01 MB** | Fits comfortably in low-RAM smartphone memory |
-| **On-Device Inference Time** | **10.54 ms** | Real-time classification on smartphone CPU |
+| **Inference Latency** | **10.54 ms (CPU Benchmark) / Target < 40 ms Mobile** | Measured with TFLite Interpreter |
 | **PlantDoc Field Benchmark** | **34.91%** | Evaluated on unaugmented outdoor images with complex backgrounds |
 | **Entropy Rejection Threshold** | **$H > 1.45$ nats** | Rejects non-foliar objects, bare soil, and ambiguous leaves |
 

@@ -583,9 +583,10 @@
           throw new Error("tflite WASM backend not found in vendor/");
         }
       } catch (err) {
-        document.getElementById("valEngine").innerText = "CANVAS READY";
-        document.getElementById("valEngine").style.color = "var(--accent-cyan)";
-        log(`TFLite runtime: ${err.message}. Ready for direct leaf inspection.`, "warn");
+        modelReady = false;
+        document.getElementById("valEngine").innerText = "AI OFFLINE";
+        document.getElementById("valEngine").style.color = "var(--accent-red)";
+        log(`TFLite load error: ${err.message}. Inference paused until model available.`, "err");
       }
     }
 
@@ -758,31 +759,28 @@
 
       let probs = [];
 
-      // 2. TFLite Model Execution
+      // 2. TFLite Model Execution (Zero Fake Fallbacks)
       if (modelReady && tfliteModel && typeof tf !== 'undefined') {
         const tfImg = tf.browser.fromPixels(cvs);
-        // MobileNetV3 input scaling to [-1, 1]
-        const normalized = tfImg.toFloat().div(127.5).sub(1.0).expandDims(0);
-        const output = tfliteModel.predict(normalized);
-        const rawProbs = Array.from(output.dataSync());
-        tf.dispose([tfImg, normalized, output]);
-
-        // Softmax if needed
-        const maxVal = Math.max(...rawProbs);
-        const expP = rawProbs.map(p => Math.exp(p - maxVal));
-        const sumExp = expP.reduce((a, b) => a + b, 0);
-        probs = expP.map(p => p / sumExp);
+        // MobileNetV3 model architecture already contains internal mobilenet_v3.preprocess_input layer
+        // Input contract: [1, 128, 128, 3] float32 in range [0.0, 255.0]
+        const inputTensor = tfImg.toFloat().expandDims(0);
+        const output = tfliteModel.predict(inputTensor);
+        // Output layer is already Softmax activation from training — no double softmax
+        probs = Array.from(output.dataSync());
+        tf.dispose([tfImg, inputTensor, output]);
       } else {
-        // Deterministic botanical feature distribution (strictly no Math.random)
-        const blightRatio = necroticCount / total;
-        const chlorosisRatio = chloroticCount / total;
-        if (blightRatio > 0.04) {
-          probs = [0.88, 0.06, 0.02, 0.02, 0.01, 0.01]; // Late blight dominant
-        } else if (chlorosisRatio > 0.03 || blightRatio > 0.015) {
-          probs = [0.08, 0.84, 0.03, 0.02, 0.02, 0.01]; // Early blight dominant
-        } else {
-          probs = [0.01, 0.02, 0.94, 0.01, 0.01, 0.01]; // Healthy dominant
-        }
+        // TFLite model is not loaded — strictly refuse to produce fake heuristic diagnosis
+        return {
+          crop: "System Notice",
+          disease: "AI Engine Unavailable",
+          pathogen: "MobileNetV3 TFLite model is not ready in browser",
+          confidence: "0.0",
+          status: "UNCERTAIN",
+          organic: "Ensure phone is connected to wand Wi-Fi and model is loaded.",
+          chemical: "Consult local Krishi Vigyan Kendra (KVK) agronomist.",
+          entropy: "0.00"
+        };
       }
 
       // 3. Shannon Entropy Calculation: H = -sum(p * ln(p))
