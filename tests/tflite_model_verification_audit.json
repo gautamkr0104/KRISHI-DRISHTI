@@ -1,0 +1,93 @@
+{
+  "timestamp": "2026-11-09T12:48:53Z",
+  "model_file": "krishi_drishti_model.tflite",
+  "file_size_bytes": 2104584,
+  "sha256": "b20a6a12648ae13fde1689604c26e7b22a0ec25213e762dfcb1c3aac47725f1c",
+  "runtime_backend": "TensorFlow 2.21.0",
+  "tensors": {
+    "input": {
+      "name": "serving_default_leaf_rgb_input:0",
+      "shape": [
+        1,
+        128,
+        128,
+        3
+      ],
+      "dtype": "<class 'numpy.float32'>",
+      "quantization": "(0.0, 0)"
+    },
+    "output": {
+      "name": "StatefulPartitionedCall_1:0",
+      "shape": [
+        1,
+        6
+      ],
+      "dtype": "<class 'numpy.float32'>",
+      "quantization": "(0.0, 0)"
+    }
+  },
+  "softmax_sum_check": 1.0,
+  "softmax_check_status": "PASSED",
+  "sample_evaluations": [
+    {
+      "filename": "healthy_512.jpg",
+      "predicted_class": "Tomato Early Blight",
+      "confidence_pct": 77.56,
+      "shannon_entropy": 0.7693,
+      "latency_ms": 1.51,
+      "probabilities": {
+        "Tomato Late Blight": 7.62,
+        "Tomato Early Blight": 77.56,
+        "Tomato Healthy": 12.09,
+        "Potato Late Blight": 0.76,
+        "Potato Early Blight": 1.8,
+        "Potato Healthy": 0.18
+      }
+    },
+    {
+      "filename": "late_blight_512.jpg",
+      "predicted_class": "Tomato Early Blight",
+      "confidence_pct": 89.11,
+      "shannon_entropy": 0.3457,
+      "latency_ms": 1.52,
+      "probabilities": {
+        "Tomato Late Blight": 10.88,
+        "Tomato Early Blight": 89.11,
+        "Tomato Healthy": 0.01,
+        "Potato Late Blight": 0.01,
+        "Potato Early Blight": 0.0,
+        "Potato Healthy": 0.0
+      }
+    },
+    {
+      "filename": "tomato_healthy.jpg",
+      "predicted_class": "Tomato Early Blight",
+      "confidence_pct": 77.53,
+      "shannon_entropy": 0.7739,
+      "latency_ms": 1.95,
+      "probabilities": {
+        "Tomato Late Blight": 7.32,
+        "Tomato Early Blight": 77.53,
+        "Tomato Healthy": 12.14,
+        "Potato Late Blight": 0.77,
+        "Potato Early Blight": 2.07,
+        "Potato Healthy": 0.18
+      }
+    },
+    {
+      "filename": "tomato_late_blight.jpg",
+      "predicted_class": "Tomato Early Blight",
+      "confidence_pct": 90.28,
+      "shannon_entropy": 0.3201,
+      "latency_ms": 1.53,
+      "probabilities": {
+        "Tomato Late Blight": 9.7,
+        "Tomato Early Blight": 90.28,
+        "Tomato Healthy": 0.01,
+        "Potato Late Blight": 0.01,
+        "Potato Early Blight": 0.0,
+        "Potato Healthy": 0.0
+      }
+    }
+  ]
+}
