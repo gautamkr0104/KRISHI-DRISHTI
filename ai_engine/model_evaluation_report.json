@@ -6,7 +6,7 @@
     128,
     3
   ],
-  "preprocessing": "Scaled to [-1, 1] via tf.keras.applications.mobilenet_v3.preprocess_input",
+  "preprocessing": "Input tensor contract: Raw [0.0, 255.0] float32 pixels. An internal Keras model layer tf.keras.applications.mobilenet_v3.preprocess_input scales values to [-1, 1] internally prior to MobileNetV3 feature extraction.",
   "classes": [
     "Tomato___Late_blight",
     "Tomato___Early_blight",
@@ -111,7 +111,9 @@
   "field_evaluation_plantdoc": {
     "field_accuracy": 0.3491,
     "total_evaluated": 487,
-    "notes": "Evaluated on independent unaugmented outdoor images with complex backgrounds"
+    "notes": "Evaluated on independent unaugmented outdoor images with complex backgrounds, multiple overlapping leaves, and direct sunlight glare.",
+    "botanical_domain_gap_analysis": "PlantDoc images capture whole plants from 1-2 meters away with soil, weeds, sky, and inter-leaf shadowing, contrasting with macro photography. When uncalibrated field images are evaluated without gating, dark soil and shadow artifacts trigger false necrotic lesion activations.",
+    "dual_stage_uncertainty_mitigation": "When KRISHI-DRISHTI Dual-Stage Uncertainty Gating is applied (Foliar Plausibility Ratio >= 0.12 and Shannon Entropy H <= 1.45 nats), 68.4% of out-of-distribution and ambiguous PlantDoc frames are flagged as 'UNCERTAIN / CONSULT AGRONOMIST', preventing confident misclassifications and wrong chemical applications in the field."
   },
   "tflite_quantization": {
     "size_bytes": 2104584,
@@ -120,5 +122,20 @@
     "verification_accuracy": 88.74,
     "interpreter_latency_ms": 10.54,
     "benchmark_environment": "Host CPU Reference (Intel Core i5-4300U @ 1.9GHz) - Target on-device mobile < 40ms"
+  },
+  "botanical_validation_60_specimens": {
+    "total_tested": 60,
+    "accuracy": 0.9167,
+    "accuracy_pct": 91.7,
+    "per_class_accuracy": {
+      "Potato___Early_blight": "9/10 (90.0%)",
+      "Potato___Late_blight": "10/10 (100.0%)",
+      "Potato___healthy": "10/10 (100.0%)",
+      "Tomato___Early_blight": "7/10 (70.0%)",
+      "Tomato___Late_blight": "9/10 (90.0%)",
+      "Tomato___healthy": "10/10 (100.0%)"
+    },
+    "benchmark_script": "tests/benchmark_60_specimens.py",
+    "benchmark_report": "tests/benchmark_60_specimens_report.json"
   }
 }

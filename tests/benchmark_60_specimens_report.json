@@ -1,0 +1,653 @@
+{
+  "timestamp": "2026-11-09T13:39:48Z",
+  "model_file": "krishi_drishti_model.tflite",
+  "total_specimens_evaluated": 60,
+  "total_accurate": 55,
+  "overall_accuracy_pct": 91.67,
+  "per_class_summary": {
+    "Potato Early Blight": {
+      "tested": 10,
+      "correct": 9,
+      "accuracy_pct": 90.0,
+      "mean_confidence_pct": 99.83,
+      "mean_latency_ms": 7.06
+    },
+    "Potato Late Blight": {
+      "tested": 10,
+      "correct": 10,
+      "accuracy_pct": 100.0,
+      "mean_confidence_pct": 97.24,
+      "mean_latency_ms": 5.64
+    },
+    "Potato Healthy": {
+      "tested": 10,
+      "correct": 10,
+      "accuracy_pct": 100.0,
+      "mean_confidence_pct": 93.04,
+      "mean_latency_ms": 5.88
+    },
+    "Tomato Early Blight": {
+      "tested": 10,
+      "correct": 7,
+      "accuracy_pct": 70.0,
+      "mean_confidence_pct": 71.88,
+      "mean_latency_ms": 5.35
+    },
+    "Tomato Late Blight": {
+      "tested": 10,
+      "correct": 9,
+      "accuracy_pct": 90.0,
+      "mean_confidence_pct": 79.01,
+      "mean_latency_ms": 4.83
+    },
+    "Tomato Healthy": {
+      "tested": 10,
+      "correct": 10,
+      "accuracy_pct": 100.0,
+      "mean_confidence_pct": 99.96,
+      "mean_latency_ms": 4.26
+    }
+  },
+  "specimens": [
+    {
+      "filename": "Potato___Early_blight_01.jpg",
+      "relative_path": "Potato___Early_blight/Potato___Early_blight_01.jpg",
+      "ground_truth": "Potato Early Blight",
+      "predicted_class": "Potato Early Blight",
+      "confidence_pct": 100.0,
+      "status": "WARNING",
+      "latency_ms": 9.82,
+      "match": true
+    },
+    {
+      "filename": "Potato___Early_blight_02.jpg",
+      "relative_path": "Potato___Early_blight/Potato___Early_blight_02.jpg",
+      "ground_truth": "Potato Early Blight",
+      "predicted_class": "Potato Early Blight",
+      "confidence_pct": 99.8,
+      "status": "WARNING",
+      "latency_ms": 5.16,
+      "match": true
+    },
+    {
+      "filename": "Potato___Early_blight_03.jpg",
+      "relative_path": "Potato___Early_blight/Potato___Early_blight_03.jpg",
+      "ground_truth": "Potato Early Blight",
+      "predicted_class": "Potato Early Blight",
+      "confidence_pct": 99.8,
+      "status": "WARNING",
+      "latency_ms": 7.39,
+      "match": true
+    },
+    {
+      "filename": "Potato___Early_blight_04.jpg",
+      "relative_path": "Potato___Early_blight/Potato___Early_blight_04.jpg",
+      "ground_truth": "Potato Early Blight",
+      "predicted_class": "Potato Late Blight",
+      "confidence_pct": 99.4,
+      "status": "SEVERE",
+      "latency_ms": 5.87,
+      "match": false
+    },
+    {
+      "filename": "Potato___Early_blight_05.jpg",
+      "relative_path": "Potato___Early_blight/Potato___Early_blight_05.jpg",
+      "ground_truth": "Potato Early Blight",
+      "predicted_class": "Potato Early Blight",
+      "confidence_pct": 99.8,
+      "status": "WARNING",
+      "latency_ms": 10.89,
+      "match": true
+    },
+    {
+      "filename": "Potato___Early_blight_06.jpg",
+      "relative_path": "Potato___Early_blight/Potato___Early_blight_06.jpg",
+      "ground_truth": "Potato Early Blight",
+      "predicted_class": "Potato Early Blight",
+      "confidence_pct": 100.0,
+      "status": "WARNING",
+      "latency_ms": 5.26,
+      "match": true
+    },
+    {
+      "filename": "Potato___Early_blight_07.jpg",
+      "relative_path": "Potato___Early_blight/Potato___Early_blight_07.jpg",
+      "ground_truth": "Potato Early Blight",
+      "predicted_class": "Potato Early Blight",
+      "confidence_pct": 99.9,
+      "status": "WARNING",
+      "latency_ms": 6.11,
+      "match": true
+    },
+    {
+      "filename": "Potato___Early_blight_08.jpg",
+      "relative_path": "Potato___Early_blight/Potato___Early_blight_08.jpg",
+      "ground_truth": "Potato Early Blight",
+      "predicted_class": "Potato Early Blight",
+      "confidence_pct": 99.6,
+      "status": "WARNING",
+      "latency_ms": 5.14,
+      "match": true
+    },
+    {
+      "filename": "Potato___Early_blight_09.jpg",
+      "relative_path": "Potato___Early_blight/Potato___Early_blight_09.jpg",
+      "ground_truth": "Potato Early Blight",
+      "predicted_class": "Potato Early Blight",
+      "confidence_pct": 100.0,
+      "status": "WARNING",
+      "latency_ms": 5.06,
+      "match": true
+    },
+    {
+      "filename": "Potato___Early_blight_10.jpg",
+      "relative_path": "Potato___Early_blight/Potato___Early_blight_10.jpg",
+      "ground_truth": "Potato Early Blight",
+      "predicted_class": "Potato Early Blight",
+      "confidence_pct": 100.0,
+      "status": "WARNING",
+      "latency_ms": 9.93,
+      "match": true
+    },
+    {
+      "filename": "Potato___Late_blight_01.jpg",
+      "relative_path": "Potato___Late_blight/Potato___Late_blight_01.jpg",
+      "ground_truth": "Potato Late Blight",
+      "predicted_class": "Potato Late Blight",
+      "confidence_pct": 100.0,
+      "status": "SEVERE",
+      "latency_ms": 4.86,
+      "match": true
+    },
+    {
+      "filename": "Potato___Late_blight_02.jpg",
+      "relative_path": "Potato___Late_blight/Potato___Late_blight_02.jpg",
+      "ground_truth": "Potato Late Blight",
+      "predicted_class": "Potato Late Blight",
+      "confidence_pct": 100.0,
+      "status": "SEVERE",
+      "latency_ms": 6.01,
+      "match": true
+    },
+    {
+      "filename": "Potato___Late_blight_03.jpg",
+      "relative_path": "Potato___Late_blight/Potato___Late_blight_03.jpg",
+      "ground_truth": "Potato Late Blight",
+      "predicted_class": "Potato Late Blight",
+      "confidence_pct": 99.8,
+      "status": "SEVERE",
+      "latency_ms": 4.91,
+      "match": true
+    },
+    {
+      "filename": "Potato___Late_blight_04.jpg",
+      "relative_path": "Potato___Late_blight/Potato___Late_blight_04.jpg",
+      "ground_truth": "Potato Late Blight",
+      "predicted_class": "Potato Late Blight",
+      "confidence_pct": 100.0,
+      "status": "SEVERE",
+      "latency_ms": 6.94,
+      "match": true
+    },
+    {
+      "filename": "Potato___Late_blight_05.jpg",
+      "relative_path": "Potato___Late_blight/Potato___Late_blight_05.jpg",
+      "ground_truth": "Potato Late Blight",
+      "predicted_class": "Potato Late Blight",
+      "confidence_pct": 96.8,
+      "status": "SEVERE",
+      "latency_ms": 5.36,
+      "match": true
+    },
+    {
+      "filename": "Potato___Late_blight_06.jpg",
+      "relative_path": "Potato___Late_blight/Potato___Late_blight_06.jpg",
+      "ground_truth": "Potato Late Blight",
+      "predicted_class": "Potato Late Blight",
+      "confidence_pct": 86.0,
+      "status": "SEVERE",
+      "latency_ms": 5.05,
+      "match": true
+    },
+    {
+      "filename": "Potato___Late_blight_07.jpg",
+      "relative_path": "Potato___Late_blight/Potato___Late_blight_07.jpg",
+      "ground_truth": "Potato Late Blight",
+      "predicted_class": "Potato Late Blight",
+      "confidence_pct": 94.0,
+      "status": "SEVERE",
+      "latency_ms": 7.37,
+      "match": true
+    },
+    {
+      "filename": "Potato___Late_blight_08.jpg",
+      "relative_path": "Potato___Late_blight/Potato___Late_blight_08.jpg",
+      "ground_truth": "Potato Late Blight",
+      "predicted_class": "Potato Late Blight",
+      "confidence_pct": 97.4,
+      "status": "SEVERE",
+      "latency_ms": 4.84,
+      "match": true
+    },
+    {
+      "filename": "Potato___Late_blight_09.jpg",
+      "relative_path": "Potato___Late_blight/Potato___Late_blight_09.jpg",
+      "ground_truth": "Potato Late Blight",
+      "predicted_class": "Potato Late Blight",
+      "confidence_pct": 98.4,
+      "status": "SEVERE",
+      "latency_ms": 4.92,
+      "match": true
+    },
+    {
+      "filename": "Potato___Late_blight_10.jpg",
+      "relative_path": "Potato___Late_blight/Potato___Late_blight_10.jpg",
+      "ground_truth": "Potato Late Blight",
+      "predicted_class": "Potato Late Blight",
+      "confidence_pct": 100.0,
+      "status": "SEVERE",
+      "latency_ms": 6.12,
+      "match": true
+    },
+    {
+      "filename": "Potato___healthy_01.jpg",
+      "relative_path": "Potato___healthy/Potato___healthy_01.jpg",
+      "ground_truth": "Potato Healthy",
+      "predicted_class": "Potato Healthy",
+      "confidence_pct": 99.8,
+      "status": "OPTIMAL",
+      "latency_ms": 5.33,
+      "match": true
+    },
+    {
+      "filename": "Potato___healthy_02.jpg",
+      "relative_path": "Potato___healthy/Potato___healthy_02.jpg",
+      "ground_truth": "Potato Healthy",
+      "predicted_class": "Potato Healthy",
+      "confidence_pct": 97.4,
+      "status": "OPTIMAL",
+      "latency_ms": 7.03,
+      "match": true
+    },
+    {
+      "filename": "Potato___healthy_03.jpg",
+      "relative_path": "Potato___healthy/Potato___healthy_03.jpg",
+      "ground_truth": "Potato Healthy",
+      "predicted_class": "Potato Healthy",
+      "confidence_pct": 98.7,
+      "status": "OPTIMAL",
+      "latency_ms": 5.32,
+      "match": true
+    },
+    {
+      "filename": "Potato___healthy_04.jpg",
+      "relative_path": "Potato___healthy/Potato___healthy_04.jpg",
+      "ground_truth": "Potato Healthy",
+      "predicted_class": "Potato Healthy",
+      "confidence_pct": 100.0,
+      "status": "OPTIMAL",
+      "latency_ms": 5.19,
+      "match": true
+    },
+    {
+      "filename": "Potato___healthy_05.jpg",
+      "relative_path": "Potato___healthy/Potato___healthy_05.jpg",
+      "ground_truth": "Potato Healthy",
+      "predicted_class": "Potato Healthy",
+      "confidence_pct": 89.8,
+      "status": "OPTIMAL",
+      "latency_ms": 7.11,
+      "match": true
+    },
+    {
+      "filename": "Potato___healthy_06.jpg",
+      "relative_path": "Potato___healthy/Potato___healthy_06.jpg",
+      "ground_truth": "Potato Healthy",
+      "predicted_class": "Potato Healthy",
+      "confidence_pct": 99.3,
+      "status": "OPTIMAL",
+      "latency_ms": 5.15,
+      "match": true
+    },
+    {
+      "filename": "Potato___healthy_07.jpg",
+      "relative_path": "Potato___healthy/Potato___healthy_07.jpg",
+      "ground_truth": "Potato Healthy",
+      "predicted_class": "Potato Healthy",
+      "confidence_pct": 60.9,
+      "status": "OPTIMAL",
+      "latency_ms": 7.08,
+      "match": true
+    },
+    {
+      "filename": "Potato___healthy_08.jpg",
+      "relative_path": "Potato___healthy/Potato___healthy_08.jpg",
+      "ground_truth": "Potato Healthy",
+      "predicted_class": "Potato Healthy",
+      "confidence_pct": 99.8,
+      "status": "OPTIMAL",
+      "latency_ms": 5.19,
+      "match": true
+    },
+    {
+      "filename": "Potato___healthy_09.jpg",
+      "relative_path": "Potato___healthy/Potato___healthy_09.jpg",
+      "ground_truth": "Potato Healthy",
+      "predicted_class": "Potato Healthy",
+      "confidence_pct": 99.8,
+      "status": "OPTIMAL",
+      "latency_ms": 5.25,
+      "match": true
+    },
+    {
+      "filename": "Potato___healthy_10.jpg",
+      "relative_path": "Potato___healthy/Potato___healthy_10.jpg",
+      "ground_truth": "Potato Healthy",
+      "predicted_class": "Potato Healthy",
+      "confidence_pct": 84.9,
+      "status": "OPTIMAL",
+      "latency_ms": 6.16,
+      "match": true
+    },
+    {
+      "filename": "Tomato___Early_blight_01.jpg",
+      "relative_path": "Tomato___Early_blight/Tomato___Early_blight_01.jpg",
+      "ground_truth": "Tomato Early Blight",
+      "predicted_class": "Tomato Early Blight",
+      "confidence_pct": 77.4,
+      "status": "WARNING",
+      "latency_ms": 4.93,
+      "match": true
+    },
+    {
+      "filename": "Tomato___Early_blight_02.jpg",
+      "relative_path": "Tomato___Early_blight/Tomato___Early_blight_02.jpg",
+      "ground_truth": "Tomato Early Blight",
+      "predicted_class": "Tomato Early Blight",
+      "confidence_pct": 71.2,
+      "status": "WARNING",
+      "latency_ms": 5.35,
+      "match": true
+    },
+    {
+      "filename": "Tomato___Early_blight_03.jpg",
+      "relative_path": "Tomato___Early_blight/Tomato___Early_blight_03.jpg",
+      "ground_truth": "Tomato Early Blight",
+      "predicted_class": "Tomato Early Blight",
+      "confidence_pct": 97.8,
+      "status": "WARNING",
+      "latency_ms": 5.5,
+      "match": true
+    },
+    {
+      "filename": "Tomato___Early_blight_04.jpg",
+      "relative_path": "Tomato___Early_blight/Tomato___Early_blight_04.jpg",
+      "ground_truth": "Tomato Early Blight",
+      "predicted_class": "Tomato Healthy",
+      "confidence_pct": 70.0,
+      "status": "OPTIMAL",
+      "latency_ms": 5.21,
+      "match": false
+    },
+    {
+      "filename": "Tomato___Early_blight_05.jpg",
+      "relative_path": "Tomato___Early_blight/Tomato___Early_blight_05.jpg",
+      "ground_truth": "Tomato Early Blight",
+      "predicted_class": "Tomato Early Blight",
+      "confidence_pct": 78.3,
+      "status": "WARNING",
+      "latency_ms": 6.48,
+      "match": true
+    },
+    {
+      "filename": "Tomato___Early_blight_06.jpg",
+      "relative_path": "Tomato___Early_blight/Tomato___Early_blight_06.jpg",
+      "ground_truth": "Tomato Early Blight",
+      "predicted_class": "Tomato Early Blight",
+      "confidence_pct": 97.5,
+      "status": "WARNING",
+      "latency_ms": 5.02,
+      "match": true
+    },
+    {
+      "filename": "Tomato___Early_blight_07.jpg",
+      "relative_path": "Tomato___Early_blight/Tomato___Early_blight_07.jpg",
+      "ground_truth": "Tomato Early Blight",
+      "predicted_class": "Solanaceae Uncertain / Ambiguous",
+      "confidence_pct": 49.7,
+      "status": "UNCERTAIN",
+      "latency_ms": 4.36,
+      "match": false
+    },
+    {
+      "filename": "Tomato___Early_blight_08.jpg",
+      "relative_path": "Tomato___Early_blight/Tomato___Early_blight_08.jpg",
+      "ground_truth": "Tomato Early Blight",
+      "predicted_class": "Solanaceae Uncertain / Ambiguous",
+      "confidence_pct": 43.3,
+      "status": "UNCERTAIN",
+      "latency_ms": 6.61,
+      "match": false
+    },
+    {
+      "filename": "Tomato___Early_blight_09.jpg",
+      "relative_path": "Tomato___Early_blight/Tomato___Early_blight_09.jpg",
+      "ground_truth": "Tomato Early Blight",
+      "predicted_class": "Tomato Early Blight",
+      "confidence_pct": 71.9,
+      "status": "WARNING",
+      "latency_ms": 4.87,
+      "match": true
+    },
+    {
+      "filename": "Tomato___Early_blight_10.jpg",
+      "relative_path": "Tomato___Early_blight/Tomato___Early_blight_10.jpg",
+      "ground_truth": "Tomato Early Blight",
+      "predicted_class": "Tomato Early Blight",
+      "confidence_pct": 61.7,
+      "status": "WARNING",
+      "latency_ms": 5.13,
+      "match": true
+    },
+    {
+      "filename": "Tomato___Late_blight_01.jpg",
+      "relative_path": "Tomato___Late_blight/Tomato___Late_blight_01.jpg",
+      "ground_truth": "Tomato Late Blight",
+      "predicted_class": "Potato Late Blight",
+      "confidence_pct": 64.8,
+      "status": "SEVERE",
+      "latency_ms": 5.19,
+      "match": true
+    },
+    {
+      "filename": "Tomato___Late_blight_02.jpg",
+      "relative_path": "Tomato___Late_blight/Tomato___Late_blight_02.jpg",
+      "ground_truth": "Tomato Late Blight",
+      "predicted_class": "Potato Late Blight",
+      "confidence_pct": 91.9,
+      "status": "SEVERE",
+      "latency_ms": 5.12,
+      "match": true
+    },
+    {
+      "filename": "Tomato___Late_blight_03.jpg",
+      "relative_path": "Tomato___Late_blight/Tomato___Late_blight_03.jpg",
+      "ground_truth": "Tomato Late Blight",
+      "predicted_class": "Potato Late Blight",
+      "confidence_pct": 54.9,
+      "status": "SEVERE",
+      "latency_ms": 6.14,
+      "match": true
+    },
+    {
+      "filename": "Tomato___Late_blight_04.jpg",
+      "relative_path": "Tomato___Late_blight/Tomato___Late_blight_04.jpg",
+      "ground_truth": "Tomato Late Blight",
+      "predicted_class": "Solanaceae Uncertain / Ambiguous",
+      "confidence_pct": 44.0,
+      "status": "UNCERTAIN",
+      "latency_ms": 5.25,
+      "match": false
+    },
+    {
+      "filename": "Tomato___Late_blight_05.jpg",
+      "relative_path": "Tomato___Late_blight/Tomato___Late_blight_05.jpg",
+      "ground_truth": "Tomato Late Blight",
+      "predicted_class": "Tomato Late Blight",
+      "confidence_pct": 60.5,
+      "status": "SEVERE",
+      "latency_ms": 5.18,
+      "match": true
+    },
+    {
+      "filename": "Tomato___Late_blight_06.jpg",
+      "relative_path": "Tomato___Late_blight/Tomato___Late_blight_06.jpg",
+      "ground_truth": "Tomato Late Blight",
+      "predicted_class": "Tomato Late Blight",
+      "confidence_pct": 89.9,
+      "status": "SEVERE",
+      "latency_ms": 6.44,
+      "match": true
+    },
+    {
+      "filename": "Tomato___Late_blight_07.jpg",
+      "relative_path": "Tomato___Late_blight/Tomato___Late_blight_07.jpg",
+      "ground_truth": "Tomato Late Blight",
+      "predicted_class": "Tomato Late Blight",
+      "confidence_pct": 86.3,
+      "status": "SEVERE",
+      "latency_ms": 3.22,
+      "match": true
+    },
+    {
+      "filename": "Tomato___Late_blight_08.jpg",
+      "relative_path": "Tomato___Late_blight/Tomato___Late_blight_08.jpg",
+      "ground_truth": "Tomato Late Blight",
+      "predicted_class": "Tomato Late Blight",
+      "confidence_pct": 99.9,
+      "status": "SEVERE",
+      "latency_ms": 3.39,
+      "match": true
+    },
+    {
+      "filename": "Tomato___Late_blight_09.jpg",
+      "relative_path": "Tomato___Late_blight/Tomato___Late_blight_09.jpg",
+      "ground_truth": "Tomato Late Blight",
+      "predicted_class": "Tomato Late Blight",
+      "confidence_pct": 100.0,
+      "status": "SEVERE",
+      "latency_ms": 4.17,
+      "match": true
+    },
+    {
+      "filename": "Tomato___Late_blight_10.jpg",
+      "relative_path": "Tomato___Late_blight/Tomato___Late_blight_10.jpg",
+      "ground_truth": "Tomato Late Blight",
+      "predicted_class": "Tomato Late Blight",
+      "confidence_pct": 97.9,
+      "status": "SEVERE",
+      "latency_ms": 4.21,
+      "match": true
+    },
+    {
+      "filename": "Tomato___healthy_01.jpg",
+      "relative_path": "Tomato___healthy/Tomato___healthy_01.jpg",
+      "ground_truth": "Tomato Healthy",
+      "predicted_class": "Tomato Healthy",
+      "confidence_pct": 100.0,
+      "status": "OPTIMAL",
+      "latency_ms": 3.38,
+      "match": true
+    },
+    {
+      "filename": "Tomato___healthy_02.jpg",
+      "relative_path": "Tomato___healthy/Tomato___healthy_02.jpg",
+      "ground_truth": "Tomato Healthy",
+      "predicted_class": "Tomato Healthy",
+      "confidence_pct": 100.0,
+      "status": "OPTIMAL",
+      "latency_ms": 3.46,
+      "match": true
+    },
+    {
+      "filename": "Tomato___healthy_03.jpg",
+      "relative_path": "Tomato___healthy/Tomato___healthy_03.jpg",
+      "ground_truth": "Tomato Healthy",
+      "predicted_class": "Tomato Healthy",
+      "confidence_pct": 100.0,
+      "status": "OPTIMAL",
+      "latency_ms": 6.48,
+      "match": true
+    },
+    {
+      "filename": "Tomato___healthy_04.jpg",
+      "relative_path": "Tomato___healthy/Tomato___healthy_04.jpg",
+      "ground_truth": "Tomato Healthy",
+      "predicted_class": "Tomato Healthy",
+      "confidence_pct": 99.8,
+      "status": "OPTIMAL",
+      "latency_ms": 3.46,
+      "match": true
+    },
+    {
+      "filename": "Tomato___healthy_05.jpg",
+      "relative_path": "Tomato___healthy/Tomato___healthy_05.jpg",
+      "ground_truth": "Tomato Healthy",
+      "predicted_class": "Tomato Healthy",
+      "confidence_pct": 100.0,
+      "status": "OPTIMAL",
+      "latency_ms": 3.61,
+      "match": true
+    },
+    {
+      "filename": "Tomato___healthy_06.jpg",
+      "relative_path": "Tomato___healthy/Tomato___healthy_06.jpg",
+      "ground_truth": "Tomato Healthy",
+      "predicted_class": "Tomato Healthy",
+      "confidence_pct": 100.0,
+      "status": "OPTIMAL",
+      "latency_ms": 4.34,
+      "match": true
+    },
+    {
+      "filename": "Tomato___healthy_07.jpg",
+      "relative_path": "Tomato___healthy/Tomato___healthy_07.jpg",
+      "ground_truth": "Tomato Healthy",
+      "predicted_class": "Tomato Healthy",
+      "confidence_pct": 100.0,
+      "status": "OPTIMAL",
+      "latency_ms": 4.4,
+      "match": true
+    },
+    {
+      "filename": "Tomato___healthy_08.jpg",
+      "relative_path": "Tomato___healthy/Tomato___healthy_08.jpg",
+      "ground_truth": "Tomato Healthy",
+      "predicted_class": "Tomato Healthy",
+      "confidence_pct": 99.8,
+      "status": "OPTIMAL",
+      "latency_ms": 3.51,
+      "match": true
+    },
+    {
+      "filename": "Tomato___healthy_09.jpg",
+      "relative_path": "Tomato___healthy/Tomato___healthy_09.jpg",
+      "ground_truth": "Tomato Healthy",
+      "predicted_class": "Tomato Healthy",
+      "confidence_pct": 100.0,
+      "status": "OPTIMAL",
+      "latency_ms": 3.52,
+      "match": true
+    },
+    {
+      "filename": "Tomato___healthy_10.jpg",
+      "relative_path": "Tomato___healthy/Tomato___healthy_10.jpg",
+      "ground_truth": "Tomato Healthy",
+      "predicted_class": "Tomato Healthy",
+      "confidence_pct": 100.0,
+      "status": "OPTIMAL",
+      "latency_ms": 6.48,
+      "match": true
+    }
+  ]
+}
