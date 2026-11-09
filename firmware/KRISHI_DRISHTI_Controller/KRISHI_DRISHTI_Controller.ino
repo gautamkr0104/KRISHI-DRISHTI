@@ -1,23 +1,33 @@
 /*
-  KRISHI-DRISHTI - Controller Wand
-  Clean, Ultra-Simple 2-Button UI (CBSE Science Exhibition Ready)
+  ==============================================================================
+  KRISHI-DRISHTI (कृषि-दृष्टि) - Official Controller Wand Firmware v2.2
+  Target Hardware: ESP32 DevKit V1 + SSD1306 OLED (128x64 I2C) + DHT11
+  Networking: Connects as Wi-Fi Station to SoftAP "KRISHI-DRISHTI" @ 192.168.4.1
+  Author: Bharadwaj (Class 9, CBSE Science Exhibition 2026-27)
+  ==============================================================================
 
-  Wiring:
-    OLED SDA  -> GPIO 21
-    OLED SCL  -> GPIO 22
-    SCAN Btn  -> GPIO 27 (to GND) -> Snaps photo / runs diagnosis
-    NEXT Btn  -> GPIO 26 (to GND) -> Flips to next page
-    DHT11     -> GPIO 18 (to 3.3V & GND)
+  Hardware Pinout:
+    OLED SDA  -> GPIO 21 (I2C Data)
+    OLED SCL  -> GPIO 22 (I2C Clock)
+    SCAN Btn  -> GPIO 27 (to GND, INPUT_PULLUP) -> Triggers camera capture & AI flow
+    NEXT Btn  -> GPIO 26 (to GND, INPUT_PULLUP) -> Cycles OLED pages
+    DHT11     -> GPIO 18 (Digital Sensor, VCC to 3.3V, GND to GND)
 */
 
+#include <WiFi.h>
+#include <HTTPClient.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <DHT.h>
+#include <ArduinoJson.h>
 #include "esp_private/brownout.h"
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
 
+// -----------------------------------------------------------------
+// HARDWARE DEFINITIONS
+// -----------------------------------------------------------------
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 #define OLED_RESET -1
@@ -28,20 +38,72 @@
 #define DHT_PIN 18
 #define DHT_TYPE DHT11
 
+// -----------------------------------------------------------------
+// CONFIGURABLE EXHIBITION DISPLAY STRINGS
+// -----------------------------------------------------------------
+const char* TXT_HEADER_HOME   = "KRISHI-DRISHTI";
+const char* TXT_HEADER_ENV    = "CANOPY CLIMATE";
+const char* TXT_HEADER_DIAG   = "AI SCREENING";
+const char* TXT_HEADER_CURE   = "AGRONOMIC CURE";
+const char* TXT_FOOTER_HINT   = "[SCAN]Snap [NEXT]>";
+
+// -----------------------------------------------------------------
+// NETWORK CONFIGURATION
+// -----------------------------------------------------------------
+const char* AP_SSID = "KRISHI-DRISHTI";
+const char* AP_PASS = "12345678";
+const char* CAMERA_HOST = "192.168.4.1";
+
+const String URL_CAPTURE   = "http://192.168.4.1/api/capture";
+const String URL_DIAG_LATEST = "http://192.168.4.1/api/diagnosis/latest";
+const String URL_STATUS    = "http://192.168.4.1/api/status";
+
+// -----------------------------------------------------------------
+// PERIPHERAL OBJECTS
+// -----------------------------------------------------------------
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 DHT dht(DHT_PIN, DHT_TYPE);
 
 // -----------------------------------------------------------------
-// SYSTEM STATE
+// SYSTEM & DIAGNOSIS STATE
 // -----------------------------------------------------------------
-int activePage = 0; // 0: Home, 1: Telemetry, 2: Diagnosis, 3: Cure
+enum WandState {
+  STATE_IDLE,
+  STATE_CAPTURING,
+  STATE_AWAITING_AI,
+  STATE_DIAGNOSIS_RECEIVED,
+  STATE_ERROR
+};
+
+WandState currentState = STATE_IDLE;
+int activePage = 0; // 0: Home, 1: Weather, 2: Diagnosis, 3: Cure
 const int TOTAL_PAGES = 4;
 
-uint32_t totalScans = 0;
-float canopyTemp = 24.5;
-float canopyHum = 82.0;
+// Microclimate Telemetry
+float currentTemp = 0.0;
+float currentHum = 0.0;
 bool dhtConnected = false;
-unsigned long lastDhtTime = 0;
+unsigned long lastDhtReadMs = 0;
+const unsigned long DHT_INTERVAL_MS = 2500;
+
+// Scan & Telemetry Tracking
+uint32_t activeScanId = 0;
+uint32_t totalScansRecorded = 0;
+String systemStatusMsg = "Wand Online";
+
+// Diagnosis Data (Received from Phone AI Engine via Camera Bridge)
+bool hasDiagnosis = false;
+uint32_t diagScanId = 0;
+String diagCrop = "--";
+String diagDisease = "No Scan Yet";
+float diagConfidence = 0.0;
+String diagStatus = "PENDING";
+String diagOrganic = "Press [SCAN] to test";
+String diagChemical = "No active prescription";
+
+// Wi-Fi Status Tracking
+bool wifiConnected = false;
+unsigned long lastWifiCheckMs = 0;
 
 // Button Debounce
 bool prevScan = HIGH;
@@ -50,21 +112,177 @@ unsigned long lastScanMs = 0;
 unsigned long lastNextMs = 0;
 const unsigned long DEBOUNCE_MS = 250;
 
-// Auto-advance slideshow timer (for judge hands-free viewing)
+// Auto-advance slideshow timer
 unsigned long lastAutoSlideMs = 0;
-const unsigned long SLIDE_INTERVAL_MS = 4500; // 4.5 seconds
+const unsigned long SLIDE_INTERVAL_MS = 6000;
 
 // -----------------------------------------------------------------
-// READ SENSORS
+// DISPLAY DRAWING PRIMITIVES
+// -----------------------------------------------------------------
+void drawHeader(const char* title, const char* pageNum) {
+  display.clearDisplay();
+  display.setTextColor(SSD1306_WHITE);
+  display.setTextSize(1);
+  display.setCursor(0, 0);
+  display.print(title);
+  display.setCursor(102, 0);
+  display.print(pageNum);
+  display.drawLine(0, 9, 127, 9, SSD1306_WHITE);
+}
+
+void drawFooter() {
+  display.drawLine(0, 52, 127, 52, SSD1306_WHITE);
+  display.setCursor(0, 55);
+  display.print(TXT_FOOTER_HINT);
+  display.display();
+}
+
+// -----------------------------------------------------------------
+// PAGE RENDERING
+// -----------------------------------------------------------------
+void renderPage0_Home() {
+  drawHeader(TXT_HEADER_HOME, "1/4");
+
+  display.setCursor(0, 13);
+  display.print("WiFi : ");
+  if (WiFi.status() == WL_CONNECTED) {
+    display.printf("Mesh OK (%ddBm)", WiFi.RSSI());
+  } else {
+    display.print("Connecting...");
+  }
+
+  display.setCursor(0, 24);
+  display.print("Camera : ");
+  display.print(WiFi.status() == WL_CONNECTED ? "192.168.4.1" : "Searching");
+
+  display.setCursor(0, 35);
+  display.printf("Scans  : %u Saved", totalScansRecorded);
+
+  display.setCursor(0, 44);
+  display.print("State  : ");
+  display.print(systemStatusMsg);
+
+  drawFooter();
+}
+
+void renderPage1_Canopy() {
+  drawHeader(TXT_HEADER_ENV, "2/4");
+
+  if (dhtConnected) {
+    display.setCursor(0, 13);
+    display.printf("Temp: %.1f C", currentTemp);
+
+    display.setCursor(0, 24);
+    display.printf("Hum : %.1f %% RH", currentHum);
+
+    display.setCursor(0, 36);
+    // Scientifically documented Plant Disease Triangle microclimate rule:
+    // Phytophthora infestans sporulation requires sustained RH > 85% and Temp 18-24 C.
+    if (currentHum >= 85.0 && currentTemp >= 18.0 && currentTemp <= 24.5) {
+      display.print("Risk: HIGH (Late Blight)");
+    } else if (currentHum >= 70.0 && currentTemp >= 22.0 && currentTemp <= 30.0) {
+      display.print("Risk: MODERATE (Early)");
+    } else if (currentHum >= 60.0) {
+      display.print("Risk: MONITOR CANOPY");
+    } else {
+      display.print("Risk: LOW (Optimal)");
+    }
+  } else {
+    display.setCursor(0, 15);
+    display.print("DHT11: Disconnected");
+    display.setCursor(0, 27);
+    display.print("Sensor pin: GPIO 18");
+    display.setCursor(0, 39);
+    display.print("Check cable/resistor");
+  }
+
+  drawFooter();
+}
+
+void renderPage2_Diagnosis() {
+  drawHeader(TXT_HEADER_DIAG, "3/4");
+
+  if (hasDiagnosis) {
+    display.setCursor(0, 13);
+    display.printf("Crop : %s", diagCrop.c_str());
+
+    display.setCursor(0, 24);
+    display.printf("Cond : %s", diagDisease.c_str());
+
+    display.setCursor(0, 35);
+    if (diagStatus == "UNCERTAIN") {
+      display.print("Conf : UNCERTAIN / LOW");
+      display.setCursor(0, 44);
+      display.print("Stat : RETAKE PHOTO");
+    } else {
+      display.printf("Conf : %.1f%%", diagConfidence);
+      display.setCursor(0, 44);
+      display.printf("Stat : %s", diagStatus.c_str());
+    }
+  } else {
+    display.setCursor(0, 18);
+    display.print("No Active Diagnosis");
+    display.setCursor(0, 30);
+    display.print("Aim lens at leaf &");
+    display.setCursor(0, 40);
+    display.print("press [SCAN] to start");
+  }
+
+  drawFooter();
+}
+
+void renderPage3_Cure() {
+  drawHeader(TXT_HEADER_CURE, "4/4");
+
+  if (hasDiagnosis && diagStatus != "UNCERTAIN") {
+    display.setCursor(0, 13);
+    display.print("Org : ");
+    // Truncate cleanly if too long
+    display.print(diagOrganic.substring(0, 15));
+
+    display.setCursor(0, 24);
+    display.print("Chem: ");
+    display.print(diagChemical.substring(0, 15));
+
+    display.setCursor(0, 36);
+    display.print("Note: Preventative bio");
+    display.setCursor(0, 44);
+    display.print("spray under canopy");
+  } else if (diagStatus == "UNCERTAIN") {
+    display.setCursor(0, 16);
+    display.print("Image unclear/shadowed");
+    display.setCursor(0, 28);
+    display.print("1. Hold wand steady");
+    display.setCursor(0, 40);
+    display.print("2. 10-15cm from leaf");
+  } else {
+    display.setCursor(0, 20);
+    display.print("Prescription pending");
+    display.setCursor(0, 34);
+    display.print("Perform leaf scan");
+  }
+
+  drawFooter();
+}
+
+void renderActivePage() {
+  if (activePage == 0) renderPage0_Home();
+  else if (activePage == 1) renderPage1_Canopy();
+  else if (activePage == 2) renderPage2_Diagnosis();
+  else renderPage3_Cure();
+}
+
+// -----------------------------------------------------------------
+// SENSOR TELEMETRY
 // -----------------------------------------------------------------
 void readSensors() {
-  if (millis() - lastDhtTime > 2000 || lastDhtTime == 0) {
-    lastDhtTime = millis();
+  if (millis() - lastDhtReadMs > DHT_INTERVAL_MS || lastDhtReadMs == 0) {
+    lastDhtReadMs = millis();
     float h = dht.readHumidity();
     float t = dht.readTemperature();
-    if (!isnan(h) && !isnan(t) && h > 0.0) {
-      canopyTemp = t;
-      canopyHum = h;
+    if (!isnan(h) && !isnan(t) && h > 0.0 && h <= 100.0) {
+      currentHum = h;
+      currentTemp = t;
       dhtConnected = true;
     } else {
       dhtConnected = false;
@@ -73,168 +291,180 @@ void readSensors() {
 }
 
 // -----------------------------------------------------------------
-// HEADER & FOOTER HELPERS (GUARANTEES ZERO TEXT OVERLAP)
+// WI-FI CONNECTION MANAGEMENT
 // -----------------------------------------------------------------
-void drawHeader(const char* title, const char* pageNum) {
-  display.clearDisplay();
-  display.setTextColor(SSD1306_WHITE);
-  display.setTextSize(1);
-
-  display.setCursor(0, 0);
-  display.print(title);
-
-  display.setCursor(102, 0);
-  display.print(pageNum);
-
-  display.drawLine(0, 10, 127, 10, SSD1306_WHITE);
-}
-
-void drawFooter() {
-  display.drawLine(0, 52, 127, 52, SSD1306_WHITE);
-  display.setCursor(0, 55);
-  display.print("[SCAN]Snap  [NEXT]>");
-  display.display();
-}
-
-// -----------------------------------------------------------------
-// PAGE 0: SCANNER HOME
-// -----------------------------------------------------------------
-void renderPage0() {
-  drawHeader("KRISHI-DRISHTI", "1/4");
-
-  display.setCursor(0, 15);
-  display.print("Camera : IN TRANSIT");
-
-  display.setCursor(0, 27);
-  display.print("Wand   : READY");
-
-  display.setCursor(0, 39);
-  display.printf("Scans  : %u Saved", totalScans);
-
-  drawFooter();
-}
-
-// -----------------------------------------------------------------
-// PAGE 1: CANOPY TELEMETRY (DISEASE TRIANGLE)
-// -----------------------------------------------------------------
-void renderPage1() {
-  readSensors();
-  drawHeader("CANOPY WEATHER", "2/4");
-
-  if (dhtConnected) {
-    display.setCursor(0, 15);
-    display.printf("Temp: %.1f C", canopyTemp);
-
-    display.setCursor(0, 27);
-    display.printf("Hum : %.1f %%", canopyHum);
-
-    display.setCursor(0, 39);
-    if (canopyHum >= 80.0 && canopyTemp >= 18.0 && canopyTemp <= 26.0) {
-      display.print("Risk: HIGH BLIGHT");
-    } else if (canopyHum >= 65.0) {
-      display.print("Risk: MODERATE");
-    } else {
-      display.print("Risk: OPTIMAL");
-    }
-  } else {
-    display.setCursor(0, 15);
-    display.print("DHT11: In Package");
-
-    display.setCursor(0, 27);
-    display.print("Micro: 24.5C 82%Hum");
-
-    display.setCursor(0, 39);
-    display.print("Risk : HIGH BLIGHT");
+void ensureWiFiConnected() {
+  if (WiFi.status() == WL_CONNECTED) {
+    wifiConnected = true;
+    return;
   }
 
-  drawFooter();
+  wifiConnected = false;
+  if (millis() - lastWifiCheckMs > 5000 || lastWifiCheckMs == 0) {
+    lastWifiCheckMs = millis();
+    Serial.println("[WIFI] Attempting connection to KRISHI-DRISHTI...");
+    WiFi.begin(AP_SSID, AP_PASS);
+  }
 }
 
 // -----------------------------------------------------------------
-// PAGE 2: AI DIAGNOSIS
+// REAL SCAN EXECUTION & AI RETRIEVAL PIPELINE
 // -----------------------------------------------------------------
-void renderPage2() {
-  drawHeader("AI DIAGNOSIS", "3/4");
+void triggerRealScan() {
+  if (WiFi.status() != WL_CONNECTED) {
+    systemStatusMsg = "WiFi Offline";
+    display.clearDisplay();
+    drawHeader("SCAN ERROR", "!");
+    display.setCursor(0, 18);
+    display.print("Camera WiFi Unreachable");
+    display.setCursor(0, 30);
+    display.print("Check ESP32-CAM power");
+    display.setCursor(0, 42);
+    display.print("SSID: KRISHI-DRISHTI");
+    drawFooter();
+    delay(2000);
+    renderActivePage();
+    return;
+  }
 
-  display.setCursor(0, 15);
-  display.print("Crop : Tomato");
-
-  display.setCursor(0, 27);
-  display.print("Diag : Late Blight");
-
-  display.setCursor(0, 39);
-  display.print("Conf : 96.8% (HIGH)");
-
-  drawFooter();
-}
-
-// -----------------------------------------------------------------
-// PAGE 3: REMEDY & CURE
-// -----------------------------------------------------------------
-void renderPage3() {
-  drawHeader("TREATMENT CURE", "4/4");
-
-  display.setCursor(0, 15);
-  display.print("Org : Neem Oil 5ml");
-
-  display.setCursor(0, 27);
-  display.print("Chem: Mancozeb 2.5g");
-
-  display.setCursor(0, 39);
-  display.print("Act : Prune leaves");
-
-  drawFooter();
-}
-
-// -----------------------------------------------------------------
-// RENDER CURRENT PAGE
-// -----------------------------------------------------------------
-void renderActivePage() {
-  if (activePage == 0) renderPage0();
-  else if (activePage == 1) renderPage1();
-  else if (activePage == 2) renderPage2();
-  else renderPage3();
-}
-
-// -----------------------------------------------------------------
-// FLASH CAPTURE ANIMATION (TRIGGERS WHEN SCAN BUTTON IS PRESSED)
-// -----------------------------------------------------------------
-void triggerScanAnimation() {
-  totalScans++;
+  currentState = STATE_CAPTURING;
+  systemStatusMsg = "Capturing...";
 
   display.clearDisplay();
-  display.setTextColor(SSD1306_WHITE);
-  display.setTextSize(1);
-
-  display.setCursor(18, 12);
-  display.println("* CAPTURING *");
-  display.drawRect(8, 6, 112, 22, SSD1306_WHITE);
-
+  drawHeader("LEAF CAPTURE", "..");
+  display.setCursor(14, 18);
+  display.print("* CAPTURING *");
+  display.drawRect(8, 14, 112, 16, SSD1306_WHITE);
   display.setCursor(10, 36);
-  display.printf("Saved Scan #%u\n", totalScans);
-  display.setCursor(10, 48);
-  display.println("AI Analyzing...");
+  display.print("Triggering Camera...");
   display.display();
 
-  delay(1200);
+  HTTPClient http;
+  http.begin(URL_CAPTURE);
+  http.setTimeout(8000); // 8 second timeout for frame capture & SD save
+  int httpCode = http.GET();
 
-  // Jump straight to AI diagnosis page
-  activePage = 2;
+  if (httpCode != 200) {
+    Serial.printf("[SCAN] Camera capture failed! HTTP code: %d\n", httpCode);
+    systemStatusMsg = "Capture Failed";
+    display.clearDisplay();
+    drawHeader("CAPTURE ERROR", "!");
+    display.setCursor(0, 20);
+    display.printf("Camera returned %d", httpCode);
+    display.setCursor(0, 34);
+    display.print("Check SD Card & Lens");
+    drawFooter();
+    http.end();
+    delay(2500);
+    currentState = STATE_IDLE;
+    renderActivePage();
+    return;
+  }
+
+  String payload = http.getString();
+  http.end();
+  Serial.printf("[SCAN] Camera response: %s\n", payload.c_str());
+
+  // Parse JSON response: {"status":"success","scan_id":X,"filename":"/scans/scan_000X.jpg","bytes":Y}
+  StaticJsonDocument<256> doc;
+  DeserializationError err = deserializeJson(doc, payload);
+  if (err || doc["status"] != "success") {
+    Serial.println("[SCAN] Failed to parse camera JSON response!");
+    systemStatusMsg = "Parse Error";
+    currentState = STATE_IDLE;
+    return;
+  }
+
+  activeScanId = doc["scan_id"];
+  totalScansRecorded = activeScanId;
+  currentState = STATE_AWAITING_AI;
+  systemStatusMsg = "AI Analyzing";
+
+  display.clearDisplay();
+  drawHeader("EDGE AI INFERENCE", "..");
+  display.setCursor(0, 16);
+  display.printf("Scan #%u Captured", activeScanId);
+  display.setCursor(0, 28);
+  display.print("Phone AI Co-Processor");
+  display.setCursor(0, 40);
+  display.print("Running MobileNetV3...");
+  display.display();
+
+  // Poll for AI Diagnosis from camera bridge (Phone -> Camera -> Wand)
+  unsigned long waitStart = millis();
+  const unsigned long AI_TIMEOUT_MS = 14000; // 14 seconds max wait for phone inference
+  bool diagFound = false;
+
+  while (millis() - waitStart < AI_TIMEOUT_MS) {
+    delay(800);
+    HTTPClient httpDiag;
+    httpDiag.begin(URL_DIAG_LATEST);
+    httpDiag.setTimeout(3000);
+    int diagCode = httpDiag.GET();
+
+    if (diagCode == 200) {
+      String diagPayload = httpDiag.getString();
+      StaticJsonDocument<512> diagDoc;
+      DeserializationError dErr = deserializeJson(diagDoc, diagPayload);
+
+      if (!dErr && diagDoc["ready"] == true) {
+        uint32_t retScanId = diagDoc["scan_id"];
+        // Verify that diagnosis matches current scan ID to prevent stale result display
+        if (retScanId == activeScanId) {
+          diagCrop = diagDoc["crop"].as<String>();
+          diagDisease = diagDoc["disease"].as<String>();
+          diagConfidence = diagDoc["confidence"].as<float>();
+          diagStatus = diagDoc["status"].as<String>();
+          diagOrganic = diagDoc["organic"].as<String>();
+          diagChemical = diagDoc["chemical"].as<String>();
+
+          diagScanId = retScanId;
+          hasDiagnosis = true;
+          diagFound = true;
+          systemStatusMsg = "Diagnosis OK";
+          Serial.printf("[AI] Diagnosis received for Scan #%u: %s %s (%.1f%%)\n",
+                        retScanId, diagCrop.c_str(), diagDisease.c_str(), diagConfidence);
+          httpDiag.end();
+          break;
+        }
+      }
+    }
+    httpDiag.end();
+  }
+
+  if (!diagFound) {
+    Serial.println("[AI] Timed out waiting for phone AI diagnosis!");
+    systemStatusMsg = "AI Timeout";
+    hasDiagnosis = true;
+    diagScanId = activeScanId;
+    diagCrop = "Tomato/Potato";
+    diagDisease = "Awaiting Phone";
+    diagConfidence = 0.0;
+    diagStatus = "UNCERTAIN";
+    diagOrganic = "Check phone AI daemon";
+    diagChemical = "Reconnect WiFi to 192.168.4.1";
+  }
+
+  currentState = STATE_DIAGNOSIS_RECEIVED;
+  activePage = 2; // Jump straight to AI Diagnosis page
   renderActivePage();
   lastAutoSlideMs = millis();
 }
 
 // -----------------------------------------------------------------
-// SETUP
+// ARDUINO SETUP
 // -----------------------------------------------------------------
 void setup() {
   esp_brownout_disable();
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
 
   Serial.begin(115200);
-  delay(200);
+  delay(150);
 
-  Serial.println("\n[KRISHI-DRISHTI] Booting Simple Wand UI...");
+  Serial.println("\n========================================");
+  Serial.println("  KRISHI-DRISHTI :: Controller Wand v2.2");
+  Serial.println("  Hardware Triad Core for CBSE 2026-27");
+  Serial.println("========================================");
 
   pinMode(SCAN_BUTTON, INPUT_PULLUP);
   pinMode(NEXT_BUTTON, INPUT_PULLUP);
@@ -243,45 +473,63 @@ void setup() {
 
   Wire.begin(21, 22);
   if (display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDRESS)) {
-    Serial.println("[KRISHI-DRISHTI] OLED initialized.");
-    renderActivePage();
+    Serial.println("[OLED] SSD1306 Initialized successfully.");
+    display.clearDisplay();
+    display.setTextColor(SSD1306_WHITE);
+    display.setTextSize(1);
+    display.setCursor(10, 15);
+    display.print("KRISHI-DRISHTI");
+    display.setCursor(10, 30);
+    display.print("Controller Wand v2.2");
+    display.setCursor(10, 45);
+    display.print("Connecting WiFi...");
+    display.display();
   }
 
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(AP_SSID, AP_PASS);
+
+  readSensors();
   lastAutoSlideMs = millis();
 }
 
 // -----------------------------------------------------------------
-// LOOP: 2 DEAD-SIMPLE BUTTONS + SMOOTH AUTO-SLIDESHOW
+// ARDUINO MAIN LOOP
 // -----------------------------------------------------------------
 void loop() {
+  ensureWiFiConnected();
+  readSensors();
+
   bool sScan = digitalRead(SCAN_BUTTON);
   bool sNext = digitalRead(NEXT_BUTTON);
 
-  // BUTTON 1: SCAN (GPIO 27) -> Snaps leaf, adds scan, shows diagnosis
+  // BUTTON 1: SCAN (GPIO 27) -> Sends real HTTP capture, awaits real AI
   if (prevScan == HIGH && sScan == LOW && millis() - lastScanMs > DEBOUNCE_MS) {
     lastScanMs = millis();
-    Serial.println("[USER] SCAN BUTTON PRESSED!");
-    triggerScanAnimation();
+    Serial.println("[USER] SCAN Button Pressed -> Initiating real capture sequence...");
+    triggerRealScan();
   }
 
-  // BUTTON 2: NEXT (GPIO 26) -> Turns to the next page (1 -> 2 -> 3 -> 4 -> 1)
+  // BUTTON 2: NEXT (GPIO 26) -> Cycles through 4 telemetry/cure pages
   if (prevNext == HIGH && sNext == LOW && millis() - lastNextMs > DEBOUNCE_MS) {
     lastNextMs = millis();
     activePage = (activePage + 1) % TOTAL_PAGES;
-    Serial.printf("[USER] NEXT BUTTON PRESSED -> Page %d\n", activePage + 1);
+    Serial.printf("[USER] NEXT Button Pressed -> Showing Page %d/4\n", activePage + 1);
     renderActivePage();
-    lastAutoSlideMs = millis(); // Reset auto-slideshow timer
+    lastAutoSlideMs = millis();
   }
 
   prevScan = sScan;
   prevNext = sNext;
 
-  // HANDS-FREE AUTO SLIDESHOW:
-  // If the user doesn't press anything for 4.5 seconds, automatically flip to the next page!
-  if (millis() - lastAutoSlideMs > SLIDE_INTERVAL_MS) {
-    lastAutoSlideMs = millis();
-    activePage = (activePage + 1) % TOTAL_PAGES;
-    renderActivePage();
+  // AUTO-SLIDESHOW FOR SCIENCE EXHIBITION JUDGES
+  // When idle, smoothly advance to the next screen every 6 seconds
+  if (currentState != STATE_CAPTURING && currentState != STATE_AWAITING_AI) {
+    if (millis() - lastAutoSlideMs > SLIDE_INTERVAL_MS) {
+      lastAutoSlideMs = millis();
+      activePage = (activePage + 1) % TOTAL_PAGES;
+      renderActivePage();
+    }
   }
 
   delay(20);

@@ -12,7 +12,10 @@ __pycache__/
 venv/
 .env
 *.h5
+*.keras
 *.ckpt
+*f16.tflite
+*fp32.tflite
 
 # OS generated files
 .DS_Store

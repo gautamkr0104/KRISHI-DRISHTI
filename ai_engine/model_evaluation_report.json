@@ -1,0 +1,123 @@
+{
+  "timestamp": "2026-11-09T08:12:23Z",
+  "architecture": "MobileNetV3-Small",
+  "input_dimensions": [
+    128,
+    128,
+    3
+  ],
+  "preprocessing": "Scaled to [-1, 1] via tf.keras.applications.mobilenet_v3.preprocess_input",
+  "classes": [
+    "Tomato___Late_blight",
+    "Tomato___Early_blight",
+    "Tomato___healthy",
+    "Potato___Late_blight",
+    "Potato___Early_blight",
+    "Potato___healthy"
+  ],
+  "dataset_source": "New Plant Diseases Dataset (Augmented 87K, Solanaceae Partition)",
+  "training_samples": 11399,
+  "validation_samples": 2850,
+  "validation_accuracy": 0.8874,
+  "validation_macro_f1": 0.8863,
+  "validation_confusion_matrix": [
+    [
+      305,
+      19,
+      22,
+      115,
+      2,
+      0
+    ],
+    [
+      23,
+      358,
+      20,
+      73,
+      3,
+      3
+    ],
+    [
+      0,
+      0,
+      478,
+      0,
+      0,
+      3
+    ],
+    [
+      3,
+      0,
+      1,
+      479,
+      1,
+      1
+    ],
+    [
+      0,
+      0,
+      1,
+      22,
+      462,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      6,
+      3,
+      447
+    ]
+  ],
+  "per_class_metrics": {
+    "Tomato___Late_blight": {
+      "precision": 0.9215,
+      "recall": 0.6587,
+      "f1_score": 0.7683,
+      "support": 463
+    },
+    "Tomato___Early_blight": {
+      "precision": 0.9496,
+      "recall": 0.7458,
+      "f1_score": 0.8355,
+      "support": 480
+    },
+    "Tomato___healthy": {
+      "precision": 0.9157,
+      "recall": 0.9938,
+      "f1_score": 0.9531,
+      "support": 481
+    },
+    "Potato___Late_blight": {
+      "precision": 0.6892,
+      "recall": 0.9876,
+      "f1_score": 0.8119,
+      "support": 485
+    },
+    "Potato___Early_blight": {
+      "precision": 0.9809,
+      "recall": 0.9526,
+      "f1_score": 0.9665,
+      "support": 485
+    },
+    "Potato___healthy": {
+      "precision": 0.9846,
+      "recall": 0.9803,
+      "f1_score": 0.9824,
+      "support": 456
+    }
+  },
+  "field_evaluation_plantdoc": {
+    "field_accuracy": 0.3491,
+    "total_evaluated": 487,
+    "notes": "Evaluated on independent unaugmented outdoor images with complex backgrounds"
+  },
+  "tflite_quantization": {
+    "size_bytes": 2104584,
+    "size_mb": 2.01,
+    "quantization_type": "Float16 (FP16 Post-Training Optimization)",
+    "verification_accuracy": 88.74,
+    "interpreter_latency_ms": 10.54
+  }
+}
