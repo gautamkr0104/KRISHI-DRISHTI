@@ -101,6 +101,19 @@ String diagStatus = "PENDING";
 String diagOrganic = "Press [SCAN] to test";
 String diagChemical = "No active prescription";
 
+// Non-Blocking AI Polling Timers
+unsigned long aiWaitStartMs = 0;
+unsigned long lastAiPollMs = 0;
+const unsigned long AI_TIMEOUT_MS = 14000;
+const unsigned long AI_POLL_INTERVAL_MS = 1000;
+
+// Microclimate Epidemiological Duration Tracker (Phytophthora Late Blight Incubation)
+unsigned long highRiskContinuousStartMs = 0;
+unsigned long highRiskAccumulatedMs = 0;
+unsigned long lastRiskUpdateMs = 0;
+float riskHoursAccumulated = 0.0f;
+const float LATE_BLIGHT_RISK_HOURS_THRESHOLD = 6.0f;
+
 // Wi-Fi Status Tracking
 bool wifiConnected = false;
 unsigned long lastWifiCheckMs = 0;
@@ -176,16 +189,17 @@ void renderPage1_Canopy() {
     display.printf("Hum : %.1f %% RH", currentHum);
 
     display.setCursor(0, 36);
-    // Scientifically documented Plant Disease Triangle microclimate rule:
-    // Phytophthora infestans sporulation requires sustained RH > 85% and Temp 18-24 C.
-    if (currentHum >= 85.0 && currentTemp >= 18.0 && currentTemp <= 24.5) {
-      display.print("Risk: HIGH (Late Blight)");
+    // Scientifically documented Plant Disease Triangle duration-based rule:
+    if (riskHoursAccumulated >= LATE_BLIGHT_RISK_HOURS_THRESHOLD) {
+      display.print("Risk: HIGH (>6h LateBlight)");
+    } else if (highRiskContinuousStartMs > 0) {
+      display.printf("Risk: Incubation %.1fh/6h", riskHoursAccumulated);
     } else if (currentHum >= 70.0 && currentTemp >= 22.0 && currentTemp <= 30.0) {
-      display.print("Risk: MODERATE (Early)");
+      display.print("Risk: MODERATE (EarlyBlight)");
     } else if (currentHum >= 60.0) {
       display.print("Risk: MONITOR CANOPY");
     } else {
-      display.print("Risk: LOW (Optimal)");
+      display.print("Risk: LOW (Canopy Optimal)");
     }
   } else {
     display.setCursor(0, 15);
@@ -284,8 +298,32 @@ void readSensors() {
       currentHum = h;
       currentTemp = t;
       dhtConnected = true;
+
+      // Epidemiological Duration Tracking:
+      // Phytophthora infestans (Late Blight) requires sustained RH >= 85% and Temp 15°C - 22°C
+      // for at least 6 continuous hours to germinate and establish infection.
+      unsigned long now = millis();
+      unsigned long elapsed = (lastRiskUpdateMs > 0) ? (now - lastRiskUpdateMs) : 0;
+      lastRiskUpdateMs = now;
+
+      if (currentHum >= 85.0 && currentTemp >= 15.0 && currentTemp <= 22.0) {
+        if (highRiskContinuousStartMs == 0) {
+          highRiskContinuousStartMs = now;
+        }
+        highRiskAccumulatedMs += elapsed;
+      } else {
+        highRiskContinuousStartMs = 0;
+        // Gradual decay when microclimate dries out
+        if (highRiskAccumulatedMs > elapsed * 2) {
+          highRiskAccumulatedMs -= elapsed * 2;
+        } else {
+          highRiskAccumulatedMs = 0;
+        }
+      }
+      riskHoursAccumulated = (float)highRiskAccumulatedMs / 3600000.0f;
     } else {
       dhtConnected = false;
+      highRiskContinuousStartMs = 0;
     }
   }
 }
@@ -310,6 +348,63 @@ void ensureWiFiConnected() {
 // -----------------------------------------------------------------
 // REAL SCAN EXECUTION & AI RETRIEVAL PIPELINE
 // -----------------------------------------------------------------
+// Non-blocking asynchronous AI polling routine
+void pollAiDiagnosisNonBlocking() {
+  HTTPClient httpDiag;
+  httpDiag.begin(URL_DIAG_LATEST);
+  httpDiag.setTimeout(1500); // Non-blocking quick query
+  int diagCode = httpDiag.GET();
+
+  if (diagCode == 200) {
+    String diagPayload = httpDiag.getString();
+    StaticJsonDocument<512> diagDoc;
+    DeserializationError dErr = deserializeJson(diagDoc, diagPayload);
+
+    if (!dErr && diagDoc["ready"] == true) {
+      uint32_t retScanId = diagDoc["scan_id"];
+      // Strict scan ID verification: discard stale or mismatched diagnoses
+      if (retScanId == activeScanId) {
+        diagCrop = diagDoc["crop"].as<String>();
+        diagDisease = diagDoc["disease"].as<String>();
+        diagConfidence = diagDoc["confidence"].as<float>();
+        diagStatus = diagDoc["status"].as<String>();
+        diagOrganic = diagDoc["organic"].as<String>();
+        diagChemical = diagDoc["chemical"].as<String>();
+
+        diagScanId = retScanId;
+        hasDiagnosis = true;
+        systemStatusMsg = "Diagnosis OK";
+        currentState = STATE_DIAGNOSIS_RECEIVED;
+        activePage = 2; // Auto-transition to diagnosis result page
+        renderActivePage();
+        lastAutoSlideMs = millis();
+
+        Serial.printf("[AI OK] Diagnosis synced for Scan #%u: %s %s (%.1f%%)\n",
+                      retScanId, diagCrop.c_str(), diagDisease.c_str(), diagConfidence);
+      }
+    }
+  }
+  httpDiag.end();
+}
+
+void handleAiTimeoutNonBlocking() {
+  Serial.printf("[AI TIMEOUT] No phone diagnosis for Scan #%u after %lu ms\n", activeScanId, AI_TIMEOUT_MS);
+  systemStatusMsg = "AI Timeout";
+  hasDiagnosis = true;
+  diagScanId = activeScanId;
+  diagCrop = "Tomato/Potato";
+  diagDisease = "Awaiting Phone";
+  diagConfidence = 0.0;
+  diagStatus = "UNCERTAIN";
+  diagOrganic = "Check phone browser is at 192.168.4.1";
+  diagChemical = "Ensure MobileNetV3 is loaded";
+
+  currentState = STATE_TIMEOUT;
+  activePage = 2;
+  renderActivePage();
+  lastAutoSlideMs = millis();
+}
+
 void triggerRealScan() {
   if (WiFi.status() != WL_CONNECTED) {
     systemStatusMsg = "WiFi Offline";
@@ -322,7 +417,6 @@ void triggerRealScan() {
     display.setCursor(0, 42);
     display.print("SSID: KRISHI-DRISHTI");
     drawFooter();
-    delay(2000);
     renderActivePage();
     return;
   }
@@ -341,7 +435,7 @@ void triggerRealScan() {
 
   HTTPClient http;
   http.begin(URL_CAPTURE);
-  http.setTimeout(8000); // 8 second timeout for frame capture & SD save
+  http.setTimeout(4000);
   int httpCode = http.GET();
 
   if (httpCode != 200) {
@@ -355,7 +449,6 @@ void triggerRealScan() {
     display.print("Check SD Card & Lens");
     drawFooter();
     http.end();
-    delay(2500);
     currentState = STATE_IDLE;
     renderActivePage();
     return;
@@ -365,19 +458,23 @@ void triggerRealScan() {
   http.end();
   Serial.printf("[SCAN] Camera response: %s\n", payload.c_str());
 
-  // Parse JSON response: {"status":"success","scan_id":X,"filename":"/scans/scan_000X.jpg","bytes":Y}
   StaticJsonDocument<256> doc;
   DeserializationError err = deserializeJson(doc, payload);
   if (err || doc["status"] != "success") {
     Serial.println("[SCAN] Failed to parse camera JSON response!");
     systemStatusMsg = "Parse Error";
     currentState = STATE_IDLE;
+    renderActivePage();
     return;
   }
 
   activeScanId = doc["scan_id"];
   totalScansRecorded = activeScanId;
+  
+  // Transition to non-blocking AWAITING_AI state
   currentState = STATE_AWAITING_AI;
+  aiWaitStartMs = millis();
+  lastAiPollMs = 0;
   systemStatusMsg = "AI Analyzing";
 
   display.clearDisplay();
@@ -389,66 +486,6 @@ void triggerRealScan() {
   display.setCursor(0, 40);
   display.print("Running MobileNetV3...");
   display.display();
-
-  // Poll for AI Diagnosis from camera bridge (Phone -> Camera -> Wand)
-  unsigned long waitStart = millis();
-  const unsigned long AI_TIMEOUT_MS = 14000; // 14 seconds max wait for phone inference
-  bool diagFound = false;
-
-  while (millis() - waitStart < AI_TIMEOUT_MS) {
-    delay(800);
-    HTTPClient httpDiag;
-    httpDiag.begin(URL_DIAG_LATEST);
-    httpDiag.setTimeout(3000);
-    int diagCode = httpDiag.GET();
-
-    if (diagCode == 200) {
-      String diagPayload = httpDiag.getString();
-      StaticJsonDocument<512> diagDoc;
-      DeserializationError dErr = deserializeJson(diagDoc, diagPayload);
-
-      if (!dErr && diagDoc["ready"] == true) {
-        uint32_t retScanId = diagDoc["scan_id"];
-        // Verify that diagnosis matches current scan ID to prevent stale result display
-        if (retScanId == activeScanId) {
-          diagCrop = diagDoc["crop"].as<String>();
-          diagDisease = diagDoc["disease"].as<String>();
-          diagConfidence = diagDoc["confidence"].as<float>();
-          diagStatus = diagDoc["status"].as<String>();
-          diagOrganic = diagDoc["organic"].as<String>();
-          diagChemical = diagDoc["chemical"].as<String>();
-
-          diagScanId = retScanId;
-          hasDiagnosis = true;
-          diagFound = true;
-          systemStatusMsg = "Diagnosis OK";
-          Serial.printf("[AI] Diagnosis received for Scan #%u: %s %s (%.1f%%)\n",
-                        retScanId, diagCrop.c_str(), diagDisease.c_str(), diagConfidence);
-          httpDiag.end();
-          break;
-        }
-      }
-    }
-    httpDiag.end();
-  }
-
-  if (!diagFound) {
-    Serial.println("[AI] Timed out waiting for phone AI diagnosis!");
-    systemStatusMsg = "AI Timeout";
-    hasDiagnosis = true;
-    diagScanId = activeScanId;
-    diagCrop = "Tomato/Potato";
-    diagDisease = "Awaiting Phone";
-    diagConfidence = 0.0;
-    diagStatus = "UNCERTAIN";
-    diagOrganic = "Check phone AI daemon";
-    diagChemical = "Reconnect WiFi to 192.168.4.1";
-  }
-
-  currentState = STATE_DIAGNOSIS_RECEIVED;
-  activePage = 2; // Jump straight to AI Diagnosis page
-  renderActivePage();
-  lastAutoSlideMs = millis();
 }
 
 // -----------------------------------------------------------------
@@ -499,6 +536,17 @@ void setup() {
 void loop() {
   ensureWiFiConnected();
   readSensors();
+
+  // Non-blocking Asynchronous AI State Machine
+  if (currentState == STATE_AWAITING_AI) {
+    if (millis() - lastAiPollMs >= AI_POLL_INTERVAL_MS) {
+      lastAiPollMs = millis();
+      pollAiDiagnosisNonBlocking();
+    }
+    if (millis() - aiWaitStartMs >= AI_TIMEOUT_MS) {
+      handleAiTimeoutNonBlocking();
+    }
+  }
 
   bool sScan = digitalRead(SCAN_BUTTON);
   bool sNext = digitalRead(NEXT_BUTTON);

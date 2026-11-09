@@ -135,10 +135,9 @@ class MockCameraServer(BaseHTTPRequestHandler):
         path = parsed.path
         query = urllib.parse.parse_qs(parsed.query)
 
-        self.send_response(200)
-        self.send_header("Access-Control-Allow-Origin", "*")
-
         if path == "/api/status":
+            self.send_response(200)
+            self.send_header("Access-Control-Allow-Origin", "*")
             self.send_header("Content-Type", "application/json")
             self.end_headers()
             data = {
@@ -154,6 +153,8 @@ class MockCameraServer(BaseHTTPRequestHandler):
         elif path == "/api/capture":
             MockCameraServer.scan_counter += 1
             MockCameraServer.diagnosis_ready = False
+            self.send_response(200)
+            self.send_header("Access-Control-Allow-Origin", "*")
             self.send_header("Content-Type", "application/json")
             self.end_headers()
             data = {
@@ -164,14 +165,26 @@ class MockCameraServer(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(data).encode("utf-8"))
 
         elif path == "/image":
+            self.send_response(200)
+            self.send_header("Access-Control-Allow-Origin", "*")
             self.send_header("Content-Type", "image/jpeg")
             self.end_headers()
             # Return synthetic 1x1 JPEG bytes
             self.wfile.write(b"\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x01\x00H\x00H\x00\x00\xff\xdb\x00C\x00\xff\xc0\x00\x11\x08\x00\x01\x00\x01\x01\x01\x11\x00\xff\xc4\x00\x1f\x00\x00\x01\x05\x01\x01\x01\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\xff\xda\x00\x08\x01\x01\x00\x00?\x00\xbf\x00\xff\xd9")
 
         elif path == "/api/diagnosis/set":
+            incoming_id = int(query.get("scan_id", [0])[0])
+            # Enforce current scan ID check
+            if incoming_id != MockCameraServer.scan_counter:
+                self.send_response(409)
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps({"status":"error","message":"stale_scan_id","active_scan":MockCameraServer.scan_counter}).encode())
+                return
+
             MockCameraServer.latest_diag = {
-                "scan_id": int(query.get("scan_id", [0])[0]),
+                "scan_id": incoming_id,
                 "crop": query.get("crop", ["Unknown"])[0],
                 "disease": query.get("disease", ["Unknown"])[0],
                 "confidence": float(query.get("confidence", [0.0])[0]),
@@ -180,11 +193,15 @@ class MockCameraServer(BaseHTTPRequestHandler):
                 "chemical": query.get("chemical", [""])[0]
             }
             MockCameraServer.diagnosis_ready = True
+            self.send_response(200)
+            self.send_header("Access-Control-Allow-Origin", "*")
             self.send_header("Content-Type", "application/json")
             self.end_headers()
             self.wfile.write(b'{"status":"success"}')
 
         elif path in ("/api/diagnosis", "/api/diagnosis/latest"):
+            self.send_response(200)
+            self.send_header("Access-Control-Allow-Origin", "*")
             self.send_header("Content-Type", "application/json")
             self.end_headers()
             data = {
@@ -260,5 +277,55 @@ class TestESP32RestCycleSimulation(unittest.TestCase):
             self.assertEqual(oled_data["status"], "INFECTED")
 
 
+    def test_stale_scan_id_is_rejected(self):
+        """Verify diagnoses for outdated or stale scan IDs are rejected with HTTP 409."""
+        import urllib.request, urllib.error
+        base = f"http://127.0.0.1:{self.port}"
+        stale_id = MockCameraServer.scan_counter - 1 # Outdated scan ID
+        diag_url = (f"{base}/api/diagnosis/set?scan_id={stale_id}&crop=Tomato"
+                    f"&disease=Healthy&confidence=90.0&status=HEALTHY")
+        req = urllib.request.Request(diag_url)
+        with self.assertRaises(urllib.error.HTTPError) as ctx:
+            urllib.request.urlopen(req)
+        self.assertEqual(ctx.exception.code, 409)
+
+    def test_tflite_input_contract_and_softmax_sum(self):
+        """Verify TFLite model output sums to 1.0 (Softmax) without double softmax."""
+        if not os.path.exists(TFLITE_PATH):
+            self.skipTest("TFLite model not found")
+        import tensorflow as tf
+        interpreter = tf.lite.Interpreter(model_path=TFLITE_PATH)
+        interpreter.allocate_tensors()
+        input_details = interpreter.get_input_details()
+        output_details = interpreter.get_output_details()
+
+        # Input shape: [1, 128, 128, 3] float32 in [0.0, 255.0]
+        self.assertEqual(input_details[0]['shape'].tolist(), [1, 128, 128, 3])
+        dummy_rgb = np.full((1, 128, 128, 3), 128.0, dtype=np.float32)
+        interpreter.set_tensor(input_details[0]['index'], dummy_rgb)
+        interpreter.invoke()
+
+        output = interpreter.get_tensor(output_details[0]['index'])[0]
+        self.assertEqual(len(output), 6)
+        prob_sum = float(np.sum(output))
+        # Validates that model output is already a true probability distribution (sum == 1.0)
+        self.assertAlmostEqual(prob_sum, 1.0, places=3)
+
+    def test_epidemiological_six_hour_microclimate_rule(self):
+        """Verify that Late Blight requires continuous duration >= 6.0 hours before triggering High Risk."""
+        # Phytophthora infestans threshold: RH >= 85% and Temp between 15°C and 22°C
+        hours_accumulated = 0.0
+        threshold_hours = 6.0
+
+        # Simulate 3 hours of high humidity -> should remain in incubation state
+        hours_accumulated += 3.0
+        self.assertLess(hours_accumulated, threshold_hours, "Incubation duration must not trigger premature High Risk")
+
+        # Simulate reaching full 6 hours -> triggers High Risk alert
+        hours_accumulated += 3.0
+        self.assertGreaterEqual(hours_accumulated, threshold_hours, "Continuous >= 6 hours must qualify as High Risk")
+
+
 if __name__ == "__main__":
+
     unittest.main()

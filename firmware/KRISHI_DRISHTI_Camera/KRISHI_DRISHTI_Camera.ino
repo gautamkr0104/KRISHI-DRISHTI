@@ -656,9 +656,10 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
           throw new Error("tflite WASM backend not found in vendor/");
         }
       } catch (err) {
-        document.getElementById("valEngine").innerText = "CANVAS READY";
-        document.getElementById("valEngine").style.color = "var(--accent-cyan)";
-        log(`TFLite runtime: ${err.message}. Ready for direct leaf inspection.`, "warn");
+        modelReady = false;
+        document.getElementById("valEngine").innerText = "AI OFFLINE";
+        document.getElementById("valEngine").style.color = "var(--accent-red)";
+        log(`TFLite load error: ${err.message}. Inference paused until model available.`, "err");
       }
     }
 
@@ -831,31 +832,28 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
 
       let probs = [];
 
-      // 2. TFLite Model Execution
+      // 2. TFLite Model Execution (Zero Fake Fallbacks)
       if (modelReady && tfliteModel && typeof tf !== 'undefined') {
         const tfImg = tf.browser.fromPixels(cvs);
-        // MobileNetV3 input scaling to [-1, 1]
-        const normalized = tfImg.toFloat().div(127.5).sub(1.0).expandDims(0);
-        const output = tfliteModel.predict(normalized);
-        const rawProbs = Array.from(output.dataSync());
-        tf.dispose([tfImg, normalized, output]);
-
-        // Softmax if needed
-        const maxVal = Math.max(...rawProbs);
-        const expP = rawProbs.map(p => Math.exp(p - maxVal));
-        const sumExp = expP.reduce((a, b) => a + b, 0);
-        probs = expP.map(p => p / sumExp);
+        // MobileNetV3 model architecture already contains internal mobilenet_v3.preprocess_input layer
+        // Input contract: [1, 128, 128, 3] float32 in range [0.0, 255.0]
+        const inputTensor = tfImg.toFloat().expandDims(0);
+        const output = tfliteModel.predict(inputTensor);
+        // Output layer is already Softmax activation from training — no double softmax
+        probs = Array.from(output.dataSync());
+        tf.dispose([tfImg, inputTensor, output]);
       } else {
-        // Deterministic botanical feature distribution (strictly no Math.random)
-        const blightRatio = necroticCount / total;
-        const chlorosisRatio = chloroticCount / total;
-        if (blightRatio > 0.04) {
-          probs = [0.88, 0.06, 0.02, 0.02, 0.01, 0.01]; // Late blight dominant
-        } else if (chlorosisRatio > 0.03 || blightRatio > 0.015) {
-          probs = [0.08, 0.84, 0.03, 0.02, 0.02, 0.01]; // Early blight dominant
-        } else {
-          probs = [0.01, 0.02, 0.94, 0.01, 0.01, 0.01]; // Healthy dominant
-        }
+        // TFLite model is not loaded — strictly refuse to produce fake heuristic diagnosis
+        return {
+          crop: "System Notice",
+          disease: "AI Engine Unavailable",
+          pathogen: "MobileNetV3 TFLite model is not ready in browser",
+          confidence: "0.0",
+          status: "UNCERTAIN",
+          organic: "Ensure phone is connected to wand Wi-Fi and model is loaded.",
+          chemical: "Consult local Krishi Vigyan Kendra (KVK) agronomist.",
+          entropy: "0.00"
+        };
       }
 
       // 3. Shannon Entropy Calculation: H = -sum(p * ln(p))
@@ -1299,7 +1297,14 @@ void handleStatus() {
 
 void handleCapture() {
   if (!cameraReady) {
+    server.sendHeader("Access-Control-Allow-Origin", "*");
     server.send(503, "application/json", "{\"status\":\"error\",\"message\":\"camera_offline\"}");
+    return;
+  }
+
+  if (!sdReady) {
+    server.sendHeader("Access-Control-Allow-Origin", "*");
+    server.send(503, "application/json", "{\"status\":\"error\",\"message\":\"sd_storage_offline\"}");
     return;
   }
 
@@ -1312,6 +1317,7 @@ void handleCapture() {
   digitalWrite(FLASH_LED_PIN, LOW); // Shut off LED immediately
 
   if (!fb) {
+    server.sendHeader("Access-Control-Allow-Origin", "*");
     server.send(500, "application/json", "{\"status\":\"error\",\"message\":\"capture_failed\"}");
     return;
   }
@@ -1321,21 +1327,25 @@ void handleCapture() {
   snprintf(filename, sizeof(filename), "/scan_%06lu.jpg", (unsigned long)nextId);
 
   size_t written = 0;
-  if (sdReady) {
-    File file = SD_MMC.open(filename, FILE_WRITE);
-    if (file) {
-      written = file.write(fb->buf, fb->len);
-      file.close();
-    }
+  File file = SD_MMC.open(filename, FILE_WRITE);
+  if (file) {
+    written = file.write(fb->buf, fb->len);
+    file.close();
+  } else {
+    Serial.printf("[SD ERROR] Failed to open %s for write!\n", filename);
+    esp_camera_fb_return(fb);
+    server.sendHeader("Access-Control-Allow-Origin", "*");
+    server.send(500, "application/json", "{\"status\":\"error\",\"message\":\"sd_open_failed\"}");
+    return;
   }
 
   // Write verification: reject empty or truncated files
-  if (sdReady && (written < 512 || written != fb->len)) {
+  if (written < 512 || written != fb->len) {
     Serial.printf("[SD ERROR] Frame write incomplete! Expected %u bytes, wrote %u bytes\n", 
                   (unsigned int)fb->len, (unsigned int)written);
     esp_camera_fb_return(fb);
     server.sendHeader("Access-Control-Allow-Origin", "*");
-    server.send(500, "application/json", "{\"status\":\"error\",\"message\":\"sd_write_failed\"}");
+    server.send(500, "application/json", "{\"status\":\"error\",\"message\":\"sd_write_truncated\"}");
     return;
   }
 
@@ -1343,7 +1353,7 @@ void handleCapture() {
   esp_camera_fb_return(fb);
 
   String body = "{\"status\":\"success\",\"scan_id\":" + String(scanCounter);
-  body += ",\"filename\":\"" + String(filename) + "\"}";
+  body += ",\"filename\":\"" + String(filename) + "\",\"bytes\":" + String(written) + "}";
 
   Serial.printf("[CAPTURE] Scan #%lu saved (%u bytes)\n", (unsigned long)scanCounter, (unsigned int)written);
   server.sendHeader("Access-Control-Allow-Origin", "*");
@@ -1444,7 +1454,21 @@ void handleGetDiagnosis() {
 }
 
 void handleSetDiagnosis() {
-  if (server.hasArg("scan_id")) diagScanId = server.arg("scan_id").toInt();
+  uint32_t incomingScanId = 0;
+  if (server.hasArg("scan_id")) {
+    incomingScanId = server.arg("scan_id").toInt();
+  }
+
+  // Reject stale diagnosis payloads to guarantee diagnosis matches active scan
+  if (incomingScanId != scanCounter) {
+    Serial.printf("[AI WARNING] Rejected stale diagnosis for Scan #%lu (Active scan is #%lu)\n",
+                  (unsigned long)incomingScanId, (unsigned long)scanCounter);
+    server.sendHeader("Access-Control-Allow-Origin", "*");
+    server.send(409, "application/json", "{\"status\":\"error\",\"message\":\"stale_scan_id\",\"active_scan\":" + String(scanCounter) + "}");
+    return;
+  }
+
+  diagScanId = incomingScanId;
   if (server.hasArg("crop")) diagCrop = server.arg("crop");
   if (server.hasArg("disease")) diagDisease = server.arg("disease");
   if (server.hasArg("confidence")) diagConfidence = server.arg("confidence").toFloat();
@@ -1455,7 +1479,8 @@ void handleSetDiagnosis() {
   diagnosisReady = true;
 
   Serial.println("\n[AI DIAGNOSIS SYNCED FROM POCKET]");
-  Serial.printf(" - Crop: %s | Condition: %s (%.1f%%)\n", diagCrop.c_str(), diagDisease.c_str(), diagConfidence);
+  Serial.printf(" - Scan #%lu | Crop: %s | Condition: %s (%.1f%%)\n", 
+                (unsigned long)diagScanId, diagCrop.c_str(), diagDisease.c_str(), diagConfidence);
   Serial.printf(" - Organic Remedy: %s\n", diagOrganic.c_str());
   Serial.printf(" - Chemical Cure: %s\n", diagChemical.c_str());
 
