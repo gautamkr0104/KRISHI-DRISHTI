@@ -773,11 +773,22 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
         log(`Diagnosis: ${diag.crop} - ${diag.disease} (${diag.confidence}%, H=${diag.entropy}) in ${elapsed}ms`, "ok");
         log(`Advisory: ${diag.organic}`);
 
-        // Post back to ESP32-CAM bridge for Wand OLED
+        // Post back to ESP32-CAM bridge for Wand OLED via standard CORS with response checking
         const setUrl = `${CAMERA_DIAG_SET_URL}?scan_id=${scanId}&crop=${encodeURIComponent(diag.crop)}&disease=${encodeURIComponent(diag.disease)}&confidence=${diag.confidence}&status=${encodeURIComponent(diag.status)}&organic=${encodeURIComponent(diag.organic)}&chemical=${encodeURIComponent(diag.chemical)}`;
 
-        await fetch(setUrl, { mode: 'no-cors' });
-        log(`>> TELEMETRY SYNCED TO CONTROLLER WAND OLED <<`, "ok");
+        try {
+          const syncRes = await fetch(setUrl);
+          if (syncRes.ok) {
+            log(`>> TELEMETRY SYNCED TO CONTROLLER WAND OLED [Scan #${scanId}] <<`, "ok");
+          } else if (syncRes.status === 409) {
+            const errJson = await syncRes.json().catch(() => ({}));
+            log(`[SYNC REJECTED] Camera rejected stale diagnosis for Scan #${scanId} (Active: ${errJson.active_scan || 'Newer'})`, "warn");
+          } else {
+            log(`[SYNC FAILED] Camera returned HTTP ${syncRes.status}`, "warn");
+          }
+        } catch (syncErr) {
+          log(`[SYNC ERROR] Could not reach camera bridge: ${syncErr.message}`, "warn");
+        }
 
       } catch (err) {
         log(`Inference exception on Scan #${scanId}: ${err.message || 'Timeout'}`, "err");

@@ -543,7 +543,8 @@ void loop() {
       lastAiPollMs = millis();
       pollAiDiagnosisNonBlocking();
     }
-    if (millis() - aiWaitStartMs >= AI_TIMEOUT_MS) {
+    // Strict race prevention: only trigger timeout if STILL in STATE_AWAITING_AI after polling
+    if (currentState == STATE_AWAITING_AI && (millis() - aiWaitStartMs >= AI_TIMEOUT_MS)) {
       handleAiTimeoutNonBlocking();
     }
   }
