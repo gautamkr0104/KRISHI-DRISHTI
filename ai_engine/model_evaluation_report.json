@@ -118,6 +118,7 @@
     "size_mb": 2.01,
     "quantization_type": "Float16 (FP16 Post-Training Optimization)",
     "verification_accuracy": 88.74,
-    "interpreter_latency_ms": 10.54
+    "interpreter_latency_ms": 10.54,
+    "benchmark_environment": "Host CPU Reference (Intel Core i5-4300U @ 1.9GHz) - Target on-device mobile < 40ms"
   }
 }
