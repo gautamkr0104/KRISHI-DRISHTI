@@ -11,8 +11,8 @@ Tests:
 7. Stale Scan ID Rejection (HTTP 409 Conflict)
 8. TFLite Model Input Contract & Softmax Probability Distribution (Graceful Skip if TF Missing)
 9. Controller Timeout Race Protection (Valid Diagnosis Never Overwritten)
-10. Modular C++ Microclimate Tracker Architecture & State Decay Logic
-11. Python Daemon Quantization Verification (uint8 [0, 255] vs int8 [-128, 127])
+10. Modular C++ Microclimate Tracker Architecture, Native Test Harness & State Decay Logic
+11. Production Daemon Preprocess Image Quantization Verification (uint8 [0, 255] vs int8 [-128, 127])
 """
 
 import os
@@ -20,6 +20,9 @@ import sys
 import json
 import math
 import time
+import shutil
+import subprocess
+import tempfile
 import unittest
 import numpy as np
 from http.server import HTTPServer, BaseHTTPRequestHandler
@@ -28,12 +31,16 @@ import urllib.parse
 from PIL import Image
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if REPO_ROOT not in sys.path:
+    sys.path.insert(0, REPO_ROOT)
+
 AI_ENGINE_DIR = os.path.join(REPO_ROOT, "ai_engine")
 LABELS_PATH = os.path.join(AI_ENGINE_DIR, "labels.json")
 TFLITE_PATH = os.path.join(AI_ENGINE_DIR, "krishi_drishti_model.tflite")
 REPORT_PATH = os.path.join(AI_ENGINE_DIR, "model_evaluation_report.json")
 SAMPLE_LEAVES_DIR = os.path.join(AI_ENGINE_DIR, "sample_leaves")
 CTRL_DIR = os.path.join(REPO_ROOT, "firmware", "KRISHI_DRISHTI_Controller")
+CPP_HARNESS_PATH = os.path.join(REPO_ROOT, "tests", "test_microclimate_tracker.cpp")
 
 EXPECTED_CLASSES = [
     "Tomato___Late_blight",
@@ -305,7 +312,7 @@ class TestESP32RestCycleSimulation(unittest.TestCase):
                 import tflite_runtime.interpreter as tflite
                 Interpreter = tflite.Interpreter
             except ImportError:
-                self.skipTest("TensorFlow / tflite-runtime not installed in this environment. Install tensorflow or tflite-runtime to run on-device tensor verification.")
+                self.skipTest("TensorFlow / tflite-runtime not installed in this environment. Run tests/verify_tflite_model.py in krishi_ai_env to verify.")
                 return
 
         interpreter = Interpreter(model_path=TFLITE_PATH)
@@ -368,24 +375,37 @@ class TestESP32RestCycleSimulation(unittest.TestCase):
 
     def test_firmware_microclimate_tracker_cpp_module(self):
         """
-        Verify the modular C++ MicroclimateTracker module exists and validates state transitions:
-        1. Accumulates elapsed duration when RH >= 85% and 15C <= Temp <= 22C.
-        2. Displays incubation hours while < 6.0h.
-        3. Triggers HIGH (>6h LateBlight) only when continuous accumulated hours >= 6.0.
-        4. Decays accumulated duration when microclimate dries out (preventing false alerts).
-        5. Resets continuous timer if sensor disconnects.
+        Verify the modular C++ MicroclimateTracker module and execute native tests:
+        1. Compiles and executes native C++ test harness (tests/test_microclimate_tracker.cpp) if g++/clang++ available.
+        2. Validates accumulation, threshold transitions, drying decay, and disconnection handling.
         """
         h_path = os.path.join(CTRL_DIR, "MicroclimateTracker.h")
         cpp_path = os.path.join(CTRL_DIR, "MicroclimateTracker.cpp")
         self.assertTrue(os.path.exists(h_path), f"Missing MicroclimateTracker.h at {h_path}")
         self.assertTrue(os.path.exists(cpp_path), f"Missing MicroclimateTracker.cpp at {cpp_path}")
+        self.assertTrue(os.path.exists(CPP_HARNESS_PATH), f"Missing test harness at {CPP_HARNESS_PATH}")
 
         with open(h_path, "r", encoding="utf-8") as f:
             h_code = f.read()
         self.assertIn("class MicroclimateTracker", h_code)
         self.assertIn("RISK_LEVEL_HIGH_LATE", h_code)
 
-        # Verify state decay and duration logic matching C++ specification
+        compiler = shutil.which("g++") or shutil.which("clang++")
+        if compiler:
+            # Native C++ Compilation & Execution Test
+            with tempfile.TemporaryDirectory() as tmpdir:
+                exe_name = "test_tracker.exe" if sys.platform == "win32" else "test_tracker"
+                out_exe = os.path.join(tmpdir, exe_name)
+                cmd = [compiler, "-Wall", "-Wextra", "-Werror", CPP_HARNESS_PATH, cpp_path, "-o", out_exe]
+                compile_res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                self.assertEqual(compile_res.returncode, 0, f"Native C++ compilation failed: {compile_res.stderr}")
+
+                run_res = subprocess.run([out_exe], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                self.assertEqual(run_res.returncode, 0, f"Native C++ execution failed: {run_res.stderr}")
+                self.assertIn("passed successfully", run_res.stdout)
+                return
+
+        # Fallback state decay and duration logic verification matching C++ specification
         class CppTrackerMirror:
             def __init__(self, threshold=6.0):
                 self.threshold = threshold
@@ -447,25 +467,46 @@ class TestESP32RestCycleSimulation(unittest.TestCase):
 
     def test_daemon_quantization_branches_uint8_and_int8(self):
         """
-        Verify that krishi_ai_daemon.py correctly handles both uint8 [0, 255]
-        and signed int8 [-128, 127] quantization branches without overflow.
+        Verify that KrishiAIDaemon.preprocess_image directly handles uint8 [0, 255],
+        signed int8 [-128, 127], and float32 [0.0, 255.0] quantization branches.
+        Calls the ACTUAL production method on KrishiAIDaemon.
         """
-        # Test synthetic pixel array: values from 0.0 to 255.0
-        arr = np.linspace(0.0, 255.0, 128 * 128 * 3, dtype=np.float32).reshape((128, 128, 3))
-        scale = 1.0
-        zero_point = 0
+        from ai_engine.krishi_ai_daemon import KrishiAIDaemon
 
-        # UINT8 Quantization branch: Must be strictly in range [0, 255] and dtype uint8
-        uint8_data = np.clip(np.round(arr / scale) + zero_point, 0, 255).astype(np.uint8)
-        self.assertEqual(uint8_data.dtype, np.uint8)
-        self.assertEqual(int(np.min(uint8_data)), 0)
-        self.assertEqual(int(np.max(uint8_data)), 255)
+        # Synthetic leaf image (rich foliar green: R=50, G=150, B=50)
+        leaf_img = Image.new("RGB", (160, 160), color=(50, 150, 50))
+        daemon = object.__new__(KrishiAIDaemon)
 
-        # INT8 Quantization branch: Must be strictly in range [-128, 127] and dtype int8
-        int8_data = np.clip(np.round(arr / scale) - 128 + zero_point, -128, 127).astype(np.int8)
-        self.assertEqual(int8_data.dtype, np.int8)
-        self.assertEqual(int(np.min(int8_data)), -128)
-        self.assertEqual(int(np.max(int8_data)), 127)
+        # 1. Production UINT8 branch: strictly bounded to [0, 255] and np.uint8 dtype
+        daemon.input_dtype = np.uint8
+        daemon.input_details = [{'quantization': (1.0, 0)}]
+        tensor_u8, ratio_u8 = daemon.preprocess_image(leaf_img)
+        self.assertIsNotNone(tensor_u8, "Foliar image must pass plausibility filter")
+        self.assertEqual(tensor_u8.dtype, np.uint8)
+        self.assertEqual(tensor_u8.shape, (1, 128, 128, 3))
+        self.assertGreaterEqual(int(np.min(tensor_u8)), 0)
+        self.assertLessEqual(int(np.max(tensor_u8)), 255)
+        self.assertGreater(ratio_u8, 0.12)
+
+        # 2. Production INT8 branch: strictly bounded to [-128, 127] and np.int8 dtype
+        daemon.input_dtype = np.int8
+        daemon.input_details = [{'quantization': (1.0, 0)}]
+        tensor_i8, ratio_i8 = daemon.preprocess_image(leaf_img)
+        self.assertIsNotNone(tensor_i8, "Foliar image must pass plausibility filter")
+        self.assertEqual(tensor_i8.dtype, np.int8)
+        self.assertEqual(tensor_i8.shape, (1, 128, 128, 3))
+        self.assertGreaterEqual(int(np.min(tensor_i8)), -128)
+        self.assertLessEqual(int(np.max(tensor_i8)), 127)
+
+        # 3. Production FLOAT32 branch: raw float32 in [0.0, 255.0] range
+        daemon.input_dtype = np.float32
+        daemon.input_details = [{'quantization': (0.0, 0)}]
+        tensor_f32, ratio_f32 = daemon.preprocess_image(leaf_img)
+        self.assertIsNotNone(tensor_f32)
+        self.assertEqual(tensor_f32.dtype, np.float32)
+        self.assertEqual(tensor_f32.shape, (1, 128, 128, 3))
+        self.assertGreaterEqual(float(np.min(tensor_f32)), 0.0)
+        self.assertLessEqual(float(np.max(tensor_f32)), 255.0)
 
 
 if __name__ == "__main__":

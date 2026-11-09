@@ -78,10 +78,19 @@ KRISHI-DRISHTI/
 │   ├── labels.json                 # Strict 1:1 disease taxonomy, organic & chemical dosages
 │   └── vendor/                     # Bundled 100% offline JS & WASM TFLite browser runtimes
 ├── tests/
-│   └── test_ai_pipeline.py         # Automated hardware-independent test suite (Unit & Mock REST cycle)
+│   ├── test_ai_pipeline.py         # Automated hardware-independent test suite (11 Unit & Integration tests)
+│   ├── test_microclimate_tracker.cpp# Native C++ unit test harness (-Wall -Wextra -Werror compliant)
+│   ├── verify_tflite_model.py      # Standalone TFLite model contract & live inference verifier
+│   ├── run_all_tests.py            # Master cross-platform test runner
+│   └── tflite_model_verification_audit.json # Cryptographic audit log (SHA-256, tensor shapes, latencies)
+├── Run_Tests.bat                   # 1-Click test execution batch script for Windows
+├── Launch_NIF_Assistant.bat        # 1-Click launch for NIF patent documentation
 └── docs/
     ├── System_Architecture_Report.md# In-depth architectural & pathological specification
-    └── Wiring_Schematic_Pinout.md  # Detailed circuit schematics and pin connection tables
+    ├── Wiring_Schematic_Pinout.md  # Detailed circuit schematics and pin connection tables
+    ├── Two_Leaf_Repeatability_Demonstration_Protocol.md # Standardized physical judge demo protocol
+    ├── NIF_Patent_Application_Docket.md # Formal patent documentation (Form 1, 2, 8, 9, 18)
+    └── KRISHI_DRISHTI_Exhibition_Presentation.pptx # Professional science exhibition slide deck
 ```
 
 ---
@@ -122,19 +131,36 @@ Trained on the **New Plant Diseases Dataset (Augmented 87K, Solanaceae Partition
 
 ## 🧪 Automated Testing & Verification
 
-Run the automated hardware-independent test suite directly on any PC:
+### 1-Click Execution (Windows):
+Double-click `Run_Tests.bat` in the repository root.
 
+### Command-Line Execution:
 ```bash
+# 1. Master cross-platform test runner (Unit tests + TFLite audit + C++ harness)
+python tests/run_all_tests.py
+
+# 2. Python automated unit & integration suite (11 tests)
 python -m unittest discover -s tests -p "test_*.py"
+
+# 3. Standalone TFLite model contract & inference audit
+python tests/verify_tflite_model.py
+
+# 4. Native C++ MicroclimateTracker firmware unit tests (Zero-warning compilation)
+g++ -Wall -Wextra -Werror -std=c++11 tests/test_microclimate_tracker.cpp firmware/KRISHI_DRISHTI_Controller/MicroclimateTracker.cpp -o test_tracker && ./test_tracker
 ```
 
-Verified test coverage:
-1. `test_labels_file_exists_and_matches_strict_classes`: Verifies strict 1:1 index alignment with model outputs.
-2. `test_model_artifact_and_report_integrity`: Verifies model file size and report accuracy figures.
-3. `test_non_foliar_rejection`: Confirms lens cap (black) and background glare (white) rejection.
-4. `test_foliar_acceptance_on_real_samples`: Confirms real leaf images pass foliar plausibility.
-5. `test_shannon_entropy_gating`: Verifies Shannon entropy mathematical bounds.
-6. `test_full_wand_phone_oled_telemetry_cycle`: Simulates complete end-to-end HTTP REST loop.
+### Verified Test Coverage (11 Comprehensive Tests):
+1. `test_labels_file_exists_and_matches_strict_classes`: Strict 1:1 index alignment with the 6 Solanaceae disease classes.
+2. `test_model_artifact_and_report_integrity`: Verifies TFLite model presence (>1 MB) and genuine validation metrics.
+3. `test_non_foliar_rejection`: Mathematical rejection of lens caps (all-black), walls (all-white), and noise.
+4. `test_foliar_acceptance_on_real_samples`: Confirms genuine tomato and potato leaf samples pass foliar gating.
+5. `test_shannon_entropy_gating`: Epistemic uncertainty validation ($H > 1.45$ nats rejects uniform/ambiguous logits).
+6. `test_full_wand_phone_oled_telemetry_cycle`: End-to-end hardware-in-the-loop HTTP REST simulation.
+7. `test_stale_scan_id_is_rejected`: HTTP 409 Conflict rejection for out-of-sequence or outdated diagnosis submissions.
+8. `test_tflite_input_contract_and_softmax_sum`: Allocates tensors, verifies raw `[0, 255]` float32 input, and checks softmax $\sum P_i = 1.0$.
+9. `test_controller_timeout_race_protection`: Ensures diagnoses arriving at the 14-second boundary are never overwritten by timeout handlers.
+10. `test_firmware_microclimate_tracker_cpp_module`: Compiles and executes native C++ `MicroclimateTracker` test harness or verifies state transitions, drying decay (2x rate), and sensor disconnection.
+11. `test_daemon_quantization_branches_uint8_and_int8`: Calls production `KrishiAIDaemon.preprocess_image` to verify `uint8` [0, 255], `int8` [-128, 127], and `float32` contracts.
 
 ---
 

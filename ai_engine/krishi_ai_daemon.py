@@ -18,14 +18,14 @@ from PIL import Image
 import numpy as np
 
 # Load TFLite interpreter from tflite_runtime or tensorflow
+tflite = None
 try:
     import tflite_runtime.interpreter as tflite
 except ImportError:
     try:
         import tensorflow.lite as tflite
     except ImportError:
-        print("[!] Neither tflite_runtime nor tensorflow is installed.")
-        sys.exit(1)
+        tflite = None
 
 IMAGE_SIZE = (128, 128)
 DEFAULT_CAMERA_IP = "192.168.4.1"
@@ -46,6 +46,8 @@ class KrishiAIDaemon:
         self.poll_interval = poll_interval
         self.labels = load_labels(labels_path)
         
+        if tflite is None:
+            raise ImportError("Neither tflite_runtime nor tensorflow is installed. Install tflite-runtime or tensorflow to run KrishiAIDaemon inference.")
         print(f"\n[AI DAEMON] Loading quantized TFLite model: {model_path}...")
         self.interpreter = tflite.Interpreter(model_path=model_path)
         self.interpreter.allocate_tensors()
