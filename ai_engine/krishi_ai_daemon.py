@@ -34,7 +34,7 @@ DEFAULT_POLL_INTERVAL = 1.0
 # Uncertainty Rejection Thresholds
 MIN_CONFIDENCE_THRESHOLD = 0.50  # 50% minimum top-1 probability
 MAX_ENTROPY_THRESHOLD = 1.45     # Maximum Shannon entropy for decisive classification
-MIN_FOLIAR_RATIO = 0.06          # Reject images with virtually no leaf tissue
+MIN_FOLIAR_RATIO = 0.12          # Reject images with virtually no leaf tissue
 
 def load_labels(labels_path):
     with open(labels_path, "r", encoding="utf-8") as f:

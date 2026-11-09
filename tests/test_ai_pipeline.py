@@ -114,7 +114,7 @@ class TestFoliarPlausibilityAndEntropy(unittest.TestCase):
 
     def test_foliar_acceptance_on_real_samples(self):
         """Verify genuine sample leaf images pass the foliar plausibility filter."""
-        sample_path = os.path.join(SAMPLE_LEAVES_DIR, "late_blight_512.jpg")
+        sample_path = os.path.join(SAMPLE_LEAVES_DIR, "tomato_late_blight.jpg")
         if os.path.exists(sample_path):
             img = Image.open(sample_path).resize((128, 128))
             arr = np.array(img)
