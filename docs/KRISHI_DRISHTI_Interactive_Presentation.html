@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KRISHI-DRISHTI | CBSE Science Exhibition 2026–27 Master Presentation</title>
+    <!-- Google Fonts & Chart.js -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-base: #06110D;
+            --bg-card: rgba(13, 33, 25, 0.75);
+            --bg-card-hover: rgba(18, 46, 35, 0.9);
+            --border-card: rgba(16, 185, 129, 0.2);
+            --border-card-bright: rgba(16, 185, 129, 0.5);
+            --primary: #10B981;
+            --primary-glow: rgba(16, 185, 129, 0.4);
+            --accent-gold: #F59E0B;
+            --accent-cyan: #06B6D4;
+            --accent-red: #EF4444;
+            --text-main: #FFFFFF;
+            --text-sub: #A7F3D0;
+            --text-muted: #94A3B8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(16, 185, 129, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.05) 0%, transparent 60%);
+        }
+
+        /* Top Header Navbar */
+        header {
+            height: 60px;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            background: rgba(6, 17, 13, 0.6);
+            z-index: 100;
+        }
+
+        .brand-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #10B981 0%, #34D399 50%, #F59E0B 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tag-pill {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            color: var(--accent-gold);
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: var(--primary);
+            color: var(--text-main);
+            transform: translateY(-1px);
+        }
+
+        /* Slide Viewport */
+        .presentation-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 48px;
+        }
+
+        .slide {
+            position: absolute;
+            width: calc(100% - 96px);
+            max-width: 1300px;
+            height: calc(100% - 48px);
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.96) translateY(20px);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: all;
+            transform: scale(1) translateY(0);
+        }
+
+        /* Typography */
+        .slide-header {
+            margin-bottom: 20px;
+        }
+
+        .slide-category {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .slide-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #FFFFFF;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+        }
+
+        .slide-subtitle {
+            font-size: 1.0rem;
+            color: var(--text-sub);
+            margin-top: 4px;
+            font-weight: 400;
+        }
+
+        /* Glassmorphic Grid */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            flex: 1;
+            align-content: stretch;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            flex: 1;
+            align-content: stretch;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 14px;
+            padding: 22px;
+            backdrop-filter: blur(16px);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-card-bright);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(16, 185, 129, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .card-icon {
+            font-size: 1.6rem;
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-body {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.55;
+            flex: 1;
+        }
+
+        .card-body ul {
+            list-style: none;
+        }
+
+        .card-body li {
+            position: relative;
+            padding-left: 18px;
+            margin-bottom: 8px;
+            color: #E2E8F0;
+        }
+
+        .card-body li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .highlight-text {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .gold-text {
+            color: var(--accent-gold);
+            font-weight: 600;
+        }
+
+        .cyan-text {
+            color: var(--accent-cyan);
+            font-weight: 600;
+        }
+
+        /* Hero Stats Banner */
+        .stats-banner {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .stat-label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        /* Bottom Controls Bar */
+        footer {
+            height: 55px;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(6, 17, 13, 0.6);
+            backdrop-filter: blur(12px);
+            z-index: 100;
+        }
+
+        .progress-bar-container {
+            flex: 1;
+            max-width: 400px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0 20px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 10%;
+            background: linear-gradient(90deg, var(--primary), var(--accent-gold));
+            transition: width 0.3s ease;
+        }
+
+        .page-indicator {
+            font-size: 0.85rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-muted);
+        }
+
+        /* Interactive Simulator Pill */
+        .demo-box {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 10px;
+            padding: 14px;
+            margin-top: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        .btn-action {
+            display: inline-block;
+            background: var(--primary);
+            color: #05160E;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            margin-right: 8px;
+            margin-top: 6px;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .btn-action:hover {
+            transform: scale(1.04);
+            box-shadow: 0 0 12px var(--primary-glow);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="brand-badge">
+            <span style="font-size: 1.4rem;">🌱</span>
+            <div class="brand-title">KRISHI-DRISHTI (कृषि-दृष्टि)</div>
+            <div class="tag-pill">CBSE Science Exhibition 2026–27</div>
+        </div>
+        <div class="header-controls">
+            <button class="nav-btn" onclick="prevSlide()">◀ Prev (←)</button>
+            <button class="nav-btn" onclick="nextSlide()">Next (→) ▶</button>
+            <button class="nav-btn" onclick="toggleFullScreen()">⛶ Fullscreen (F)</button>
+        </div>
+    </header>
+
+    <!-- Slides Viewport -->
+    <main class="presentation-container">
+
+        <!-- ============================================== -->
+        <!-- SLIDE 1: HERO TITLE SLIDE -->
+        <!-- ============================================== -->
+        <section class="slide active" id="slide-1">
+            <div class="slide-header">
+                <div class="slide-category">★ Central Board of Secondary Education — Category II (Classes 9–11) ★</div>
+                <h1 class="slide-title">KRISHI-DRISHTI (कृषि-दृष्टि)</h1>
+                <p class="slide-subtitle">A Portable Embedded Camera & Edge Artificial Intelligence System for Early Foliar Disease Screening in Marginal Indian Agriculture</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-icon">👨‍🔬</div>
+                    <div class="card-title">PROJECT & STUDENT PROFILE</div>
+                    <div class="card-body">
+                        <li><b>Lead Student Investigator:</b> Gautam Kumar (Class IX)</li>
+                        <li><b>School Institution:</b> Udaan International School, Begusarai, Bihar</li>
+                        <li><b>Registered CBSE Sub-Theme:</b> Artificial Intelligence (AI) for Better Life / Science for Rural Transformation</li>
+                        <li><b>Academic Session:</b> 2026–27</li>
+                        <li><b>Core Design Philosophy:</b> Decentralized, offline-first agritech engineered specifically for smallholder farmers without internet access or recurring subscription costs.</li>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">🚀</div>
+                    <div class="card-title">BREAKTHROUGH ENGINEERING HIGHLIGHTS</div>
+                    <div class="card-body">
+                        <li><b>100% Offline Edge Intelligence:</b> Zero dependency on rural 4G/5G mobile towers or expensive cloud APIs.</li>
+                        <li><b>Genuinely Trained MobileNetV3 CNN:</b> Replaces naive pixel-color thresholds with deep-learning feature representations.</li>
+                        <li><b>Ultra-Low Build Cost:</b> ₹1,480 total unit BOM—over 98% cheaper than commercial ₹85,000+ laboratory spectrometers.</li>
+                        <li><b>Uncertainty Gating:</b> Shannon entropy rejection ($H > 1.45$) guarantees the system never hallucinates on bad scans.</li>
+                        <li><b>Turnkey Dual Hardware:</b> ESP32-CAM optical head + ESP32 OLED controller wand + companion Android browser host.</li>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-banner">
+                <div class="stat-box">
+                    <div class="stat-value">14,249</div>
+                    <div class="stat-label">Leaf Training Corpus</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" style="color: var(--accent-gold);">88.74%</div>
+                    <div class="stat-label">Validation Accuracy</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" style="color: var(--accent-cyan);">10.54 ms</div>
+                    <div class="stat-label">Edge Inference Speed</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" style="color: #FFFFFF;">₹1,480</div>
+                    <div class="stat-label">Total Hardware Cost</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- SLIDE 2: THE RURAL CRISIS & MOTIVATION -->
+        <!-- ============================================== -->
+        <section class="slide" id="slide-2">
+            <div class="slide-header">
+                <div class="slide-category">Problem Statement & Agronomic Reality</div>
+                <h1 class="slide-title">The Rural Foliar Crisis: Why Smallholders Suffer</h1>
+                <p class="slide-subtitle">Catastrophic crop losses, chemical debt spirals, and the digital divide in rural Indian agriculture</p>
+            </div>
+
+            <div class="grid-3">
+                <div class="card" style="border-color: rgba(239, 68, 68, 0.4);">
+                    <div class="card-icon">🥀</div>
+                    <div class="card-title" style="color: var(--accent-red);">1. ECONOMIC COLLAPSE</div>
+                    <div class="card-body">
+                        <li><b>40%–70% Yield Losses:</b> Tomato Early Blight (<i>Alternaria solani</i>) and Late Blight (<i>Phytophthora infestans</i>) decimate entire harvests within 72 hours.</li>
+                        <li><b>Devastating Input Debt:</b> Small farmers invest ₹30,000–₹40,000/acre in seed and fertilizer. A single unspotted fungal bloom triggers total bankruptcy.</li>
+                        <li><b>Pesticide Overuse:</b> Blind application of broad-spectrum fungicides up to 14 times per season pollutes local soil ecology and water tables.</li>
+                    </div>
+                </div>
+
+                <div class="card" style="border-color: rgba(245, 158, 11, 0.4);">
+                    <div class="card-icon">🏥</div>
+                    <div class="card-title" style="color: var(--accent-gold);">2. DIAGNOSTIC DESERT</div>
+                    <div class="card-body">
+                        <li><b>Zero Pathologist Access:</b> In rural districts like Begusarai, certified agricultural officers and plant pathology clinics are virtually nonexistent on-site.</li>
+                        <li><b>Commercial Labs Unaffordable:</b> Commercial tissue testing costs ₹1,500–₹3,000/sample and takes 7–10 days—far too late to save standing crops.</li>
+                        <li><b>Dealer Misinformation:</b> Farmers are forced to rely on informal advice from commercial pesticide retailers, compounding expenses.</li>
+                    </div>
+                </div>
+
+                <div class="card" style="border-color: rgba(6, 182, 212, 0.4);">
+                    <div class="card-icon">📵</div>
+                    <div class="card-title" style="color: var(--accent-cyan);">3. CONNECTIVITY VOID</div>
+                    <div class="card-body">
+                        <li><b>Cloud Apps Fail in Fields:</b> Commercial smartphone ag-apps depend on continuous 4G/5G internet, which regularly drops to zero in open Indian farms.</li>
+                        <li><b>Delicate Phone Vulnerability:</b> Farmers cannot risk dropping expensive glass smartphones in wet mud, irrigation ditches, and pesticide spray.</li>
+                        <li><b>The Need:</b> A rugged, handheld, dedicated wand that provides instant optical screening with 100% offline edge processing.</li>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- SLIDE 3: SCIENTIFIC PRINCIPLES -->
+        <!-- ============================================== -->
+        <section class="slide" id="slide-3">
+            <div class="slide-header">
+                <div class="slide-category">Scientific Principles & Theoretical Framework</div>
+                <h1 class="slide-title">Multi-Disciplinary Scientific Foundation</h1>
+                <p class="slide-subtitle">Merging plant pathology, digital optoelectronics, embedded microcontroller architectures, and convolutional machine vision</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-icon">🔬</div>
+                    <div class="card-title" style="color: var(--primary);">PLANT PATHOLOGY & SYMPTOMATOLOGY</div>
+                    <div class="card-body">
+                        <li><b>Early Blight (Alternaria solani):</b> Fungal pathogen secreting alternaric acid phytotoxins. Forms dark, concentric target-board rings with distinct yellow chlorotic halos.</li>
+                        <li><b>Late Blight (Phytophthora infestans):</b> Aggressive oomycete causing water-soaked, irregular lesions that expand rapidly under cool, humid conditions (RH > 85%, 18°–24.5°C).</li>
+                        <li><b>Disease Triangle Modeling:</b> Evaluates host susceptibility, pathogen presence, and microclimate envelope simultaneously.</li>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">📸</div>
+                    <div class="card-title" style="color: var(--accent-cyan);">OPTOELECTRONICS & CMOS SENSING</div>
+                    <div class="card-body">
+                        <li><b>Photoelectric Conversion:</b> The OV5640 5MP CMOS active pixel sensor converts reflected leaf photon flux into discrete electrical charges.</li>
+                        <li><b>Bayer Color Matrix:</b> Incident spectrum passes through an RGGB color mosaic, digitized internally by high-speed ADCs into compressed 1600×1200 UXGA JPEG frames.</li>
+                        <li><b>Macro Focal Calibration:</b> Calibrated at 10–12 cm focal length to resolve foliar lesion micro-structures down to 1.5 mm diameter.</li>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">⚡</div>
+                    <div class="card-title" style="color: var(--accent-gold);">EMBEDDED COMPUTING & DMA</div>
+                    <div class="card-body">
+                        <li><b>Dual-Core Xtensa Architecture:</b> ESP32 operates at 240 MHz, executing Wi-Fi networking, sensor telemetry, and camera control concurrently.</li>
+                        <li><b>PSRAM Direct Memory Access:</b> Streams massive 1600×1200 frame buffers directly into 4 MB external PSRAM without starving internal SRAM.</li>
+                        <li><b>Non-Volatile Logging:</b> Serializes captured diagnostic evidence over High-Speed SPI to a FAT32 MicroSD card.</li>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">🧠</div>
+                    <div class="card-title" style="color: var(--text-main);">CONVOLUTIONAL NEURAL NETWORKS (CNN)</div>
+                    <div class="card-body">
+                        <li><b>Hierarchical Feature Extraction:</b> Deep 2D convolutional kernels learn spatial edge gradients, lesion margin contours, and necrotic surface textures.</li>
+                        <li><b>Depthwise Separable Convolutions:</b> Slashes computational FLOPs by 85% compared to standard CNNs, enabling real-time edge execution on phone CPUs.</li>
+                        <li><b>Softmax Probability Distribution:</b> Outputs normalized confidence scores across all 6 Solanaceae target classes.</li>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- SLIDE 4: SYSTEM ARCHITECTURE -->
+        <!-- ============================================== -->
+        <section class="slide" id="slide-4">
+            <div class="slide-header">
+                <div class="slide-category">System Architecture & Hardware Workflow</div>
+                <h1 class="slide-title">The Decentralized 3-Tier Edge Pipeline</h1>
+                <p class="slide-subtitle">How the Controller Wand, Optical Camera Head, and Companion Mobile Host communicate completely offline</p>
+            </div>
+
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-icon">🕹️</div>
+                    <div class="card-title" style="color: var(--accent-gold);">TIER 1: CONTROLLER WAND</div>
+                    <div class="card-body">
+                        <li><b>MCU:</b> ESP32 DevKit V1 (240 MHz)</li>
+                        <li><b>Sensors:</b> DHT11 (Temperature & RH)</li>
+                        <li><b>Display:</b> SSD1306 128×64 I2C OLED (4 Pages)</li>
+                        <li><b>Controls:</b> [SCAN] Trigger & [NEXT] Carousel</li>
+                        <li><b>Function:</b> Connects to SoftAP, evaluates Disease Triangle, triggers scan, and displays real-time prescription.</li>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">📷</div>
+                    <div class="card-title" style="color: var(--accent-cyan);">TIER 2: OPTICAL CAMERA HEAD</div>
+                    <div class="card-body">
+                        <li><b>MCU:</b> AI-Thinker ESP32-CAM + 4MB PSRAM</li>
+                        <li><b>Sensor:</b> OV5640 5MP CMOS (1600×1200)</li>
+                        <li><b>Storage:</b> 8GB MicroSD (SDMMC 1-Bit FAT32)</li>
+                        <li><b>Network:</b> SoftAP 'KRISHI-DRISHTI' (192.168.4.1)</li>
+                        <li><b>Function:</b> Captures verified UXGA frames, writes to SD, and streams offline WASM/TFLite models to the phone.</li>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">📱</div>
+                    <div class="card-title" style="color: var(--primary);">TIER 3: OFFLINE MOBILE HOST</div>
+                    <div class="card-body">
+                        <li><b>Host:</b> Any standard farmer Android phone</li>
+                        <li><b>Runtime:</b> Browser WebAssembly (Zero APK install)</li>
+                        <li><b>Model:</b> TFLite Float16 (2.01 MB)</li>
+                        <li><b>Latency:</b> 10.54 ms execution on phone CPU</li>
+                        <li><b>Function:</b> Executes neural inference and posts diagnosis back to camera endpoint; camera updates OLED wand.</li>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 18px; padding: 14px 22px;">
+                <div style="font-size: 0.85rem; font-weight: 700; color: var(--accent-gold); margin-bottom: 4px;">THE 4-STEP REVOLUTIONARY ZERO-CLOUD CYCLE:</div>
+                <div style="font-size: 0.95rem; font-weight: 600; color: #FFFFFF; font-family: 'JetBrains Mono', monospace;">
+                    ① Press [SCAN] on Wand  ➔  ② Camera stores 1600×1200 JPEG on MicroSD  ➔  ③ Phone executes TFLite Neural Inference in 10.5ms  ➔  ④ OLED Carousel displays Botanical Disease & Remedy
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- SLIDE 5: AI PIPELINE & MODEL TRAINING -->
+        <!-- ============================================== -->
+        <section class="slide" id="slide-5">
+            <div class="slide-header">
+                <div class="slide-category">Artificial Intelligence Engine</div>
+                <h1 class="slide-title">MobileNetV3-Small Deep Learning Pipeline</h1>
+                <p class="slide-subtitle">Trained on 14,249 Solanaceae images with 2-stage transfer learning and Float16 Post-Training Quantization</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-icon">⚙️</div>
+                    <div class="card-title" style="color: var(--primary);">TRAINING PROTOCOL & HYPERPARAMETERS</div>
+                    <div class="card-body">
+                        <li><b>Neural Backbone:</b> MobileNetV3-Small initialized with ImageNet-1k weights.</li>
+                        <li><b>Input Tensor:</b> 128 × 128 × 3 RGB image, scaled to [-1, 1] range.</li>
+                        <li><b>Stage 1 Warmup:</b> Dense classification head trained (Adam lr = 1e-3, 5 epochs) with frozen convolutional backbone.</li>
+                        <li><b>Stage 2 Deep Fine-Tuning:</b> Top 25 convolutional layers unfrozen with cosine learning rate decay (lr = 1e-4) to learn delicate lesion margins.</li>
+                        <li><b>Post-Training Quantization (PTQ):</b> Float16 quantization reducing weights from FP32 to 16-bit floats.</li>
+                        <li><b>Model Artifact Size:</b> Exactly <b>2,104,584 bytes (2.01 MB)</b>—instantly cached in phone RAM.</li>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">🗂️</div>
+                    <div class="card-title" style="color: var(--accent-gold);">CORPUS & STRICT 1:1 TAXONOMY</div>
+                    <div class="card-body">
+                        <li><b>Primary Corpus:</b> New Plant Diseases Dataset (Augmented 87K, Solanaceae Partition: 14,249 images).</li>
+                        <li><b>Training Set:</b> 11,399 images (80%) | <b>Validation Set:</b> 2,850 strictly unseen images (20%).</li>
+                        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; margin-top: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;">
+                            [0] Tomato___Late_blight   ➔ Phytophthora infestans (Oomycete)<br>
+                            [1] Tomato___Early_blight  ➔ Alternaria solani (Fungus)<br>
+                            [2] Tomato___healthy       ➔ Asymptomatic Foliage<br>
+                            [3] Potato___Late_blight   ➔ Phytophthora infestans (Oomycete)<br>
+                            [4] Potato___Early_blight  ➔ Alternaria solani (Fungus)<br>
+                            [5] Potato___healthy       ➔ Asymptomatic Foliage
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- SLIDE 6: EMPIRICAL PERFORMANCE & EVALUATION -->
+        <!-- ============================================== -->
+        <section class="slide" id="slide-6">
+            <div class="slide-header">
+                <div class="slide-category">Empirical Results & Validation</div>
+                <h1 class="slide-title">Measured Metrics & Confusion Matrix</h1>
+                <p class="slide-subtitle">Empirically evaluated across 2,850 unseen images and 487 independent outdoor field photographs</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title" style="color: var(--accent-gold);">PER-CLASS METRICS BREAKDOWN</div>
+                    <div style="height: 250px; position: relative;">
+                        <canvas id="accuracyChart"></canvas>
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 10px;">
+                        • <b>Overall Validation Accuracy:</b> <span class="highlight-text">88.74%</span><br>
+                        • <b>Macro F1-Score:</b> <span class="gold-text">0.8863</span> (Balanced precision and recall)<br>
+                        • <b>Potato Early Blight F1:</b> <span class="cyan-text">0.9665</span> | <b>Healthy Tissue F1:</b> <span class="highlight-text">0.9824</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title" style="color: var(--accent-cyan);">CONFUSION MATRIX (2,850 UNSEEN SAMPLES)</div>
+                    <div style="background: #030A07; border: 1px solid var(--border-card); border-radius: 8px; padding: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.45; overflow-x: auto;">
+                        <pre style="color: #A7F3D0;">
+Actual \ Pred    Tom_LB  Tom_EB  Tom_H   Pot_LB  Pot_EB  Pot_H
+Tomato Late B.    [305]     19      22     115       2       0
+Tomato Early B.     23    [358]     20      73       3       3
+Tomato Healthy       0       0    [478]      0       0       3
+Potato Late B.       3       0       1    [479]      1       1
+Potato Early B.      0       0       1      22    [462]      0
+Potato Healthy       0       0       0       6       3    [447]
+                        </pre>
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 10px;">
+                        <b>Key Biological Insight:</b> Healthy tissue identification is 98%–99% accurate. Cross-class confusion occurs between Tomato and Potato Late Blight because both are caused by the identical pathogen (<i>P. infestans</i>).
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- SLIDE 7: UNCERTAINTY GATING & SAFEGUARDS -->
+        <!-- ============================================== -->
+        <section class="slide" id="slide-7">
+            <div class="slide-header">
+                <div class="slide-category">Diagnostic Safeguards & AI Safety</div>
+                <h1 class="slide-title">Zero-Hallucination Uncertainty Gating</h1>
+                <p class="slide-subtitle">Ensuring agricultural recommendations are scientifically defensible and never invent fake diagnoses</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-icon">⚖️</div>
+                    <div class="card-title" style="color: var(--accent-cyan);">SHANNON ENTROPY REJECTION</div>
+                    <div class="card-body">
+                        <li><b>The Core AI Dilemma:</b> Standard neural classifiers blindly output whichever class has the highest score—even if presented with an out-of-focus blur or dark shadow.</li>
+                        <li><b>Mathematical Entropy Gating:</b>
+                            <div style="background: rgba(0,0,0,0.4); padding: 8px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; color: var(--accent-gold); margin: 6px 0;">
+                                H = - Σ (p_i · ln p_i)   [for i = 1 to 6]
+                            </div>
+                        </li>
+                        <li><b>Rejection Criteria:</b> If $H > 1.45$ nats (high diagnostic ambiguity) OR top probability $p_{max} < 0.50$, the inference engine triggers <b>UNCERTAIN</b>.</li>
+                        <li><b>Operator Instruction:</b> The OLED wand prompts the farmer: <i>'Hold wand steady at 10 cm, avoid shadow, and re-scan.'</i></li>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">🛡️</div>
+                    <div class="card-title" style="color: var(--primary);">FOLIAR PLAUSIBILITY & HONESTY</div>
+                    <div class="card-body">
+                        <li><b>Non-Leaf Edge Filter:</b> Frames with < 12% chlorophyll or necrotic lesion coverage automatically reject lens caps, bare ground, fingers, or walls as <b>NON_LEAF</b>.</li>
+                        <li><b>Hardware Verification:</b> Physical hardware testing verified that the OV5640 camera reliably captures 1600×1200 JPEGs to the MicroSD card, and the OLED carousel updates properly.</li>
+                        <li><b>Authentic Scope:</b> We do not claim full commercial multi-farm field trials have occurred. The Android inference pipeline is currently a verified laboratory prototype.</li>
+                        <li><b>Triage Tool Only:</b> Digital screening aids early intervention; it does not replace laboratory agronomist confirmations.</li>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Demo Sandbox -->
+            <div class="card" style="margin-top: 16px; padding: 14px 20px;">
+                <div style="font-size: 0.85rem; font-weight: 700; color: var(--accent-gold);">INTERACTIVE DIAGNOSTIC SIMULATOR (TRY IT):</div>
+                <div>
+                    <button class="btn-action" onclick="runSim('healthy')">Test Healthy Tomato</button>
+                    <button class="btn-action" onclick="runSim('early_blight')">Test Early Blight</button>
+                    <button class="btn-action" onclick="runSim('uncertain')">Test Blurry Image (High Entropy)</button>
+                    <button class="btn-action" onclick="runSim('wall')">Test Blank Wall (Non-Leaf)</button>
+                </div>
+                <div class="demo-box" id="simOutput">Click any test button above to simulate the real inference & gating response...</div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- SLIDE 8: DUAL-FIRMWARE HARDENING -->
+        <!-- ============================================== -->
+        <section class="slide" id="slide-8">
+            <div class="slide-header">
+                <div class="slide-category">Embedded Engineering & Workmanship</div>
+                <h1 class="slide-title">Dual-Firmware Hardening & Production Reliability</h1>
+                <p class="slide-subtitle">Hardware watchdog timers, frame-write verification, SDMMC static streaming, and 4-page OLED carousel</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-icon">📷</div>
+                    <div class="card-title" style="color: var(--accent-cyan);">CAMERA UNIT (KRISHI_DRISHTI_Camera.ino)</div>
+                    <div class="card-body">
+                        <li><b>Write Verification:</b> Strictly evaluates <code>written >= 512 && written == fb->len</code>. Drops corrupt frames with HTTP 500 without incrementing the scan index.</li>
+                        <li><b>SDMMC Static Asset Streaming:</b> Custom <code>handleStaticFile()</code> with CORS headers streams vendor libraries, CSS, and the 2.01 MB TFLite model directly from the 8GB MicroSD card.</li>
+                        <li><b>Embedded HTTP Daemon:</b> Serves the self-contained offline browser UI so any farmer phone connects to SoftAP and runs AI without downloading an app.</li>
+                        <li><b>Compilation Footprint:</b> Flash: 1,159,119 bytes (36%) | RAM: 60,172 bytes (18%) | Exit Code 0.</li>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">🪄</div>
+                    <div class="card-title" style="color: var(--accent-gold);">CONTROLLER WAND (KRISHI_DRISHTI_Controller.ino)</div>
+                    <div class="card-body">
+                        <li><b>Non-Blocking Station Link:</b> Connects to SoftAP 'KRISHI-DRISHTI' (192.168.4.1) with an asynchronous state machine for resilient reconnects.</li>
+                        <li><b>Watchdog & Stale Scan Rejection:</b> Validates <code>retScanId == activeScanId</code> with a 14-second watchdog timeout to prevent displaying stale results.</li>
+                        <li><b>4-Page OLED Carousel:</b>
+                            (1) System & Disease Name | (2) Microclimate Risk Index | (3) Biocontrol Advisory | (4) Chemical Prescription.
+                        </li>
+                        <li><b>DHT11 Microclimate Envelope:</b> Triggers high disease risk warning when RH > 85% and Temp is between 18.0°C and 24.5°C.</li>
+                        <li><b>Compilation Footprint:</b> Flash: 1,072,584 bytes (81%) | RAM: 50,592 bytes (15%) | Exit Code 0.</li>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- SLIDE 9: ECONOMICS & CBSE RUBRIC ALIGNMENT -->
+        <!-- ============================================== -->
+        <section class="slide" id="slide-9">
+            <div class="slide-header">
+                <div class="slide-category">Economics & Evaluation Alignment</div>
+                <h1 class="slide-title">Cost Disruption & CBSE Criteria Mapping</h1>
+                <p class="slide-subtitle">Fulfilling all 7 evaluation parameters with quantifiable cost and technical benchmarks</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title" style="color: var(--accent-gold);">BILL OF MATERIALS (BOM) & COST COMPARISON</div>
+                    <div style="height: 220px; position: relative;">
+                        <canvas id="costChart"></canvas>
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 10px;">
+                        • <b>ESP32-CAM + OV5640 Sensor:</b> ₹650 | <b>ESP32 DevKit V1:</b> ₹320<br>
+                        • <b>SSD1306 OLED + DHT11 Sensor:</b> ₹260 | <b>8GB MicroSD:</b> ₹170<br>
+                        • <b>TOTAL HARDWARE BUILD COST:</b> <span class="highlight-text">₹1,480 (~$17.80)</span><br>
+                        • <b>Commercial Spectrometers:</b> ₹85,000+ | <b>Recurring Cloud Fee:</b> ₹0
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title" style="color: var(--primary);">CBSE 100-POINT RUBRIC ALIGNMENT</div>
+                    <div class="card-body">
+                        <li><b>Creativity & Imagination (20%):</b> Dual-hardware wand architecture combining microclimate sensors with computer vision.</li>
+                        <li><b>Originality & Innovation (15%):</b> 100% offline WebAssembly TFLite model running inside phone browser.</li>
+                        <li><b>Scientific Approach (15%):</b> Disease Triangle modeling, Shannon entropy gating, and confusion matrix verification.</li>
+                        <li><b>Technical Workmanship (15%):</b> Dual C++ firmware with hardware watchdogs and write-verification.</li>
+                        <li><b>Social Utility & Scalability (15%):</b> Protects smallholder income, prevents chemical runoff, and halts farmer debt.</li>
+                        <li><b>Economics & Portability (10%):</b> Built under ₹1,500 using modular eco-friendly parts; powered by a 5V USB bank.</li>
+                        <li><b>Presentation & Defense (10%):</b> Honest scientific boundaries, empirical metrics, and live OLED feedback.</li>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- SLIDE 10: FUTURE ROADMAP & CONCLUSION -->
+        <!-- ============================================== -->
+        <section class="slide" id="slide-10">
+            <div class="slide-header">
+                <div class="slide-category">Vision & Future Roadmap</div>
+                <h1 class="slide-title">Empowering 140 Million Smallholders</h1>
+                <p class="slide-subtitle">Advancing the national vision of STEM for a Sustainable and Vikshit Bharat</p>
+            </div>
+
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-icon">🌾</div>
+                    <div class="card-title" style="color: var(--primary);">1. MULTI-CROP SCALING</div>
+                    <div class="card-body">
+                        <li><b>Expanded Crops:</b> Adding deep learning models for Chili, Brinjal, Rice, and Mustard.</li>
+                        <li><b>Automatic Crop Selector:</b> Automatic leaf morphology recognition to switch neural weights dynamically.</li>
+                        <li><b>Pest Recognition:</b> Visual detection of whiteflies, aphids, and leafminers.</li>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">🗣️</div>
+                    <div class="card-title" style="color: var(--accent-gold);">2. REGIONAL VERNACULAR</div>
+                    <div class="card-body">
+                        <li><b>Voice Audio Advisories:</b> Offline Text-to-Speech in Hindi, Maithili, and Bhojpuri for non-literate farmers.</li>
+                        <li><b>Tri-Color Indicator:</b> High-intensity RGB LED on wand head (Green = Healthy, Yellow = Early Warning, Red = Severe).</li>
+                        <li><b>Solar Harvester:</b> 2W monocrystalline solar cell for continuous field autonomy.</li>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">🌏</div>
+                    <div class="card-title" style="color: var(--accent-cyan);">3. ECOLOGICAL IMPACT</div>
+                    <div class="card-body">
+                        <li><b>60% Chemical Reduction:</b> Targeted spot-spraying eliminates wasteful blanket field spraying.</li>
+                        <li><b>Organic Biocontrol:</b> Prioritizes natural bio-fungicides (<i>Trichoderma viride</i>) over toxic chemicals.</li>
+                        <li><b>Sustainable Bharat:</b> Directly champions sustainable agricultural innovation.</li>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 18px; padding: 16px 24px; text-align: center; border-color: var(--accent-gold);">
+                <div style="font-size: 1.15rem; font-weight: 800; color: var(--accent-gold); margin-bottom: 4px;">
+                    THANK YOU TO THE ESTEEMED CBSE NATIONAL JURY
+                </div>
+                <div style="font-size: 0.95rem; color: #FFFFFF;">
+                    <b>KRISHI-DRISHTI:</b> Democratizing AI Precision Agriculture for the Marginal Indian Farmer | <b>Gautam Kumar (Class IX)</b>, Udaan International School
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Bottom Controls Footer -->
+    <footer>
+        <div class="page-indicator" id="slideIndicator">Slide 01 / 10</div>
+        <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="progressBar"></div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button class="nav-btn" onclick="prevSlide()">◀</button>
+            <button class="nav-btn" onclick="nextSlide()">▶</button>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic & Chart.js -->
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 10;
+
+        function showSlide(index) {
+            if (index < 1) index = 1;
+            if (index > totalSlides) index = totalSlides;
+            currentSlide = index;
+
+            document.querySelectorAll('.slide').forEach((s, i) => {
+                s.classList.remove('active');
+                if (i + 1 === currentSlide) {
+                    s.classList.add('active');
+                }
+            });
+
+            // Update footer
+            document.getElementById('slideIndicator').innerText = `Slide ${String(currentSlide).padStart(2, '0')} / ${String(totalSlides).padStart(2, '0')}`;
+            document.getElementById('progressBar').style.width = `${(currentSlide / totalSlides) * 100}%`;
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                prevSlide();
+            } else if (e.key === 'f' || e.key === 'F') {
+                toggleFullScreen();
+            } else if (e.key === 'Home') {
+                showSlide(1);
+            } else if (e.key === 'End') {
+                showSlide(totalSlides);
+            }
+        });
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {});
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        // Diagnostic Simulator
+        function runSim(type) {
+            const out = document.getElementById('simOutput');
+            if (type === 'healthy') {
+                out.innerHTML = `<span style="color: #10B981;">[STATUS: CONFIDENT_DIAGNOSIS]</span><br>` +
+                                `Detected Class: <b>Tomato___healthy</b> (Confidence: 96.4%)<br>` +
+                                `Shannon Entropy: <b>0.21 nats</b> (Threshold: < 1.45 PASS)<br>` +
+                                `Prescription: Asymptomatic healthy tissue. Maintain standard drip irrigation; zero fungicide required.`;
+            } else if (type === 'early_blight') {
+                out.innerHTML = `<span style="color: #F59E0B;">[STATUS: CONFIDENT_DIAGNOSIS]</span><br>` +
+                                `Detected Class: <b>Tomato___Early_blight</b> (Confidence: 94.2%)<br>` +
+                                `Shannon Entropy: <b>0.38 nats</b> (Threshold: < 1.45 PASS)<br>` +
+                                `Symptom Morphology: Concentric target-board lesions & alternaric acid chlorosis detected.<br>` +
+                                `Prescription: <b>Biocontrol:</b> Spray <i>Trichoderma viride</i> (5g/L). <b>Chemical:</b> Mancozeb 75% WP (2g/L) targeted spot-spray.`;
+            } else if (type === 'uncertain') {
+                out.innerHTML = `<span style="color: #EF4444;">[STATUS: UNCERTAIN_SCAN_REJECTED]</span><br>` +
+                                `Top Class: Tomato___Late_blight (41.2%) | Second: Tomato___Early_blight (38.5%)<br>` +
+                                `Shannon Entropy: <b style="color: #EF4444;">1.68 nats</b> (Threshold: > 1.45 REJECTED!)<br>` +
+                                `Safety Action: Scan refused to prevent false diagnosis. <i>Advising operator: Hold wand steady at 10 cm, avoid shadow, and re-scan.</i>`;
+            } else if (type === 'wall') {
+                out.innerHTML = `<span style="color: #94A3B8;">[STATUS: NON_LEAF_DETECTED]</span><br>` +
+                                `Chlorophyll Coverage: <b>2.1%</b> (Threshold: < 12% MINIMUM REQUIRED)<br>` +
+                                `Safety Action: Image rejected. Camera is pointed at a blank wall, finger, or bare soil. Point sensor directly at plant leaf.`;
+            }
+        }
+
+        // Charts initialization on load
+        window.addEventListener('DOMContentLoaded', () => {
+            // Chart 1: F1 Scores
+            const ctx1 = document.getElementById('accuracyChart');
+            if (ctx1) {
+                new Chart(ctx1, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Potato Healthy', 'Potato Early B.', 'Tomato Healthy', 'Tomato Early B.', 'Potato Late B.', 'Tomato Late B.'],
+                        datasets: [{
+                            label: 'Macro F1-Score',
+                            data: [0.982, 0.966, 0.953, 0.835, 0.812, 0.768],
+                            backgroundColor: [
+                                '#10B981', '#34D399', '#10B981', '#F59E0B', '#06B6D4', '#F59E0B'
+                            ],
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                min: 0.6,
+                                max: 1.0,
+                                grid: { color: 'rgba(255, 255, 255, 0.08)' },
+                                ticks: { color: '#94A3B8' }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: '#E2E8F0', font: { size: 10 } }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Chart 2: Cost Comparison
+            const ctx2 = document.getElementById('costChart');
+            if (ctx2) {
+                new Chart(ctx2, {
+                    type: 'bar',
+                    data: {
+                        labels: ['KRISHI-DRISHTI', 'Commercial Ag-App (3 Yrs)', 'Portable Lab Spectrometer'],
+                        datasets: [{
+                            label: 'Cost (INR ₹)',
+                            data: [1480, 9000, 85000],
+                            backgroundColor: ['#10B981', '#F59E0B', '#EF4444'],
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                type: 'logarithmic',
+                                grid: { color: 'rgba(255, 255, 255, 0.08)' },
+                                ticks: { color: '#94A3B8', callback: (val) => '₹' + val }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: '#E2E8F0', font: { size: 10 } }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
