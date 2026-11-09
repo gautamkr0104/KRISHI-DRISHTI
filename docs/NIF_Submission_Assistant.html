@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KRISHI-DRISHTI — NIF Free Patent Submission Assistant</title>
+    <style>
+        :root {
+            --primary: #1b5e20;
+            --primary-light: #2e7d32;
+            --accent: #ff8f00;
+            --bg: #f4f6f8;
+            --card-bg: #ffffff;
+            --text: #212121;
+            --text-muted: #555555;
+            --border: #e0e0e0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
+        body { background-color: var(--bg); color: var(--text); line-height: 1.6; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        
+        .header-card {
+            background: linear-gradient(135deg, #1b5e20, #0d3c10);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+        .header-card h1 { font-size: 26px; margin-bottom: 8px; font-weight: 700; }
+        .header-card p { font-size: 15px; opacity: 0.9; }
+        .badge {
+            display: inline-block;
+            background-color: var(--accent);
+            color: #111;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .action-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease-in-out;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .btn-gmail { background-color: #d93025; color: white; }
+        .btn-gmail:hover { background-color: #b3261e; transform: translateY(-2px); }
+        .btn-copy { background-color: var(--primary-light); color: white; }
+        .btn-copy:hover { background-color: var(--primary); transform: translateY(-2px); }
+        .btn-print { background-color: #0288d1; color: white; }
+        .btn-print:hover { background-color: #0277bd; transform: translateY(-2px); }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .card h2 {
+            font-size: 18px;
+            color: var(--primary);
+            border-bottom: 2px solid #e8f5e9;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checklist { list-style: none; }
+        .checklist li {
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            background: #f9fbf9;
+            border-left: 4px solid var(--primary-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+        .checklist .path { font-family: "Cascadia Code", Consolas, monospace; font-size: 12px; color: #555; background: #eee; padding: 2px 6px; border-radius: 4px; }
+        .badge-status { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: #c8e6c9; color: #2e7d32; font-weight: bold; }
+
+        .docket-view {
+            background: #fafafa;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 14px;
+            white-space: pre-wrap;
+            line-height: 1.7;
+            max-height: 500px;
+            overflow-y: auto;
+            color: #222;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        .toast.show { opacity: 1; }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .action-bar, .header-card .badge, .checklist-card, .toast { display: none !important; }
+            .header-card { background: none; color: black; border-bottom: 2px solid black; padding: 0 0 10px 0; box-shadow: none; }
+            .card { border: none; box-shadow: none; padding: 0; }
+            .docket-view { max-height: none; overflow: visible; border: none; background: white; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-card">
+        <span class="badge">Official Government Patent Pathway (NIF-DST)</span>
+        <h1>KRISHI-DRISHTI — NIF Free Patent Facilitation Assistant</h1>
+        <p>100% Free Patent Filing &amp; Prototype Incubation via National Innovation Foundation – India (Autonomous Body of Dept. of Science &amp; Technology, Govt. of India).</p>
+    </div>
+
+    <div class="action-bar">
+        <button class="btn btn-gmail" onclick="openGmail()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            1-Click Launch Gmail
+        </button>
+        <button class="btn btn-copy" onclick="copyDocket()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+            Copy Full Application
+        </button>
+        <button class="btn btn-print" onclick="window.print()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-4 11H9v-5h6v5zm4-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-3-9H8V2h8v2z"/></svg>
+            Save as PDF (Ctrl+P)
+        </button>
+    </div>
+
+    <div class="card checklist-card">
+        <h2>Attachment Checklist for Your Email</h2>
+        <ul class="checklist">
+            <li>
+                <div>
+                    <strong>1. Printable Patent Application Docket (PDF)</strong><br>
+                    <span class="path">Export from this page using the "Save as PDF" button above</span>
+                </div>
+                <span class="badge-status">READY</span>
+            </li>
+            <li>
+                <div>
+                    <strong>2. System Architecture &amp; Methodology Report</strong><br>
+                    <span class="path">docs/System_Architecture_Report.md</span>
+                </div>
+                <span class="badge-status">READY</span>
+            </li>
+            <li>
+                <div>
+                    <strong>3. Hardware Pinout &amp; Wiring Schematic</strong><br>
+                    <span class="path">docs/Wiring_Schematic_Pinout.md</span>
+                </div>
+                <span class="badge-status">READY</span>
+            </li>
+            <li>
+                <div>
+                    <strong>4. MicroSD Edge Model &amp; Deployment Engine</strong><br>
+                    <span class="path">E:\krishi_drishti_model.tflite (Float16, 2.01 MB)</span>
+                </div>
+                <span class="badge-status">PREPARED</span>
+            </li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>Formal Application Docket Text</h2>
+        <div id="docketContent" class="docket-view">TO:
+The National Coordinator (Scouting & Documentation / Intellectual Property Management)
+National Innovation Foundation - India
+Grambharti, Amrapur, Gandhinagar-Mahudi Road, Gandhinagar, Gujarat — 382650
+Emails: campaign@nifindia.org, info@nifindia.org, patent@nifindia.org
+
+SUBJECT: Submission of Working Technological Prototype and Request for Free Patent Drafting & Filing Assistance under NIF-DST Mandate
+
+1. INNOVATOR PROFILE
+• Name of Innovator: Gautam Kumar
+• Nationality: Indian
+• State / District: Begusarai, Bihar, India
+• Innovation Category: Mechanical / Agricultural Engineering & Edge Artificial Intelligence
+• Stage of Innovation: Fully Functional Working Hardware Prototype & Verified Neural Model
+
+2. TITLE OF INNOVATION
+"AN OFFLINE-FIRST DISTRIBUTED SYSTEM AND METHOD FOR PREDICTIVE PLANT HEALTH SCREENING AND MICROCLIMATE TELEMETRY (KRISHI-DRISHTI)"
+
+3. GENESIS & AGRICULTURAL PROBLEM ADDRESSED
+In Indian agriculture—particularly across potato and tomato farming in Bihar, Uttar Pradesh, West Bengal, and Punjab—foliar blights (Phytophthora infestans and Alternaria solani) destroy 20% to 35% of annual crop yield. Existing diagnostic solutions fail Indian smallholder farmers due to excessive cost (optical kits cost ₹25,000–₹60,000), absence of rural cellular internet, and reactive rather than predictive operation.
+KRISHI-DRISHTI is engineered as an integrated, handheld, zero-cloud agricultural screening system manufactured under ₹1,500 INR ($18 USD) that operates 100% offline without cellular service, cloud servers, or subscriptions.
+
+4. TECHNICAL SOLUTION & SYSTEM ARCHITECTURE
+The system operates as an integrated Hardware-Software Triad over a private, ad-hoc 2.4 GHz local Wi-Fi mesh:
+1. The Optical Capture Node (AI-Thinker ESP32-CAM): 5MP OV5640 sensor, SoftAP (192.168.4.1), 8GB MicroSD in 1-bit SD_MMC DMA mode with frame verification (written >= 512 bytes).
+2. The Handheld Telemetry Wand (ESP32 DevKit V1): SSD1306 128x64 I2C OLED display, DHT11 canopy microclimate sensor, FreeRTOS non-blocking polling state machine with stale scan rejection.
+3. The Offline Pocket AI Co-Processor: Runs an optimized MobileNetV3 Float16 neural model locally on Android RAM with 10.54 ms inference latency per leaf.
+
+5. SCIENTIFIC NOVELTY: THE PLANT DISEASE TRIANGLE
+KRISHI-DRISHTI correlates foliar computer vision with microclimate risk envelopes:
+• Late Blight Envelope: Canopy RH > 85% with 18°C–24.5°C temperature sustained.
+• Early Blight Envelope: 24°C–29°C with fluctuating moisture.
+• Information Entropy Gating (H = -sum(p * ln(p))): If H > 1.45 nats or max confidence < 50%, flags UNCERTAIN, rejecting false positive diagnoses on non-target leaves.
+
+6. EMPIRICAL VERIFICATION
+• Training Convergence Accuracy: 91.80%
+• Validation Accuracy: 88.74% (evaluated on 2,850 unseen real leaf photographs)
+• Validation Macro F1 Score: 0.8863
+• Edge Inference Latency: 10.54 ms (CPU)
+• Edge Model Size: 2.01 MB (Float16 Post-Training Quantization)
+• Firmware Verification: Exit Code 0 (arduino-cli) for both nodes
+• Automated Test Suite: 6/6 tests passing (100% OK)
+
+7. PROPOSED NOVEL PATENT CLAIMS FOR FREE FILING
+1. Apparatus Claim: An offline-first, distributed agricultural screening triad comprising a handheld environmental telemetry wand, an asynchronous optical capture unit, and a localized edge co-processor communicating over an ad-hoc local mesh without internet connectivity.
+2. Method Claim: A method for predictive plant disease screening correlating ambient canopy temperature and humidity thresholds with real-time foliar Shannon information entropy and neural classification.
+3. Firmware Decoupling Method: A non-blocking telemetry protocol where high-resolution frame capture, local wireless dispatches, pocket neural inference, and OLED carousel rendering are asynchronously decoupled across independent microcontrollers.
+
+8. DECLARATION OF ORIGINALITY
+I hereby declare that the KRISHI-DRISHTI system architecture, firmware implementation, and telemetry integration described herein are my original technological work. The prototype is fully verified. The online code repository has been secured as PRIVATE to protect absolute patent novelty. I request the National Innovation Foundation - India to evaluate this entry and grant free patent drafting, filing, and intellectual property support under the official DST mandate.
+
+Dated: 9th November 2026
+Innovator / Applicant: Gautam Kumar
+Location: Begusarai, Bihar, India</div>
+    </div>
+</div>
+
+<div id="toast" class="toast">Application text copied to clipboard!</div>
+
+<script>
+    const recipients = "campaign@nifindia.org";
+    const cc = "patent@nifindia.org,info@nifindia.org";
+    const subject = "Grassroots Technology Submission & Free Patent Facilitation Request: KRISHI-DRISHTI";
+
+    function copyDocket() {
+        const text = document.getElementById("docketContent").innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            showToast("Application text copied to clipboard!");
+        });
+    }
+
+    function showToast(msg) {
+        const t = document.getElementById("toast");
+        t.innerText = msg;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 3000);
+    }
+
+    function openGmail() {
+        const bodyText = document.getElementById("docketContent").innerText;
+        // Construct Gmail Web Compose URL
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(recipients)}&cc=${encodeURIComponent(cc)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
+        window.open(gmailUrl, '_blank');
+    }
+</script>
+
+</body>
+</html>
