@@ -5,7 +5,7 @@
   Optics: OV5640 / OV2640 Dual-Support Auto-Detection (UXGA 1600x1200)
   Storage: Onboard MicroSD in SD_MMC 1-Bit Mode (DMA Accelerated)
   Networking: SoftAP "KRISHI-DRISHTI" @ 192.168.4.1 (100% Offline Mesh)
-  Author: Bharadwaj (Class 9, CBSE Science Exhibition 2026-27)
+  Author: Gautam Kumar / KRISHI-DRISHTI Project
   ==============================================================================
 */
 
@@ -441,7 +441,7 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
     <div>
       <div class="brand-title">
         KRISHI-DRISHTI
-        <span class="badge-tag">CBSE 2026-27</span>
+        <span class="badge-tag">v2.2 EDGE</span>
       </div>
       <div class="brand-subtitle">Headless Neural Co-Processor &bull; MobileNetV3 TFLite</div>
     </div>
@@ -529,7 +529,7 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
   </div>
 
   <div class="footer-note">
-    Class 9 Indian National Science Exhibition &bull; Open-Source Agritech
+    KRISHI-DRISHTI &bull; Offline Edge AI Plant Telemetry &bull; Source Available
   </div>
 
   <canvas id="offscreenCanvas" width="128" height="128"></canvas>
@@ -1533,7 +1533,7 @@ void setup() {
 
   Serial.println("\n========================================");
   Serial.println("  KRISHI-DRISHTI :: ESP32-CAM v2.2");
-  Serial.println("  Open-Source Agritech for CBSE 2026-27");
+  Serial.println("  Offline-First Edge Agritech Platform");
   Serial.println("========================================");
 
   cameraReady = initialiseCamera();

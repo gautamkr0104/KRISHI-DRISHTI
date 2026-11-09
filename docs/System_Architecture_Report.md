@@ -2,9 +2,9 @@
 
 **Title:** KRISHI-DRISHTI: Low-Cost Edge-AI Handheld Wand and Microclimate Telemetry for Predictive Plant Health Screening  
 **Category / Theme:** Technological Innovations for Agriculture and Food Security  
-**Competition:** CBSE Science Exhibition 2026-27  
+**Competition:** Edge Agritech Architecture  
 **Grade Level:** Class 9 (Secondary School)  
-**License:** Open Source Hardware & Software (MIT License)
+**License:** Source-Available Non-Commercial License
 
 ---
 
@@ -135,6 +135,6 @@ To prevent misleading predictions when pointed at bare soil, weeds, or hands:
 
 ---
 
-## 8. Open Source Hardware & Software
-All source code, CAD files, schematics, and model weights are released freely under the **MIT License** on GitHub:  
+## 8. Source-Available Architecture
+All source code, CAD files, schematics, and model weights are released freely under the **Source-Available License** on GitHub:  
 **Repository:** [https://github.com/gautamkr0104/KRISHI-DRISHTI](https://github.com/gautamkr0104/KRISHI-DRISHTI)

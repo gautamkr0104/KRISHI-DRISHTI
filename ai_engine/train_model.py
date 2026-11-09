@@ -260,7 +260,7 @@ def main():
 
     print("=" * 65)
     print("  KRISHI-DRISHTI :: MobileNetV3 Production Pipeline")
-    print("  CBSE Science Exhibition 2026-27 Production Standards")
+    print("  Production Systems Architecture Standards")
     print("=" * 65)
 
     # 1. Dataset verification

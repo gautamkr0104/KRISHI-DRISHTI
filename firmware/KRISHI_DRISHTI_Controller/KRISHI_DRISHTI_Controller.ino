@@ -3,7 +3,7 @@
   KRISHI-DRISHTI (कृषि-दृष्टि) - Official Controller Wand Firmware v2.2
   Target Hardware: ESP32 DevKit V1 + SSD1306 OLED (128x64 I2C) + DHT11
   Networking: Connects as Wi-Fi Station to SoftAP "KRISHI-DRISHTI" @ 192.168.4.1
-  Author: Bharadwaj (Class 9, CBSE Science Exhibition 2026-27)
+  Author: Gautam Kumar / KRISHI-DRISHTI Project
   ==============================================================================
 
   Hardware Pinout:
@@ -463,7 +463,7 @@ void setup() {
 
   Serial.println("\n========================================");
   Serial.println("  KRISHI-DRISHTI :: Controller Wand v2.2");
-  Serial.println("  Hardware Triad Core for CBSE 2026-27");
+  Serial.println("  Offline Edge Telemetry Core v2.2");
   Serial.println("========================================");
 
   pinMode(SCAN_BUTTON, INPUT_PULLUP);

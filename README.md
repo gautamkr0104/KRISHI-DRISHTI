@@ -1,21 +1,20 @@
 # KRISHI-DRISHTI (कृषि-दृष्टि)
-> **An Open-Source, Edge-AI Handheld Wand and Microclimate Telemetry System for Predictive Agricultural Plant Health Screening**
+> **Offline-First Edge-AI Handheld Wand and Microclimate Telemetry System for Predictive Agricultural Plant Health Screening**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Hardware: Open Source](https://img.shields.io/badge/Hardware-Open%20Source-brightgreen.svg)](https://www.oshwa.org/)
+[![License: Source Available](https://img.shields.io/badge/License-Source--Available-blue.svg)](LICENSE)
 [![Platform: ESP32](https://img.shields.io/badge/Platform-ESP32%20%7C%20FreeRTOS-blue.svg)](https://www.espressif.com/)
 [![Inference: Offline TFLite](https://img.shields.io/badge/AI-Offline%20TFLite%20%7C%20MobileNetV3-orange.svg)](https://www.tensorflow.org/lite)
-[![CBSE Science Exhibition 2026-27](https://img.shields.io/badge/Exhibition-CBSE%20Class%209%20State%20Entry-red.svg)](#)
+[![Architecture: Edge Mesh](https://img.shields.io/badge/Mesh-Zero--Cloud%20SoftAP-success.svg)](#)
 
 ---
 
-## 🌟 Overview & Scientific Mission
+## 🌟 Overview & System Architecture
 
-Over **35% of potato and tomato crops across India are destroyed annually by foliar blights** like Late Blight (*Phytophthora infestans*, an oomycete water mold) and Early Blight (*Alternaria solani*, an ascomycete fungus). Smallholder and marginal farmers cannot afford expensive laboratory diagnostic equipment (₹25,000+) or rely on cloud-connected apps in rural areas with poor cellular reception.
+Over **35% of potato and tomato crops across India are destroyed annually by foliar blights** like Late Blight (*Phytophthora infestans*, an oomycete water mold) and Early Blight (*Alternaria solani*, an ascomycete fungus). Smallholder and marginal farmers often lack access to expensive laboratory diagnostic equipment (₹25,000+) or reliable cloud connectivity in rural fields with poor cellular reception.
 
-**KRISHI-DRISHTI** is a low-cost (< ₹1,500 INR / $18 total), **100% offline-first agritech screening system** designed for Indian agriculture. 
+**KRISHI-DRISHTI** is an ultra-low-cost (< ₹1,500 INR / $18 total), **100% offline-first agritech screening system** designed for rural field environments.
 
-Instead of requiring an expensive 5G phone or internet connection, KRISHI-DRISHTI uses a **handheld wireless wand**, an **ESP32-CAM module**, and turns an ordinary budget smartphone (Samsung Galaxy A03) into an **invisible, headless edge AI co-processor** running silently in the farmer's pocket.
+Instead of relying on cloud APIs or expensive 5G connectivity, KRISHI-DRISHTI uses a **handheld wireless telemetry wand**, an **ESP32-CAM optical capture unit**, and an ordinary budget smartphone (e.g. Samsung Galaxy A03) acting as an **invisible, headless edge AI co-processor** operating over a dedicated local Wi-Fi mesh.
 
 ```
 +--------------------------------------------------------------------------+
@@ -29,7 +28,7 @@ Instead of requiring an expensive 5G phone or internet connection, KRISHI-DRISHT
 |         ^                                             || (Local Wi-Fi)   |
 |         ||                                            \/                 |
 |         +=========== Diagnosis Payload ========= [ Pocket AI Engine ]   |
-|                      in < 15 milliseconds        Samsung Galaxy A03      |
+|                      synced in < 15 ms           Samsung Galaxy A03      |
 |                                                  MobileNetV3 Edge Model  |
 |                                                  100% Offline (No Data)  |
 +--------------------------------------------------------------------------+
@@ -51,18 +50,18 @@ flowchart TD
     Host & Env & Pathogen --> Disease["DISEASE OUTBREAK!\n(Late Blight Spores Germinate)"]
 ```
 
-### Why KRISHI-DRISHTI Beats Commercial Phone Apps:
-* **Commercial Apps (Reactive Only):** Take a photo only after the leaf is already brown, necrotic, and infected.
-* **KRISHI-DRISHTI (Predictive Prevention):** The handheld wand integrates a **DHT11 digital microclimate sensor** on GPIO 18. Late Blight spores require **Relative Humidity $> 85\%$** between **$18^\circ\text{C} - 24.5^\circ\text{C}$** for $> 6$ hours to germinate. KRISHI-DRISHTI continuously monitors this canopy microclimate to alert the farmer **BEFORE** visual spore damage spreads across the field.
+### Proactive Microclimate Correlation vs. Reactive Classification:
+* **Reactive Classification:** Evaluates leaves only after severe necrosis, chlorosis, and irreversible tissue decay have occurred.
+* **KRISHI-DRISHTI Predictive Triage:** The handheld wand integrates a **DHT11 digital microclimate sensor** on GPIO 18. Late Blight spores require **Relative Humidity $> 85\%$** between **$18^\circ\text{C} - 24.5^\circ\text{C}$** for $> 6$ hours to germinate. KRISHI-DRISHTI continuously monitors this canopy microclimate envelope to advise the farmer **BEFORE** visual spore damage spreads across the field.
 
 ---
 
 ## 📂 Repository Structure
 
 ```text
-KRISHI-DRISHTI-OpenSource/
-├── LICENSE                         # MIT Open Source License
-├── README.md                       # Master Project Documentation & Quickstart
+KRISHI-DRISHTI/
+├── LICENSE                         # Source-Available Non-Commercial License
+├── README.md                       # Master Project Architecture & Guide
 ├── .gitignore                      # Git ignore rules for Arduino & Python
 ├── firmware/
 │   ├── KRISHI_DRISHTI_Camera/
@@ -73,7 +72,6 @@ KRISHI-DRISHTI-OpenSource/
 │   ├── krishi_ai_server.html       # Headless offline AI daemon for Android (Bundled WASM TFLite)
 │   ├── krishi_ai_daemon.py         # Headless Python AI daemon for Termux/Android/PC
 │   ├── krishi_drishti_model.tflite # Optimized MobileNetV3 Float16 model (2.01 MB, 10.54 ms latency)
-│   ├── krishi_drishti_base.keras   # Native trained Keras 3 model checkpoint
 │   ├── model_evaluation_report.json# Full empirical metrics, confusion matrix & PlantDoc evaluation
 │   ├── train_model.py              # Two-stage MobileNetV3 training pipeline
 │   ├── export_and_evaluate.py      # TFLite quantization and evaluation script
@@ -82,7 +80,7 @@ KRISHI-DRISHTI-OpenSource/
 ├── tests/
 │   └── test_ai_pipeline.py         # Automated hardware-independent test suite (Unit & Mock REST cycle)
 └── docs/
-    ├── CBSE_Project_Synopsis.md    # Official CBSE Exhibition Synopsis & Research Report
+    ├── System_Architecture_Report.md# In-depth architectural & pathological specification
     └── Wiring_Schematic_Pinout.md  # Detailed circuit schematics and pin connection tables
 ```
 
@@ -92,14 +90,14 @@ KRISHI-DRISHTI-OpenSource/
 
 | Component | Purpose | Unit Cost (INR) | Sourcing |
 | :--- | :--- | :--- | :--- |
-| **ESP32-S CAM Board** | 5MP camera + 4MB PSRAM | ₹675.00 | Robu / Quartz Components |
-| **ESP32-CAM-MB Programmer** | Safe USB programming shield (No jumper wires) | ₹92.00 | Robu / Quartz Components |
-| **ESP32 DevKit V1** | Handheld wand controller core | ~₹350.00 | Amazon / Robu |
-| **SSD1306 0.96" OLED** | 128×64 I2C diagnostic display | ~₹150.00 | Robu / Local Electronics |
-| **DHT11 Sensor Module** | Canopy temperature & relative humidity (GPIO 18) | ₹57.00 | Robu / Quartz Components |
-| **MicroSD Card (8GB)** | Local storage for UXGA leaf scans | ~₹180.00 | Any standard Class 10 card |
+| **ESP32-S CAM Board** | 5MP camera + 4MB PSRAM | ₹675.00 | Standard Electronics Distributor |
+| **ESP32-CAM-MB Programmer** | USB programming shield (No jumper wires) | ₹92.00 | Standard Electronics Distributor |
+| **ESP32 DevKit V1** | Handheld wand controller core | ~₹350.00 | Standard Electronics Distributor |
+| **SSD1306 0.96" OLED** | 128×64 I2C diagnostic display | ~₹150.00 | Local Electronics |
+| **DHT11 Sensor Module** | Canopy temperature & relative humidity (GPIO 18) | ₹57.00 | Standard Electronics Distributor |
+| **MicroSD Card (8GB)** | Local storage for UXGA leaf scans | ~₹180.00 | Standard Class 10 card |
 | **Pushbuttons (x2)** | `[SCAN]` (GPIO 27) and `[NEXT]` (GPIO 26) | ~₹10.00 | Local Electronics |
-| **Total Hardware Cost** | **Complete System Triad** | **~₹1,514 INR ($18 USD)** | **100% Low-Cost Compliant** |
+| **Total Hardware Cost** | **Complete System Triad** | **~₹1,514 INR ($18 USD)** | **Ultra-Low Cost Compliant** |
 
 ---
 
@@ -110,11 +108,12 @@ Trained on the **New Plant Diseases Dataset (Augmented 87K, Solanaceae Partition
 | Metric | Measured Value | Practical Significance |
 | :--- | :--- | :--- |
 | **Training Accuracy** | **91.80%** | High feature convergence on diverse foliar lesions |
-| **Validation Accuracy** | **88.74%** | Evaluated on 2,850 independent test samples |
+| **Validation Set Accuracy** | **88.74%** | Evaluated on 2,850 independent test samples |
 | **Validation Macro F1** | **0.8863** | Balanced precision and recall across all 6 classes |
 | **Potato Early Blight F1** | **0.9665** | Precision: 98.09%, Recall: 95.26% |
+| **Potato Healthy Tissue F1** | **0.9824** | Precision: 98.46%, Recall: 98.03% |
 | **Tomato Healthy Tissue F1** | **0.9531** | Precision: 91.57%, Recall: 99.38% |
-| **Model Size (TFLite)** | **2.01 MB** | Fits comfortably in any low-cost smartphone RAM |
+| **Model Size (TFLite)** | **2.01 MB** | Fits comfortably in low-RAM smartphone memory |
 | **On-Device Inference Time** | **10.54 ms** | Real-time classification on smartphone CPU |
 | **PlantDoc Field Benchmark** | **34.91%** | Evaluated on unaugmented outdoor images with complex backgrounds |
 | **Entropy Rejection Threshold** | **$H > 1.45$ nats** | Rejects non-foliar objects, bare soil, and ambiguous leaves |
@@ -159,21 +158,21 @@ Verified test coverage:
    - Partition Scheme: **Huge APP (3MB No OTA / 1MB SPIFFS)**.
    - Flash Frequency: **40MHz**, Flash Mode: **DIO**.
 4. Open [`firmware/KRISHI_DRISHTI_Camera/KRISHI_DRISHTI_Camera.ino`](firmware/KRISHI_DRISHTI_Camera/KRISHI_DRISHTI_Camera.ino) and click **Upload**.
-5. Insert an 8GB MicroSD card (FAT32 formatted) into the card slot.
+5. Insert the prepared 8GB MicroSD card (FAT32 formatted) into the card slot.
 
 ### Step 3: Run the Edge AI Engine
 1. Connect your Android phone to the Wi-Fi network: **`KRISHI-DRISHTI`** (Password: `12345678`).
 2. Open Chrome on the phone and navigate to `http://192.168.4.1/` (served directly from ESP32-CAM flash and SDMMC) or open [`ai_engine/krishi_ai_server.html`](ai_engine/krishi_ai_server.html) locally.
-3. Tap **`START AI SERVER`** and put the phone in your pocket.
+3. Tap **`START AI SERVER`** and place the phone in your pocket.
 4. Aim the wand at a leaf and press the **`[SCAN]`** button!
 5. Within seconds, the diagnosis and treatment carousel appears on the wand's OLED screen.
 
 ---
 
-## 📜 License & Open Science Commitment
+## 📜 License & Intellectual Property
 
-This project is licensed under the **MIT License**.  
-Scientific and technological innovation is meant to empower society. By releasing KRISHI-DRISHTI as open-source hardware and software, we aim to make edge artificial intelligence accessible to every rural farmer and school student worldwide.
+This project is licensed under the **Source-Available Non-Commercial License**. See [`LICENSE`](LICENSE) for terms.  
+Source code, schematics, and model weights are made available solely for personal inspection, educational evaluation, and non-commercial research. Commercial manufacturing, sublicensing, redistribution, and third-party patent filing without explicit written authorization are strictly prohibited.
 
-**Author:** Bharadwaj (Class 9, Secondary School, India)  
-**Project:** CBSE Science Exhibition 2026-27
+**Author & Systems Designer:** Gautam Kumar  
+**Copyright (c) 2026 Gautam Kumar. All rights reserved.**

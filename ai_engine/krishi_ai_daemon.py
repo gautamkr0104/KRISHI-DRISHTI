@@ -1,7 +1,7 @@
 """
 KRISHI-DRISHTI: Headless Edge AI Co-Processor Daemon
 -----------------------------------------------------
-Author: Bharadwaj (Class 9, CBSE Science Exhibition 2026-27)
+Author: Gautam Kumar / KRISHI-DRISHTI Project
 Architecture: MobileNetV3 INT8 Quantized Interpreter Daemon
 Execution Environment: Samsung Galaxy A03 (Termux / Android Python / Local Edge)
 Operation: 100% Offline over Local Wi-Fi Mesh (SoftAP: KRISHI-DRISHTI @ 192.168.4.1)
