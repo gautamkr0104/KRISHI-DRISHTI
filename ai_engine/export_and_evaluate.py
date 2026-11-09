@@ -144,6 +144,7 @@ def main():
     print(f"\n[+] Quantizing model to TFLite (Optimized Dynamic Range / Weights)...")
     converter = tf.lite.TFLiteConverter.from_keras_model(model)
     converter.optimizations = [tf.lite.Optimize.DEFAULT]
+    converter.target_spec.supported_types = [tf.float16]
 
     def rep_data_gen():
         for images, _ in val_ds.take(10):
