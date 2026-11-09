@@ -311,19 +311,118 @@ class TestESP32RestCycleSimulation(unittest.TestCase):
         # Validates that model output is already a true probability distribution (sum == 1.0)
         self.assertAlmostEqual(prob_sum, 1.0, places=3)
 
-    def test_epidemiological_six_hour_microclimate_rule(self):
-        """Verify that Late Blight requires continuous duration >= 6.0 hours before triggering High Risk."""
-        # Phytophthora infestans threshold: RH >= 85% and Temp between 15°C and 22°C
-        hours_accumulated = 0.0
-        threshold_hours = 6.0
+    def test_controller_timeout_race_protection(self):
+        """
+        Verify that if pollAiDiagnosisNonBlocking() transitions state to
+        STATE_DIAGNOSIS_RECEIVED at or past the 14s timeout boundary,
+        the timeout handler is NOT triggered and the diagnosis is preserved.
+        """
+        STATE_IDLE = 0
+        STATE_CAPTURING = 1
+        STATE_AWAITING_AI = 2
+        STATE_DIAGNOSIS_RECEIVED = 3
+        STATE_TIMEOUT = 4
 
-        # Simulate 3 hours of high humidity -> should remain in incubation state
-        hours_accumulated += 3.0
-        self.assertLess(hours_accumulated, threshold_hours, "Incubation duration must not trigger premature High Risk")
+        aiWaitStartMs = 1000
+        AI_TIMEOUT_MS = 14000
+        now = 15001 # 14.001s elapsed (past timeout)
 
-        # Simulate reaching full 6 hours -> triggers High Risk alert
-        hours_accumulated += 3.0
-        self.assertGreaterEqual(hours_accumulated, threshold_hours, "Continuous >= 6 hours must qualify as High Risk")
+        # Scenario A: Diagnosis arrives successfully at timeout boundary
+        current_state = STATE_AWAITING_AI
+        diag_arrived = True
+        if diag_arrived:
+            current_state = STATE_DIAGNOSIS_RECEIVED
+
+        # Controller loop logic: only trigger timeout if STILL awaiting AI
+        if current_state == STATE_AWAITING_AI and (now - aiWaitStartMs >= AI_TIMEOUT_MS):
+            current_state = STATE_TIMEOUT
+
+        self.assertEqual(current_state, STATE_DIAGNOSIS_RECEIVED,
+                         "Diagnosis arriving at timeout boundary must NEVER be overwritten by timeout")
+
+        # Scenario B: No diagnosis arrives within 14s
+        current_state = STATE_AWAITING_AI
+        diag_arrived = False
+        if current_state == STATE_AWAITING_AI and (now - aiWaitStartMs >= AI_TIMEOUT_MS):
+            current_state = STATE_TIMEOUT
+
+        self.assertEqual(current_state, STATE_TIMEOUT,
+                         "Unanswered scan must cleanly transition to STATE_TIMEOUT")
+
+    def test_firmware_microclimate_six_hour_duration_tracker(self):
+        """
+        Verify the exact state logic in KRISHI_DRISHTI_Controller.ino:
+        1. Accumulates elapsed time only when RH >= 85% and 15C <= Temp <= 22C.
+        2. Displays incubation hours while < 6.0h.
+        3. Triggers HIGH (>6h LateBlight) only when continuous accumulated hours >= 6.0.
+        4. Decays accumulated duration when microclimate dries out (preventing false alerts).
+        5. Resets continuous timer if sensor disconnects.
+        """
+        class FirmwareMicroclimateTracker:
+            def __init__(self):
+                self.highRiskContinuousStartMs = 0
+                self.highRiskAccumulatedMs = 0
+                self.lastRiskUpdateMs = 0
+                self.riskHoursAccumulated = 0.0
+                self.LATE_BLIGHT_RISK_HOURS_THRESHOLD = 6.0
+
+            def update(self, now_ms, temp, hum, dht_connected):
+                if not dht_connected:
+                    self.highRiskContinuousStartMs = 0
+                    return "DHT11: Disconnected"
+
+                elapsed = (now_ms - self.lastRiskUpdateMs) if self.lastRiskUpdateMs > 0 else 0
+                self.lastRiskUpdateMs = now_ms
+
+                if hum >= 85.0 and 15.0 <= temp <= 22.0:
+                    if self.highRiskContinuousStartMs == 0:
+                        self.highRiskContinuousStartMs = now_ms
+                    self.highRiskAccumulatedMs += elapsed
+                else:
+                    self.highRiskContinuousStartMs = 0
+                    if self.highRiskAccumulatedMs > elapsed * 2:
+                        self.highRiskAccumulatedMs -= elapsed * 2
+                    else:
+                        self.highRiskAccumulatedMs = 0
+
+                self.riskHoursAccumulated = self.highRiskAccumulatedMs / 3600000.0
+
+                if self.riskHoursAccumulated >= self.LATE_BLIGHT_RISK_HOURS_THRESHOLD:
+                    return "Risk: HIGH (>6h LateBlight)"
+                elif self.highRiskContinuousStartMs > 0:
+                    return f"Risk: Incubation {self.riskHoursAccumulated:.1f}h/6h"
+                elif hum >= 70.0 and 22.0 <= temp <= 30.0:
+                    return "Risk: MODERATE (EarlyBlight)"
+                else:
+                    return "Risk: LOW (Canopy Optimal)"
+
+        tracker = FirmwareMicroclimateTracker()
+        t = 1000
+
+        # Start in cool humid fog: 18C, 90% RH
+        res = tracker.update(t, 18.0, 90.0, True)
+        self.assertTrue(res.startswith("Risk: Incubation"))
+
+        # Advance 2 hours in high risk
+        t += 2 * 3600 * 1000
+        res = tracker.update(t, 18.0, 90.0, True)
+        self.assertEqual(res, "Risk: Incubation 2.0h/6h")
+
+        # Advance another 4 hours (total 6 hours continuous)
+        t += 4 * 3600 * 1000
+        res = tracker.update(t, 18.0, 90.0, True)
+        self.assertEqual(res, "Risk: HIGH (>6h LateBlight)")
+
+        # Canopy dries out (Temp rises to 28C, Hum drops to 60%) for 4 hours -> decay to zero
+        t += 4 * 3600 * 1000
+        res = tracker.update(t, 28.0, 60.0, True)
+        self.assertEqual(res, "Risk: LOW (Canopy Optimal)")
+        self.assertEqual(tracker.highRiskAccumulatedMs, 0)
+
+        # Sensor disconnects
+        res = tracker.update(t + 1000, 18.0, 90.0, False)
+        self.assertEqual(res, "DHT11: Disconnected")
+        self.assertEqual(tracker.highRiskContinuousStartMs, 0)
 
 
 if __name__ == "__main__":

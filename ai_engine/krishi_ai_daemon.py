@@ -62,7 +62,8 @@ class KrishiAIDaemon:
 
     def preprocess_image(self, pil_img):
         """
-        Resizes to 128x128 and normalizes to [-1, 1] matching MobileNetV3 training preprocessing.
+        Resizes to 128x128. Model contains internal mobilenet_v3.preprocess_input layer,
+        so input contract is raw float32 in [0.0, 255.0] range (identical to browser engine).
         """
         img = pil_img.convert("RGB").resize(IMAGE_SIZE, Image.BILINEAR)
         arr = np.array(img, dtype=np.float32)
@@ -75,18 +76,18 @@ class KrishiAIDaemon:
         if foliar_ratio < MIN_FOLIAR_RATIO:
             return None, foliar_ratio
         
-        # Scale to [-1, 1]
-        normalized = (arr / 127.5) - 1.0
-        
         if self.input_dtype == np.uint8 or self.input_dtype == np.int8:
             # Handle int8/uint8 quantized inputs if applicable
             scale, zero_point = self.input_details[0].get('quantization', (1.0, 0))
             if scale > 0:
-                normalized = np.clip(np.round(arr / scale) + zero_point, -128, 127).astype(self.input_dtype)
+                tensor_data = np.clip(np.round(arr / scale) + zero_point, -128, 127).astype(self.input_dtype)
+            else:
+                tensor_data = arr.astype(self.input_dtype)
         else:
-            normalized = normalized.astype(np.float32)
+            # Float32 model contract: raw [0.0, 255.0] pixels
+            tensor_data = arr.astype(np.float32)
             
-        tensor = np.expand_dims(normalized, axis=0)
+        tensor = np.expand_dims(tensor_data, axis=0)
         return tensor, foliar_ratio
 
     def run_inference(self, pil_img):
