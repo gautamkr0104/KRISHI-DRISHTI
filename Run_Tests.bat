@@ -23,7 +23,7 @@ if exist "D:\tools\krishi_ai_env\Scripts\python.exe" (
 )
 
 echo.
-echo [1/3] Running Python Automated Unit and Integration Tests...
+echo [1/4] Running Python Automated Unit and Integration Tests (11 Tests)...
 echo ----------------------------------------------------------------------
 %PYTHON_CMD% "%~dp0tests\test_ai_pipeline.py"
 if %errorlevel% neq 0 (
@@ -33,17 +33,27 @@ if %errorlevel% neq 0 (
 )
 
 echo.
-echo [2/3] Running TFLite Tensor and Real Inference Verification...
+echo [2/4] Running Production Daemon 8-Specimen & Gating Verification Audit...
 echo ----------------------------------------------------------------------
 %PYTHON_CMD% "%~dp0tests\verify_tflite_model.py"
 if %errorlevel% neq 0 (
-    echo [FAIL] TFLite verification encountered errors.
+    echo [FAIL] Production verification encountered errors.
     if "%1" neq "--no-pause" pause
     exit /b %errorlevel%
 )
 
 echo.
-echo [3/3] Checking for C++ Compiler for Native Firmware Module Tests...
+echo [3/4] Running Reproducible 60-Specimen Botanical Benchmark...
+echo ----------------------------------------------------------------------
+%PYTHON_CMD% "%~dp0tests\benchmark_60_specimens.py"
+if %errorlevel% neq 0 (
+    echo [FAIL] 60-specimen benchmark encountered errors.
+    if "%1" neq "--no-pause" pause
+    exit /b %errorlevel%
+)
+
+echo.
+echo [4/4] Checking for C++ Compiler for Native Firmware Module Tests...
 echo ----------------------------------------------------------------------
 where g++ >nul 2>&1
 if %errorlevel% equ 0 (

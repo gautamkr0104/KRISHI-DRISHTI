@@ -1,9 +1,10 @@
 {
-  "timestamp": "2026-11-09T13:11:33Z",
+  "timestamp": "2026-11-09T13:39:36Z",
   "model_file": "krishi_drishti_model.tflite",
   "file_size_bytes": 2104584,
   "sha256": "b20a6a12648ae13fde1689604c26e7b22a0ec25213e762dfcb1c3aac47725f1c",
   "runtime_backend": "TensorFlow 2.21.0",
+  "pipeline": "KrishiAIDaemon.run_inference (Full Production Method)",
   "tensors": {
     "input": {
       "name": "serving_default_leaf_rgb_input:0",
@@ -13,8 +14,7 @@
         128,
         3
       ],
-      "dtype": "<class 'numpy.float32'>",
-      "quantization": "(0.0, 0)"
+      "dtype": "<class 'numpy.float32'>"
     },
     "output": {
       "name": "StatefulPartitionedCall_1:0",
@@ -22,8 +22,7 @@
         1,
         6
       ],
-      "dtype": "<class 'numpy.float32'>",
-      "quantization": "(0.0, 0)"
+      "dtype": "<class 'numpy.float32'>"
     }
   },
   "softmax_sum_check": 1.0,
@@ -39,146 +38,104 @@
       "ground_truth": "Potato Early Blight",
       "predicted_class": "Potato Early Blight",
       "confidence_pct": 100.0,
-      "shannon_entropy": 0.0006,
-      "foliar_ratio": 0.526,
-      "decision": "ACCEPTED (High Certainty)",
-      "status": "INFECTED",
+      "decision": "ACCEPTED (WARNING)",
+      "status": "WARNING",
       "verified_match": true,
-      "latency_ms": 1.69,
-      "probabilities": {
-        "Tomato Late Blight": 0.0,
-        "Tomato Early Blight": 0.0,
-        "Tomato Healthy": 0.0,
-        "Potato Late Blight": 0.0,
-        "Potato Early Blight": 100.0,
-        "Potato Healthy": 0.0
-      }
+      "latency_ms": 10.68,
+      "pathogen": "Alternaria solani",
+      "organic_recommendation": "Crop rotation with non-solanaceous crops + Neem cake soil application.",
+      "chemical_recommendation": "Azoxystrobin 23% SC @ 1.0ml/L."
     },
     {
       "filename": "potato_healthy.jpg",
       "ground_truth": "Potato Healthy",
       "predicted_class": "Potato Healthy",
-      "confidence_pct": 99.77,
-      "shannon_entropy": 0.0183,
-      "foliar_ratio": 0.557,
-      "decision": "ACCEPTED (High Certainty)",
-      "status": "HEALTHY",
+      "confidence_pct": 99.8,
+      "decision": "ACCEPTED (OPTIMAL)",
+      "status": "OPTIMAL",
       "verified_match": true,
-      "latency_ms": 1.48,
-      "probabilities": {
-        "Tomato Late Blight": 0.0,
-        "Tomato Early Blight": 0.0,
-        "Tomato Healthy": 0.01,
-        "Potato Late Blight": 0.1,
-        "Potato Early Blight": 0.11,
-        "Potato Healthy": 99.77
-      }
+      "latency_ms": 7.37,
+      "pathogen": "None (Healthy Tissue)",
+      "organic_recommendation": "Regular earthing-up and balanced potassium application.",
+      "chemical_recommendation": "No chemical intervention needed."
     },
     {
       "filename": "potato_late_blight.jpg",
       "ground_truth": "Potato Late Blight",
       "predicted_class": "Potato Late Blight",
-      "confidence_pct": 99.99,
-      "shannon_entropy": 0.0008,
-      "foliar_ratio": 0.302,
-      "decision": "ACCEPTED (High Certainty)",
-      "status": "INFECTED",
+      "confidence_pct": 100.0,
+      "decision": "ACCEPTED (SEVERE)",
+      "status": "SEVERE",
       "verified_match": true,
-      "latency_ms": 1.5,
-      "probabilities": {
-        "Tomato Late Blight": 0.01,
-        "Tomato Early Blight": 0.0,
-        "Tomato Healthy": 0.0,
-        "Potato Late Blight": 99.99,
-        "Potato Early Blight": 0.0,
-        "Potato Healthy": 0.0
-      }
+      "latency_ms": 6.18,
+      "pathogen": "Phytophthora infestans",
+      "organic_recommendation": "Copper soap spray + destroy infected haulms 10 days before harvest.",
+      "chemical_recommendation": "Cymoxanil 8% + Mancozeb 64% WP @ 2.5g/L."
     },
     {
       "filename": "test_edge_ambient_surface.jpg",
       "ground_truth": "NON_FOLIAR_CONTROL",
       "predicted_class": "No Leaf Detected",
       "confidence_pct": 0.0,
-      "shannon_entropy": 0.0,
-      "foliar_ratio": 0.0,
-      "decision": "REJECTED (Non-Foliar / Insufficient Leaf Tissue)",
+      "decision": "REJECTED (No Leaf Detected)",
       "status": "UNCERTAIN",
       "verified_match": true,
-      "latency_ms": 0.1,
-      "probabilities": {}
+      "latency_ms": 2.65,
+      "pathogen": "Insufficient foliar tissue in frame",
+      "organic_recommendation": "Aim camera lens squarely at leaf surface",
+      "chemical_recommendation": "Ensure good ambient daylight"
     },
     {
       "filename": "test_edge_lens_cap.jpg",
       "ground_truth": "NON_FOLIAR_CONTROL",
       "predicted_class": "No Leaf Detected",
       "confidence_pct": 0.0,
-      "shannon_entropy": 0.0,
-      "foliar_ratio": 0.0,
-      "decision": "REJECTED (Non-Foliar / Insufficient Leaf Tissue)",
+      "decision": "REJECTED (No Leaf Detected)",
       "status": "UNCERTAIN",
       "verified_match": true,
-      "latency_ms": 0.1,
-      "probabilities": {}
+      "latency_ms": 9.77,
+      "pathogen": "Insufficient foliar tissue in frame",
+      "organic_recommendation": "Aim camera lens squarely at leaf surface",
+      "chemical_recommendation": "Ensure good ambient daylight"
     },
     {
       "filename": "tomato_early_blight.jpg",
       "ground_truth": "Tomato Early Blight",
       "predicted_class": "Tomato Early Blight",
-      "confidence_pct": 99.48,
-      "shannon_entropy": 0.0348,
-      "foliar_ratio": 0.739,
-      "decision": "ACCEPTED (High Certainty)",
-      "status": "INFECTED",
+      "confidence_pct": 99.5,
+      "decision": "ACCEPTED (WARNING)",
+      "status": "WARNING",
       "verified_match": true,
-      "latency_ms": 1.47,
-      "probabilities": {
-        "Tomato Late Blight": 0.09,
-        "Tomato Early Blight": 99.48,
-        "Tomato Healthy": 0.0,
-        "Potato Late Blight": 0.43,
-        "Potato Early Blight": 0.0,
-        "Potato Healthy": 0.0
-      }
+      "latency_ms": 6.92,
+      "pathogen": "Alternaria solani",
+      "organic_recommendation": "Baking soda 5g/L spray + compost tea soil amendment.",
+      "chemical_recommendation": "Chlorothalonil 75% WP @ 2.0g/L or Copper Oxychloride @ 3.0g/L."
     },
     {
       "filename": "tomato_healthy.jpg",
       "ground_truth": "Tomato Healthy",
       "predicted_class": "Tomato Healthy",
-      "confidence_pct": 99.99,
-      "shannon_entropy": 0.0009,
-      "foliar_ratio": 0.499,
-      "decision": "ACCEPTED (High Certainty)",
-      "status": "HEALTHY",
+      "confidence_pct": 100.0,
+      "decision": "ACCEPTED (OPTIMAL)",
+      "status": "OPTIMAL",
       "verified_match": true,
-      "latency_ms": 1.56,
-      "probabilities": {
-        "Tomato Late Blight": 0.0,
-        "Tomato Early Blight": 0.0,
-        "Tomato Healthy": 99.99,
-        "Potato Late Blight": 0.0,
-        "Potato Early Blight": 0.0,
-        "Potato Healthy": 0.0
-      }
+      "latency_ms": 17.12,
+      "pathogen": "None (Healthy Tissue)",
+      "organic_recommendation": "Maintain balanced NPK fertilizer and drip irrigation schedule.",
+      "chemical_recommendation": "No chemical intervention needed."
     },
     {
       "filename": "tomato_late_blight.jpg",
       "ground_truth": "Tomato Late Blight",
       "predicted_class": "Tomato Late Blight",
-      "confidence_pct": 99.89,
-      "shannon_entropy": 0.0087,
-      "foliar_ratio": 0.233,
-      "decision": "ACCEPTED (High Certainty)",
-      "status": "INFECTED",
+      "confidence_pct": 99.9,
+      "decision": "ACCEPTED (SEVERE)",
+      "status": "SEVERE",
       "verified_match": true,
-      "latency_ms": 1.48,
-      "probabilities": {
-        "Tomato Late Blight": 99.89,
-        "Tomato Early Blight": 0.01,
-        "Tomato Healthy": 0.1,
-        "Potato Late Blight": 0.0,
-        "Potato Early Blight": 0.0,
-        "Potato Healthy": 0.0
-      }
+      "latency_ms": 14.55,
+      "pathogen": "Phytophthora infestans",
+      "organic_recommendation": "Neem Oil 5ml/L + Trichoderma viride drench. Prune infected leaves.",
+      "chemical_recommendation": "Mancozeb 75% WP @ 2.5g/L or Ridomil Gold @ 2.0g/L."
     }
   ]
 }

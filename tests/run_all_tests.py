@@ -1,7 +1,11 @@
 """
 KRISHI-DRISHTI :: Cross-Platform Test & Verification Master Runner
 ------------------------------------------------------------------
-Executes all validation suites across Windows, Linux, and macOS.
+Executes all validation suites across Windows, Linux, and macOS:
+1. Unit & Integration Suite (11 tests)
+2. Production Daemon 8-Specimen & Gating Audit
+3. Reproducible 60-Specimen Botanical Benchmark
+4. Native C++ MicroclimateTracker Unit Test Harness
 """
 
 import os
@@ -13,32 +17,41 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PYTHON_EXE = sys.executable
 
 def main():
-    print("=" * 70)
-    print("KRISHI-DRISHTI :: MASTER TEST & VERIFICATION SUITE")
-    print("=" * 70)
+    print("=" * 75)
+    print("  KRISHI-DRISHTI :: COMPREHENSIVE MASTER TEST & VERIFICATION SUITE")
+    print("=" * 75)
     print(f"[*] Python Interpreter: {PYTHON_EXE}")
 
     # 1. Run Unit & Integration Suite
-    print("\n[1/3] Running Python Automated Unit & Integration Suite...")
-    print("-" * 70)
+    print("\n[1/4] Running Python Automated Unit & Integration Suite (11 Tests)...")
+    print("-" * 75)
     test_pipeline = os.path.join(REPO_ROOT, "tests", "test_ai_pipeline.py")
     res1 = subprocess.run([PYTHON_EXE, test_pipeline])
     if res1.returncode != 0:
         print("[FAIL] Automated unit test suite failed.")
         sys.exit(res1.returncode)
 
-    # 2. Run TFLite Model & Runtime Verification
-    print("\n[2/3] Running TFLite Tensor & Real Inference Verification...")
-    print("-" * 70)
+    # 2. Run Production Daemon Verification Audit
+    print("\n[2/4] Running Production Daemon 8-Specimen & Gating Verification Audit...")
+    print("-" * 75)
     verify_script = os.path.join(REPO_ROOT, "tests", "verify_tflite_model.py")
     res2 = subprocess.run([PYTHON_EXE, verify_script])
     if res2.returncode != 0:
         print("[FAIL] TFLite verification script failed.")
         sys.exit(res2.returncode)
 
-    # 3. Check for Native C++ Compiler
-    print("\n[3/3] Checking for C++ Compiler for Native Firmware Unit Tests...")
-    print("-" * 70)
+    # 3. Run 60-Specimen Botanical Benchmark
+    print("\n[3/4] Running Reproducible 60-Specimen Botanical Benchmark...")
+    print("-" * 75)
+    bench_script = os.path.join(REPO_ROOT, "tests", "benchmark_60_specimens.py")
+    res3 = subprocess.run([PYTHON_EXE, bench_script])
+    if res3.returncode != 0:
+        print("[FAIL] 60-specimen benchmark script failed.")
+        sys.exit(res3.returncode)
+
+    # 4. Check for Native C++ Compiler
+    print("\n[4/4] Checking for C++ Compiler for Native Firmware Unit Tests...")
+    print("-" * 75)
     compiler = shutil.which("g++") or shutil.which("clang++")
     if compiler:
         print(f"[*] Native compiler detected: {compiler}")
@@ -63,9 +76,9 @@ def main():
     else:
         print("[INFO] No C++ compiler (g++/clang++) found in PATH. Architecture verified by Python tests.")
 
-    print("\n" + "=" * 70)
-    print("[SUCCESS] ALL KRISHI-DRISHTI TEST AND VERIFICATION SUITES PASSED!")
-    print("=" * 70)
+    print("\n" + "=" * 75)
+    print("  [SUCCESS] ALL KRISHI-DRISHTI MASTER VERIFICATION SUITES PASSED!")
+    print("=" * 75)
 
 if __name__ == "__main__":
     main()

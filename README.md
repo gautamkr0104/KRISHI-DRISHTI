@@ -69,26 +69,28 @@ KRISHI-DRISHTI/
 │   └── KRISHI_DRISHTI_Controller/
 │       └── KRISHI_DRISHTI_Controller.ino   # Controller wand firmware v2.2 (Real Wi-Fi + OLED + DHT11)
 ├── ai_engine/
-│   ├── krishi_ai_server.html       # Headless offline AI daemon for Android (Bundled WASM TFLite)
-│   ├── krishi_ai_daemon.py         # Headless Python AI daemon for Termux/Android/PC
-│   ├── krishi_drishti_model.tflite # Optimized MobileNetV3 Float16 model (2.01 MB, 10.54 ms latency)
+│   ├── krishi_drishti_model.tflite # INT8 Quantized MobileNetV3-Small (2.01 MB)
+│   ├── krishi_ai_server.html       # Offline browser AI engine & live telemetry dashboard
+│   ├── krishi_ai_daemon.py         # Standalone headless edge Python daemon
 │   ├── model_evaluation_report.json# Full empirical metrics, confusion matrix & PlantDoc evaluation
-│   ├── train_model.py              # Two-stage MobileNetV3 training pipeline
-│   ├── export_and_evaluate.py      # TFLite quantization and evaluation script
 │   ├── labels.json                 # Strict 1:1 disease taxonomy, organic & chemical dosages
+│   ├── sample_leaves/              # Canonical macro foliar targets & non-foliar edge controls
+│   ├── validation_60_specimens/    # Bundled 60-specimen ground-truth dataset (10 per class)
 │   └── vendor/                     # Bundled 100% offline JS & WASM TFLite browser runtimes
 ├── tests/
 │   ├── test_ai_pipeline.py         # Automated hardware-independent test suite (11 Unit & Integration tests)
 │   ├── test_microclimate_tracker.cpp# Native C++ unit test harness (-Wall -Wextra -Werror compliant)
-│   ├── verify_tflite_model.py      # Standalone TFLite model contract & live inference verifier
+│   ├── verify_tflite_model.py      # Production daemon inference & gating verification audit
+│   ├── benchmark_60_specimens.py   # Reproducible 60-specimen botanical validation benchmark
 │   ├── run_all_tests.py            # Master cross-platform test runner
+│   ├── benchmark_60_specimens_report.json # Full 60-specimen empirical benchmark results
 │   └── tflite_model_verification_audit.json # Cryptographic audit log (SHA-256, tensor shapes, latencies)
 ├── Run_Tests.bat                   # 1-Click test execution batch script for Windows
 ├── Launch_NIF_Assistant.bat        # 1-Click launch for NIF patent documentation
 └── docs/
     ├── System_Architecture_Report.md# In-depth architectural & pathological specification
     ├── Wiring_Schematic_Pinout.md  # Detailed circuit schematics and pin connection tables
-    ├── Two_Leaf_Repeatability_Demonstration_Protocol.md # Standardized physical judge demo protocol
+    ├── Two_Leaf_Repeatability_Demonstration_Protocol.md # 50-condition multi-factor physical demo protocol
     ├── NIF_Patent_Application_Docket.md # Formal patent documentation (Form 1, 2, 8, 9, 18)
     └── KRISHI_DRISHTI_Exhibition_Presentation.pptx # Professional science exhibition slide deck
 ```
@@ -136,16 +138,19 @@ Double-click `Run_Tests.bat` in the repository root.
 
 ### Command-Line Execution:
 ```bash
-# 1. Master cross-platform test runner (Unit tests + TFLite audit + C++ harness)
+# 1. Master cross-platform test runner (All 4 verification suites)
 python tests/run_all_tests.py
 
 # 2. Python automated unit & integration suite (11 tests)
 python -m unittest discover -s tests -p "test_*.py"
 
-# 3. Standalone TFLite model contract & inference audit
+# 3. Production daemon 8-specimen & gating verification audit
 python tests/verify_tflite_model.py
 
-# 4. Native C++ MicroclimateTracker firmware unit tests (Zero-warning compilation)
+# 4. Reproducible 60-specimen botanical benchmark (10 per class)
+python tests/benchmark_60_specimens.py
+
+# 5. Native C++ MicroclimateTracker firmware unit tests (Zero-warning compilation)
 g++ -Wall -Wextra -Werror -std=c++11 tests/test_microclimate_tracker.cpp firmware/KRISHI_DRISHTI_Controller/MicroclimateTracker.cpp -o test_tracker && ./test_tracker
 ```
 
