@@ -20,6 +20,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <DHT.h>
+#include "MicroclimateTracker.h"
 #include <ArduinoJson.h>
 #include "esp_private/brownout.h"
 #include "soc/soc.h"
@@ -107,12 +108,8 @@ unsigned long lastAiPollMs = 0;
 const unsigned long AI_TIMEOUT_MS = 14000;
 const unsigned long AI_POLL_INTERVAL_MS = 1000;
 
-// Microclimate Epidemiological Duration Tracker (Phytophthora Late Blight Incubation)
-unsigned long highRiskContinuousStartMs = 0;
-unsigned long highRiskAccumulatedMs = 0;
-unsigned long lastRiskUpdateMs = 0;
-float riskHoursAccumulated = 0.0f;
-const float LATE_BLIGHT_RISK_HOURS_THRESHOLD = 6.0f;
+// Modular Microclimate Epidemiological Risk Tracker (Duration with Drying-Decay)
+MicroclimateTracker microclimateTracker(6.0f);
 
 // Wi-Fi Status Tracking
 bool wifiConnected = false;
@@ -189,18 +186,7 @@ void renderPage1_Canopy() {
     display.printf("Hum : %.1f %% RH", currentHum);
 
     display.setCursor(0, 36);
-    // Scientifically documented Plant Disease Triangle duration-based rule:
-    if (riskHoursAccumulated >= LATE_BLIGHT_RISK_HOURS_THRESHOLD) {
-      display.print("Risk: HIGH (>6h LateBlight)");
-    } else if (highRiskContinuousStartMs > 0) {
-      display.printf("Risk: Incubation %.1fh/6h", riskHoursAccumulated);
-    } else if (currentHum >= 70.0 && currentTemp >= 22.0 && currentTemp <= 30.0) {
-      display.print("Risk: MODERATE (EarlyBlight)");
-    } else if (currentHum >= 60.0) {
-      display.print("Risk: MONITOR CANOPY");
-    } else {
-      display.print("Risk: LOW (Canopy Optimal)");
-    }
+    display.print(microclimateTracker.getRiskStatusString());
   } else {
     display.setCursor(0, 15);
     display.print("DHT11: Disconnected");
@@ -298,33 +284,11 @@ void readSensors() {
       currentHum = h;
       currentTemp = t;
       dhtConnected = true;
-
-      // Epidemiological Duration Tracking:
-      // Phytophthora infestans (Late Blight) requires sustained RH >= 85% and Temp 15°C - 22°C
-      // for at least 6 continuous hours to germinate and establish infection.
-      unsigned long now = millis();
-      unsigned long elapsed = (lastRiskUpdateMs > 0) ? (now - lastRiskUpdateMs) : 0;
-      lastRiskUpdateMs = now;
-
-      if (currentHum >= 85.0 && currentTemp >= 15.0 && currentTemp <= 22.0) {
-        if (highRiskContinuousStartMs == 0) {
-          highRiskContinuousStartMs = now;
-        }
-        highRiskAccumulatedMs += elapsed;
-      } else {
-        highRiskContinuousStartMs = 0;
-        // Gradual decay when microclimate dries out
-        if (highRiskAccumulatedMs > elapsed * 2) {
-          highRiskAccumulatedMs -= elapsed * 2;
-        } else {
-          highRiskAccumulatedMs = 0;
-        }
-      }
-      riskHoursAccumulated = (float)highRiskAccumulatedMs / 3600000.0f;
     } else {
       dhtConnected = false;
-      highRiskContinuousStartMs = 0;
     }
+    // Update modular C++ microclimate duration tracker
+    microclimateTracker.update(millis(), currentTemp, currentHum, dhtConnected);
   }
 }
 

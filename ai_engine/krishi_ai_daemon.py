@@ -76,13 +76,20 @@ class KrishiAIDaemon:
         if foliar_ratio < MIN_FOLIAR_RATIO:
             return None, foliar_ratio
         
-        if self.input_dtype == np.uint8 or self.input_dtype == np.int8:
-            # Handle int8/uint8 quantized inputs if applicable
+        if self.input_dtype == np.uint8:
+            # Unsigned 8-bit quantized inputs: range [0, 255]
             scale, zero_point = self.input_details[0].get('quantization', (1.0, 0))
             if scale > 0:
-                tensor_data = np.clip(np.round(arr / scale) + zero_point, -128, 127).astype(self.input_dtype)
+                tensor_data = np.clip(np.round(arr / scale) + zero_point, 0, 255).astype(np.uint8)
             else:
-                tensor_data = arr.astype(self.input_dtype)
+                tensor_data = np.clip(np.round(arr), 0, 255).astype(np.uint8)
+        elif self.input_dtype == np.int8:
+            # Signed 8-bit quantized inputs: range [-128, 127]
+            scale, zero_point = self.input_details[0].get('quantization', (1.0, 0))
+            if scale > 0:
+                tensor_data = np.clip(np.round(arr / scale) + zero_point, -128, 127).astype(np.int8)
+            else:
+                tensor_data = np.clip(np.round(arr - 128.0), -128, 127).astype(np.int8)
         else:
             # Float32 model contract: raw [0.0, 255.0] pixels
             tensor_data = arr.astype(np.float32)
