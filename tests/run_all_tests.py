@@ -137,7 +137,15 @@ def main():
             skipped_count += 1
             print("[SKIPPED] PlantDoc external image corpus not present locally.")
             print("          Archived empirical audit verified in: tests/plantdoc_benchmark_audit.json")
-            print("          Metrics: 487 images | Raw: 48.05% (234/487) | Accepted: 72.00% (234/325) | Gated: 162/487 (33.26%)")
+            pd_audit_file = os.path.join(REPO_ROOT, "tests", "plantdoc_benchmark_audit.json")
+            if os.path.exists(pd_audit_file):
+                try:
+                    with open(pd_audit_file, "r", encoding="utf-8") as pf:
+                        pdata = json.load(pf)
+                        hout = pdata.get("held_out_unseen_outdoor_test", {})
+                        print(f"          Metrics: {hout.get('total_evaluated_unique_images', 93)} held-out images | Raw: {hout.get('raw_accuracy_pct', 0.0)}% | Accepted: {hout.get('accepted_frame_triage', {}).get('accepted_accuracy_pct', 0.0)}% | Gated: {hout.get('dual_stage_gating', {}).get('gated_pct', 0.0)}%")
+                except Exception:
+                    pass
         else:
             plantdoc_status = "FAILED"
             failed_count += 1
@@ -197,10 +205,24 @@ def main():
         except Exception:
             pass
     print(f"  [PASS]    5. Cryptographic & Perceptual Dataset Overlap Audit ({indep_str})")
+    pd_json = os.path.join(REPO_ROOT, "tests", "plantdoc_benchmark_audit.json")
+    pd_str = "Held-out unseen test partition & 487-image corpus audited"
+    if os.path.exists(pd_json):
+        try:
+            with open(pd_json, "r", encoding="utf-8") as pdf:
+                pdata = json.load(pdf)
+                hout = pdata.get("held_out_unseen_outdoor_test", {})
+                tot_u = hout.get("total_evaluated_unique_images", 93)
+                raw_pct = hout.get("raw_accuracy_pct", 0.0)
+                acc_obj = hout.get("accepted_frame_triage", {})
+                acc_pct = acc_obj.get("accepted_accuracy_pct", 0.0)
+                pd_str = f"{tot_u} Unique Held-Out Images: {raw_pct}% Raw / {acc_pct}% Accepted Diagnostic"
+        except Exception:
+            pass
     if plantdoc_status == "PASSED":
-        print("  [PASS]    6. PlantDoc Outdoor Benchmark (487 Images freshly executed on local corpus)")
+        print(f"  [PASS]    6. PlantDoc Outdoor Benchmark ({pd_str})")
     elif plantdoc_status == "SKIPPED":
-        print("  [SKIPPED] 6. PlantDoc Outdoor Benchmark (External corpus skipped locally; historical 487-image audit archived)")
+        print(f"  [SKIPPED] 6. PlantDoc Outdoor Benchmark (External corpus skipped locally; {pd_str})")
     else:
         print("  [FAILED]  6. PlantDoc Outdoor Benchmark (Execution encountered error)")
     print("=" * 80)

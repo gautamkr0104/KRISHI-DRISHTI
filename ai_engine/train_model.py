@@ -1,21 +1,27 @@
 """
-KRISHI-DRISHTI: Dual-Domain Edge AI Training & Quantization Pipeline
-----------------------------------------------------------------------
+KRISHI-DRISHTI :: Production Dual-Domain Edge AI Training Pipeline
+Author: Gautam Kumar / KRISHI-DRISHTI Project
+----------------------------------------------------------------------------------------
 Architecture: MobileNetV3-Small (Two-Phase Fine-Tuning + Float16 PTQ)
 Target Hardware: Edge Devices (Samsung Galaxy A03 / Cortex-A55, < 40 ms budget)
-Datasets:
-  1. PlantVillage (New Plant Diseases Dataset Augmented, Solanaceae Partition)
-     - Clean baseline foliar representations across 6 Solanaceae classes
-     - 60 Ground-Truth benchmark specimens strictly excluded via SHA-256 hashes
-  2. PlantDoc Outdoor Solanaceae Partition
-     - 80% Train Split (~391 images) for outdoor canopy domain adaptation
-     - 20% Held-Out Test Split (96 images) strictly excluded via PLANTDOC_HOLDOUT_MANIFEST.json
-  3. Canonical Reference Leaves (ai_engine/sample_leaves)
-  4. Real-World Nocturnal Tomato Field Leaves (ai_engine/field_test_images)
+
+Cryptographic Zero-Leakage Boundaries:
+1. PlantVillage: 6,600 clean foliar samples (1,100 per class)
+   - Excludes all 60 botanical validation benchmark hashes (ai_engine/validation_60_specimens)
+   - Excludes all 10 real-world field test hashes (ai_engine/field_test_images)
+   - Excludes all 8 canonical sample leaves hashes (ai_engine/sample_leaves)
+2. PlantDoc Outdoor Solanaceae Partition:
+   - 80% Train Split (380 clean unique images, replicated 3x = 1,140 samples)
+   - 20% Held-Out Test Split (93 unique clean images) strictly excluded via PLANTDOC_HOLDOUT_MANIFEST.json
+   - 5 conflicting cross-class duplicate hashes excluded completely to eliminate label noise
+3. Zero Test Images in Training:
+   - Zero images from validation_60_specimens are added to training
+   - Zero images from field_test_images are added to training
+   - Zero images from sample_leaves are added to training
 
 Outputs:
-  - Quantized TFLite Model: ai_engine/krishi_drishti_model.tflite (~2.03 MB)
-  - Zero-overlap cryptographically verifiable training provenance
+  - Model Artifact: ai_engine/krishi_drishti_model.tflite (~2.03 MB)
+  - Provenance Manifest: ai_engine/PLANTDOC_HOLDOUT_MANIFEST.json
 """
 
 import os
@@ -25,6 +31,7 @@ import json
 import random
 import hashlib
 from pathlib import Path
+from collections import defaultdict
 import numpy as np
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -51,32 +58,46 @@ CLASS_NAMES = [
 ]
 CLASS_TO_IDX = {c: i for i, c in enumerate(CLASS_NAMES)}
 
-def load_excluded_hashes():
-    """Loads all SHA-256 hashes that must be strictly excluded from training."""
-    excluded = set()
-    
-    # 1. 60 Botanical Benchmark specimens
-    bench_dir = REPO_ROOT / "ai_engine" / "validation_60_specimens"
-    if bench_dir.exists():
-        for f in bench_dir.glob("*/*.*"):
-            if f.suffix.lower() in [".jpg", ".jpeg", ".png"]:
-                excluded.add(hashlib.sha256(f.read_bytes()).hexdigest())
-                
-    # 2. PlantDoc 20% Held-Out Test specimens
-    manifest_path = REPO_ROOT / "ai_engine" / "PLANTDOC_HOLDOUT_MANIFEST.json"
-    if manifest_path.exists():
-        try:
-            with open(manifest_path, "r", encoding="utf-8") as mf:
-                mdata = json.load(mf)
-                for item in mdata.get("held_out_test_specimens", []):
-                    excluded.add(item["sha256"])
-        except Exception as e:
-            print(f"[WARN] Error loading holdout manifest: {e}")
-            
-    return excluded
+def main():
+    print("=" * 80)
+    print("  KRISHI-DRISHTI :: PRODUCTION STRICT ZERO-LEAKAGE DUAL-DOMAIN TRAINING")
+    print("=" * 80)
 
-def build_training_dataset(excluded_hashes):
-    """Assembles the dual-domain training paths and labels with zero test leakage."""
+    # 1. Collect Evaluation Hashes for Master Blacklist
+    bench_dir = REPO_ROOT / "ai_engine" / "validation_60_specimens"
+    field_dir = REPO_ROOT / "ai_engine" / "field_test_images"
+    sample_dir = REPO_ROOT / "ai_engine" / "sample_leaves"
+
+    bench_hashes = set(hashlib.sha256(f.read_bytes()).hexdigest() for f in bench_dir.glob("*/*.*") if f.suffix.lower() in [".jpg", ".jpeg", ".png"])
+    field_hashes = set(hashlib.sha256(f.read_bytes()).hexdigest() for f in field_dir.glob("*.*") if f.suffix.lower() in [".jpg", ".jpeg", ".png"])
+    sample_hashes = set(hashlib.sha256(f.read_bytes()).hexdigest() for f in sample_dir.glob("*.*") if f.suffix.lower() in [".jpg", ".jpeg", ".png"])
+
+    print(f"[+] Loaded {len(bench_hashes)} 60-specimen benchmark hashes")
+    print(f"[+] Loaded {len(field_hashes)} real-world field test hashes")
+    print(f"[+] Loaded {len(sample_hashes)} canonical sample leaves hashes")
+
+    # 2. Build Clean PlantDoc Hash Partition
+    manifest_path = REPO_ROOT / "ai_engine" / "PLANTDOC_HOLDOUT_MANIFEST.json"
+    if not manifest_path.exists():
+        print(f"[FAIL] Holdout manifest missing at: {manifest_path}")
+        print("       Run manifest generation to ensure strict hash-level train/test separation.")
+        return 1
+
+    with open(manifest_path, "r", encoding="utf-8") as mf:
+        mdata = json.load(mf)
+
+    plantdoc_test_specimens = mdata.get("held_out_test_specimens", [])
+    plantdoc_train_specimens = mdata.get("train_specimens", [])
+    conflicting_hashes = set(mdata.get("conflicting_hashes", []))
+
+    plantdoc_test_hashes = set(x["sha256"] for x in plantdoc_test_specimens)
+    print(f"[+] PlantDoc Manifest: {len(plantdoc_train_specimens)} TRAIN | {len(plantdoc_test_specimens)} HELD-OUT TEST")
+
+    # Master Blacklist: Zero test or benchmark data can EVER enter training
+    master_blacklist = bench_hashes.union(field_hashes).union(sample_hashes).union(plantdoc_test_hashes).union(conflicting_hashes)
+    print(f"[+] MASTER BLACKLIST FOR TRAINING: {len(master_blacklist)} unique hashes strictly forbidden from training.")
+
+    # 3. Assemble Pure Training Dataset
     pv_train_dir = Path(r"C:\Users\DELL\.cache\kagglehub\datasets\vipoooool\new-plant-diseases-dataset\versions\2\New Plant Diseases Dataset(Augmented)\New Plant Diseases Dataset(Augmented)\train")
     if not pv_train_dir.exists():
         pv_train_dir = REPO_ROOT / "ai_engine" / "PlantVillage_Train"
@@ -88,7 +109,7 @@ def build_training_dataset(excluded_hashes):
     np.random.seed(42)
     tf.random.set_seed(42)
 
-    # 1. PlantVillage Clean Foliar Samples (1,100 per class)
+    # (A) PlantVillage Clean Samples (1,100 per class, zero blacklist overlap)
     if pv_train_dir.exists():
         for cname in CLASS_NAMES:
             cdir = pv_train_dir / cname
@@ -97,75 +118,38 @@ def build_training_dataset(excluded_hashes):
                 clean_files = [
                     f for f in files 
                     if f.suffix.lower() in [".jpg", ".jpeg", ".png"] 
-                    and hashlib.sha256(f.read_bytes()).hexdigest() not in excluded_hashes
+                    and hashlib.sha256(f.read_bytes()).hexdigest() not in master_blacklist
                 ]
                 selected = random.sample(clean_files, min(len(clean_files), 1100))
                 for sf in selected:
                     all_paths.append(str(sf))
                     all_labels.append(CLASS_TO_IDX[cname])
-                print(f"  [+] PlantVillage {cname:<24}: {len(selected)} samples (zero holdout overlap)")
+                print(f"  [PV Clean Train] {cname:<24}: {len(selected)} samples (zero blacklist overlap)")
 
-    # 2. PlantDoc 80% Outdoor Train Split
-    plantdoc_dir = Path(r"C:\Users\DELL\.cache\PlantDoc_Solanaceae")
-    if not plantdoc_dir.exists():
-        plantdoc_dir = REPO_ROOT / "ai_engine" / "PlantDoc_Solanaceae"
+    # (B) PlantDoc Clean Train Split (replicated 3x, zero test overlap)
+    for item in plantdoc_train_specimens:
+        assert item["sha256"] not in master_blacklist, f"LEAK DETECTED: {item['filename']}"
+        if item["class"] in CLASS_TO_IDX:
+            c_idx = CLASS_TO_IDX[item["class"]]
+            for _ in range(3):
+                all_paths.append(item["path"])
+                all_labels.append(c_idx)
 
-    if plantdoc_dir.exists():
-        pd_count = 0
-        for folder in plantdoc_dir.iterdir():
-            if folder.is_dir() and folder.name in CLASS_TO_IDX:
-                c_idx = CLASS_TO_IDX[folder.name]
-                for f in folder.glob("*.*"):
-                    if f.suffix.lower() in [".jpg", ".jpeg", ".png"]:
-                        sha = hashlib.sha256(f.read_bytes()).hexdigest()
-                        if sha not in excluded_hashes:
-                            # Replicate 3x to balance outdoor canopy domain representation
-                            for _ in range(3):
-                                all_paths.append(str(f))
-                                all_labels.append(c_idx)
-                            pd_count += 1
-        print(f"  [+] PlantDoc Outdoor Train Split       : {pd_count} images (replicated 3x = {pd_count * 3})")
+    print(f"  [PlantDoc Clean Train] {len(plantdoc_train_specimens)} unique outdoor images added (replicated 3x = {len(plantdoc_train_specimens)*3})")
 
-    # 3. Canonical References & Nocturnal In-Domain Samples
-    sample_dir = REPO_ROOT / "ai_engine" / "sample_leaves"
-    sample_map = {
-        "tomato_late_blight.jpg": "Tomato___Late_blight",
-        "tomato_early_blight.jpg": "Tomato___Early_blight",
-        "tomato_healthy.jpg": "Tomato___healthy",
-        "potato_late_blight.jpg": "Potato___Late_blight",
-        "potato_early_blight.jpg": "Potato___Early_blight",
-        "potato_healthy.jpg": "Potato___healthy",
-    }
-    for sname, cname in sample_map.items():
-        sp = sample_dir / sname
-        if sp.exists():
-            for _ in range(20):
-                all_paths.append(str(sp))
-                all_labels.append(CLASS_TO_IDX[cname])
+    # STRICT AUDIT: Verify ZERO master_blacklist hashes exist in training!
+    print("\n[*] Auditing training paths against master blacklist...")
+    leak_count = 0
+    for p in all_paths:
+        h = hashlib.sha256(Path(p).read_bytes()).hexdigest()
+        if h in master_blacklist:
+            print(f"[CRITICAL ERROR] Leaked hash in training: {p}")
+            leak_count += 1
 
-    field_dir = REPO_ROOT / "ai_engine" / "field_test_images"
-    if field_dir.exists():
-        for f in field_dir.glob("V261110-1915*.jpg"):
-            for _ in range(15):
-                all_paths.append(str(f))
-                all_labels.append(CLASS_TO_IDX["Tomato___healthy"])
+    assert leak_count == 0, f"Found {leak_count} leaked hashes!"
+    print("[OK] ZERO LEAKAGE VERIFIED! Not a single benchmark, field, canonical, or test image exists in training.")
 
-    print(f"\n[+] Total Combined Training Corpus: {len(all_paths)} images")
-    return all_paths, all_labels
-
-def main():
-    print("=" * 80)
-    print("  KRISHI-DRISHTI :: PRODUCTION DUAL-DOMAIN TRAINING & QUANTIZATION PIPELINE")
-    print("  Zero-Leakage Cryptographically Audited Architecture")
-    print("=" * 80)
-
-    excluded_hashes = load_excluded_hashes()
-    print(f"[+] Total Strictly Excluded Test Hashes: {len(excluded_hashes)}")
-
-    all_paths, all_labels = build_training_dataset(excluded_hashes)
-    if len(all_paths) == 0:
-        print("[ERROR] No training images found!")
-        return 1
+    print(f"\n[+] Total Pure Training Corpus: {len(all_paths)} images")
 
     combined = list(zip(all_paths, all_labels))
     random.shuffle(combined)
@@ -243,7 +227,7 @@ def main():
     with open(out_path, "wb") as f:
         f.write(tflite_bytes)
 
-    print(f"[OK] Production TFLite model successfully written to: {out_path}")
+    print(f"[OK] Pure Zero-Leakage TFLite model successfully written to: {out_path}")
     print(f"     Size: {len(tflite_bytes):,} bytes ({len(tflite_bytes)/(1024*1024):.2f} MB)")
     print(f"     SHA-256: {hashlib.sha256(tflite_bytes).hexdigest()}")
     return 0
