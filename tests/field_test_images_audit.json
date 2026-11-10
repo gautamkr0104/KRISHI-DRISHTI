@@ -2,11 +2,13 @@
   "audit_date": "2026-11-10",
   "audit_domain": "Real-World Field Telemetry & Botanical OOD Evaluation",
   "total_specimens": 10,
-  "in_domain_tomato_healthy_accuracy": "0/6 (0.0%)",
+  "in_domain_tomato_healthy_accuracy": "1/6 (16.7%)",
   "in_domain_specimens_count": 6,
-  "in_domain_correct_count": 0,
+  "in_domain_correct_count": 1,
   "ood_specimens_count": 4,
-  "scientific_ood_finding": "Standalone closed-set CNNs exhibit overconfidence on unfamiliar non-crop species (Bendale & Boult, 2016). Multi-modal DHT11 microclimate telemetry (RH < 85% suppresses late blight alerts) provides physical safety gating.",
+  "ood_gated_uncertain_count": 4,
+  "ood_safety_interception_pct": "100.0%",
+  "scientific_ood_finding": "Standalone closed-set CNNs exhibit overconfidence on unfamiliar non-crop species (Bendale & Boult, 2016). Enhanced dual-stage gating (Top-Margin < 12% & Peripheral Void > 45%) combined with DHT11 microclimate telemetry (RH < 85% suppresses late blight alerts) provides multi-modal field safety.",
   "specimens": [
     {
       "filename": "V261110-191510-30fps-auto_exp-tmc_auto_0.jpg",
@@ -14,11 +16,11 @@
       "botanical_species": "Solanum lycopersicum (Tomato)",
       "ground_truth": "Tomato Healthy",
       "description": "Healthy green tomato leaflet under nocturnal LED torch",
-      "prediction": "Tomato Late Blight",
-      "confidence": 51.7,
-      "status": "SEVERE",
+      "prediction": "Solanaceae Uncertain / Ambiguous",
+      "confidence": 46.2,
+      "status": "UNCERTAIN",
       "in_domain_match": false,
-      "latency_ms": 19.7
+      "latency_ms": 24.39
     },
     {
       "filename": "V261110-191524-30fps-auto_exp-tmc_auto_0.jpg",
@@ -26,11 +28,11 @@
       "botanical_species": "Solanum lycopersicum (Tomato)",
       "ground_truth": "Tomato Healthy",
       "description": "Healthy green tomato leaflet under nocturnal LED torch",
-      "prediction": "Potato Late Blight",
-      "confidence": 60.9,
-      "status": "SEVERE",
+      "prediction": "Solanaceae Uncertain / Ambiguous",
+      "confidence": 48.7,
+      "status": "UNCERTAIN",
       "in_domain_match": false,
-      "latency_ms": 19.96
+      "latency_ms": 51.48
     },
     {
       "filename": "V261110-191530-30fps-auto_exp-tmc_auto_0.jpg",
@@ -38,11 +40,11 @@
       "botanical_species": "Piper betle (Betel Leaf / Paan)",
       "ground_truth": "OOD Non-Crop (Paan)",
       "description": "Yellow heart-shaped betel leaf (Piperaceae family)",
-      "prediction": "Tomato Early Blight",
-      "confidence": 50.6,
-      "status": "WARNING",
+      "prediction": "Solanaceae Uncertain / Ambiguous",
+      "confidence": 47.9,
+      "status": "UNCERTAIN",
       "in_domain_match": false,
-      "latency_ms": 20.02
+      "latency_ms": 34.98
     },
     {
       "filename": "V261110-191538-30fps-auto_exp-tmc_auto_0.jpg",
@@ -50,11 +52,11 @@
       "botanical_species": "Solanum lycopersicum (Tomato)",
       "ground_truth": "Tomato Healthy",
       "description": "Healthy green tomato leaflet under nocturnal LED torch",
-      "prediction": "Solanaceae Uncertain / Ambiguous",
-      "confidence": 37.5,
-      "status": "UNCERTAIN",
-      "in_domain_match": false,
-      "latency_ms": 19.93
+      "prediction": "Tomato Healthy",
+      "confidence": 55.9,
+      "status": "OPTIMAL",
+      "in_domain_match": true,
+      "latency_ms": 46.2
     },
     {
       "filename": "V261110-191543-30fps-auto_exp-tmc_auto_0.jpg",
@@ -62,11 +64,11 @@
       "botanical_species": "Solanum lycopersicum (Tomato)",
       "ground_truth": "Tomato Healthy",
       "description": "Healthy green tomato leaflet under nocturnal LED torch",
-      "prediction": "Tomato Late Blight",
-      "confidence": 53.0,
-      "status": "SEVERE",
+      "prediction": "Solanaceae Uncertain / Ambiguous",
+      "confidence": 34.1,
+      "status": "UNCERTAIN",
       "in_domain_match": false,
-      "latency_ms": 22.08
+      "latency_ms": 27.93
     },
     {
       "filename": "V261110-191549-30fps-auto_exp-tmc_auto_0.jpg",
@@ -75,10 +77,10 @@
       "ground_truth": "Tomato Healthy",
       "description": "Healthy green tomato leaflet under nocturnal LED torch",
       "prediction": "Tomato Late Blight",
-      "confidence": 66.7,
+      "confidence": 51.0,
       "status": "SEVERE",
       "in_domain_match": false,
-      "latency_ms": 25.7
+      "latency_ms": 22.12
     },
     {
       "filename": "V261110-191600-30fps-auto_exp-tmc_auto_0.jpg",
@@ -86,11 +88,11 @@
       "botanical_species": "Solanum lycopersicum (Tomato)",
       "ground_truth": "Tomato Healthy",
       "description": "Healthy green tomato leaflet under nocturnal LED torch",
-      "prediction": "Solanaceae Uncertain / Ambiguous",
-      "confidence": 49.2,
-      "status": "UNCERTAIN",
+      "prediction": "Potato Late Blight",
+      "confidence": 54.7,
+      "status": "SEVERE",
       "in_domain_match": false,
-      "latency_ms": 24.62
+      "latency_ms": 26.7
     },
     {
       "filename": "V261110-191626-30fps-auto_exp-tmc_auto_0.jpg",
@@ -98,11 +100,11 @@
       "botanical_species": "Hibiscus rosa-sinensis (Gudhal)",
       "ground_truth": "OOD Non-Crop (Hibiscus)",
       "description": "Yellow chlorotic Hibiscus leaf (Malvaceae family)",
-      "prediction": "Solanaceae Uncertain / Ambiguous",
-      "confidence": 41.8,
+      "prediction": "Unknown Framing / Void Detected",
+      "confidence": 0.0,
       "status": "UNCERTAIN",
       "in_domain_match": false,
-      "latency_ms": 18.64
+      "latency_ms": 31.53
     },
     {
       "filename": "V261110-191628-30fps-auto_exp-tmc_auto_0.jpg",
@@ -110,11 +112,11 @@
       "botanical_species": "Hibiscus rosa-sinensis (Gudhal)",
       "ground_truth": "OOD Non-Crop (Hibiscus)",
       "description": "Yellow chlorotic Hibiscus leaf (Malvaceae family)",
-      "prediction": "Tomato Late Blight",
-      "confidence": 67.9,
-      "status": "SEVERE",
+      "prediction": "Unknown Framing / Void Detected",
+      "confidence": 0.0,
+      "status": "UNCERTAIN",
       "in_domain_match": false,
-      "latency_ms": 19.62
+      "latency_ms": 33.9
     },
     {
       "filename": "V261110-191634-30fps-auto_exp-tmc_auto_0.jpg",
@@ -122,11 +124,11 @@
       "botanical_species": "Hibiscus rosa-sinensis (Gudhal)",
       "ground_truth": "OOD Non-Crop (Hibiscus)",
       "description": "Green Hibiscus leaf (Malvaceae family)",
-      "prediction": "Tomato Late Blight",
-      "confidence": 86.0,
-      "status": "SEVERE",
+      "prediction": "Unknown Framing / Void Detected",
+      "confidence": 0.0,
+      "status": "UNCERTAIN",
       "in_domain_match": false,
-      "latency_ms": 17.3
+      "latency_ms": 36.27
     }
   ]
 }

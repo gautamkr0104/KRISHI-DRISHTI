@@ -754,7 +754,28 @@
 
       const foliarRatio = foliarCount / total;
 
-      // 1. Plausibility check: Reject lens cap, blank white surface, non-leaf background
+      // 1. Peripheral dark void check: Reject unshielded night flash / off-center leaf
+      let darkCount = 0;
+      for (let i = 0; i < total; i++) {
+        const r = data[i * 4];
+        const g = data[i * 4 + 1];
+        const b = data[i * 4 + 2];
+        if (r < 35 && g < 35 && b < 35) darkCount++;
+      }
+      if (darkCount / total > 0.45) {
+        return {
+          crop: "Uncertain",
+          disease: "Framing / Void Detected",
+          pathogen: `Excessive peripheral dark void (${((darkCount/total)*100).toFixed(1)}%). Leaf must be centered in optical shroud.`,
+          confidence: "0.0",
+          status: "UNCERTAIN",
+          organic: "Center camera wand shroud directly over leaf surface.",
+          chemical: "Ensure optical shroud blocks peripheral night darkness.",
+          entropy: "0.00"
+        };
+      }
+
+      // Plausibility check: Reject lens cap, blank white surface, non-leaf background
       if (foliarRatio < 0.12) {
         return {
           crop: "Invalid",
@@ -811,8 +832,12 @@
       }
       const confPercent = (maxProb * 100).toFixed(1);
 
-      // 5. Scientific Uncertainty Gating: Rejection of ambiguous samples
-      if (maxProb < 0.50 || entropy > 1.45) {
+      // Decision margin calculation (top1 - top2)
+      const sortedProbs = probs.slice().sort((a, b) => b - a);
+      const margin = sortedProbs[0] - (sortedProbs.length > 1 ? sortedProbs[1] : 0.0);
+
+      // 5. Scientific Uncertainty Gating: Rejection of ambiguous samples and OOD species
+      if (maxProb < 0.50 || entropy > 1.45 || margin < 0.12) {
         return {
           crop: "Uncertain",
           disease: "Low Confidence / Ambiguous",

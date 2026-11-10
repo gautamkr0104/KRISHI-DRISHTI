@@ -124,7 +124,7 @@ To prevent misleading predictions when pointed at bare soil, weeds, or hands:
 > *"Respected Sir/Ma'am, I learned standard C++ and Python syntax through tutorials and official documentation. However, **KRISHI-DRISHTI is an original multi-tier systems architecture** designed specifically to overcome hardware limitations:  
 > 1. In `KRISHI_DRISHTI_Camera.ino`, the Edge AI server daemon is embedded directly into ESP32 flash memory (`PROGMEM`) and static files are streamed from SDMMC, overcoming Android 13's Scoped Storage restriction (`ERR_ACCESS_DENIED`) and allowing offline browser inference.  
 > 2. The Controller wand uses non-blocking polling and FreeRTOS-compatible timing for SSD1306 I2C telemetry, decoupling camera captures from sensor reads to prevent Watchdog Timer (WDT) resets.  
-> 3. The machine learning pipeline uses two-stage fine-tuning with canopy-specific augmentation on 11,399 Kaggle images and evaluates against PlantDoc field images, with Shannon entropy gating to reject non-leaf frames."*
+> 3. The machine learning pipeline uses two-stage fine-tuning with canopy-specific augmentation on 7,740 dual-domain images (6,600 clean PlantVillage + 1,140 PlantDoc outdoor, documented in TRAINING_RUN_MANIFEST.json) and evaluates against PlantDoc field images, with Shannon entropy gating to reject non-leaf frames."*
 
 ### Q2: "Is Late Blight caused by a fungus?"
 > **Student Defense:**  

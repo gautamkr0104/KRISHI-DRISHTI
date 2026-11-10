@@ -88,7 +88,7 @@ class TestLabelsAndModelContract(unittest.TestCase):
             report = json.load(f)
         
         self.assertEqual(report["architecture"], "MobileNetV3-Small")
-        self.assertEqual(report["training_samples"], 11399)
+        self.assertEqual(report["training_samples"], 7740)
         self.assertEqual(report["validation_samples"], 2850)
         self.assertGreater(report["validation_accuracy"], 0.85)
         self.assertGreater(report["validation_macro_f1"], 0.85)
