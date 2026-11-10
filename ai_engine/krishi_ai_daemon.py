@@ -169,7 +169,7 @@ class KrishiAIDaemon:
         if "Late Blight" in matched["disease"] and telemetry:
             hum = telemetry.get("humidity", 0.0)
             if hum > 0.0 and hum < 85.0:
-                chem_rec = f"WITHHELD: Low RH ({hum:.0f}%). Spores dormant under dry canopy (requires RH >= 85%). Suppressing fungicide; inspect for abiotic chlorosis."
+                chem_rec = f"ADVISORY: Low RH ({hum:.0f}%). Late Blight sporulation favors sustained high RH (>=85%). Low current microclimate risk; verify foliar symptoms before spraying."
 
         return {
             "crop": matched["crop"],
@@ -241,7 +241,17 @@ class KrishiAIDaemon:
                         img = self.fetch_leaf_image(scan_count)
                         if img:
                             print(f"[INFERENCE] Running TFLite on Scan #{scan_count} ({img.size[0]}x{img.size[1]})...")
-                            diag = self.run_inference(img)
+                            # Extract genuine live canopy telemetry from Camera SoftAP bridge
+                            live_telemetry = None
+                            if status.get("telemetry_available") and "humidity" in status:
+                                live_telemetry = {
+                                    "humidity": float(status["humidity"]),
+                                    "temperature": float(status.get("temperature", 0.0))
+                                }
+                                print(f"[TELEMETRY] Live wand canopy readings: {live_telemetry['temperature']}C, {live_telemetry['humidity']}% RH")
+                            else:
+                                print("[TELEMETRY] Sensor telemetry unavailable from wand; bypassing microclimate gate.")
+                            diag = self.run_inference(img, telemetry=live_telemetry)
                             print(f"[RESULT] {diag['crop']} - {diag['disease']} ({diag['confidence']}%) in {diag['latency_ms']} ms")
                             
                             ok = self.post_diagnosis(scan_count, diag)

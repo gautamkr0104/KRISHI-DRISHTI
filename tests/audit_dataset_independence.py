@@ -89,9 +89,13 @@ def main():
         "classes_evaluated": len(classes),
         "class_balance": class_counts,
         "independence_protocol": (
-            "These 60 physical leaf images were partitioned prior to local training, "
-            "maintained in a separate directory tree, and held out entirely from gradient descent "
-            "and weight updates. They serve as an immutable benchmark for reproducible evaluation."
+            "These 60 held-out botanical dataset images were partitioned from the PlantVillage "
+            "validation corpus, maintained in a separate directory tree, and held out entirely from "
+            "local gradient descent and weight updates. Note on public dataset provenance: in the Kaggle "
+            "'New Plant Diseases Dataset (Augmented)', original source photos underwent offline augmentations "
+            "prior to distribution, meaning identical or affine-transformed source leaves exist across augmented "
+            "partitions. However, these 60 specimens were strictly held out from local model training batches "
+            "to serve as an immutable benchmark for reproducible evaluation."
         ),
         "specimens": verified_hashes
     }

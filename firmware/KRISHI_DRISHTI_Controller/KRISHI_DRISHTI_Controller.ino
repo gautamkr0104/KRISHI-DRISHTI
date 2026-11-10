@@ -242,12 +242,12 @@ void renderPage3_Cure() {
 
     display.setCursor(0, 24);
     display.print("Chem: ");
-    if (diagChemical.startsWith("WITHHELD")) {
-      display.print("WITHHELD (Low RH)");
+    if (diagChemical.startsWith("ADVISORY") || diagChemical.startsWith("WITHHELD")) {
+      display.print("ADVISORY (Low RH)");
       display.setCursor(0, 36);
-      display.printf("RH %d%%: Spores dormant", (int)currentHum);
+      display.printf("RH %d%%: Low ambient risk", (int)currentHum);
       display.setCursor(0, 46);
-      display.print("Check abiotic chlorosis");
+      display.print("Verify leaf before spray");
     } else {
       display.print(diagChemical.substring(0, 15));
       display.setCursor(0, 36);
@@ -351,9 +351,9 @@ void pollAiDiagnosisNonBlocking() {
         // from costly, unnecessary chemical spraying on abiotic chlorosis!
         // -------------------------------------------------------------
         if (diagDisease.indexOf("Late Blight") >= 0 || diagDisease.indexOf("Blight") >= 0) {
-          if (dhtConnected && currentHum < 85.0f && microclimateTracker.getRiskLevel() == RISK_LOW) {
-            diagChemical = "WITHHELD: Low RH (" + String((int)currentHum) + "%). No spore risk.";
-            Serial.printf("[SAFETY GATE] Microclimate Cross-Gating ACTIVE: Low RH (%.1f%%) suppressed chemical alert for %s!\n",
+          if (dhtConnected && currentHum < 85.0f && microclimateTracker.getRiskLevel() == RISK_LEVEL_LOW) {
+            diagChemical = "ADVISORY: Low RH (" + String((int)currentHum) + "%). Unfavorable for sporulation.";
+            Serial.printf("[SAFETY GATE] Microclimate Cross-Gating ACTIVE: Low RH (%.1f%%) issued advisory for %s!\n",
                           currentHum, diagDisease.c_str());
           } else {
             diagChemical = rawChem;
@@ -425,7 +425,11 @@ void triggerRealScan() {
   display.display();
 
   HTTPClient http;
-  http.begin(URL_CAPTURE);
+  String captureUrl = URL_CAPTURE;
+  if (dhtConnected && currentHum > 0.0) {
+    captureUrl += "?temp=" + String(currentTemp, 1) + "&hum=" + String(currentHum, 1);
+  }
+  http.begin(captureUrl);
   http.setTimeout(4000);
   int httpCode = http.GET();
 

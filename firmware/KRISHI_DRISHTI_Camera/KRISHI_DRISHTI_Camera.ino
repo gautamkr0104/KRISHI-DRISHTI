@@ -56,6 +56,9 @@ bool psramAvailable = false;
 String sensorModel = "Unknown";
 
 uint32_t scanCounter = 0;
+float lastCanopyTemp = 0.0;
+float lastCanopyHum = 0.0;
+bool canopyTelemetryPresent = false;
 static bool isStreaming = false;
 
 // AI Diagnosis Bridge State (Phone AI Daemon <-> Camera <-> Controller Wand)
@@ -1307,6 +1310,13 @@ void handleStatus() {
 }
 
 void handleCapture() {
+  if (server.hasArg("hum")) {
+    lastCanopyHum = server.arg("hum").toFloat();
+    canopyTelemetryPresent = true;
+  }
+  if (server.hasArg("temp")) {
+    lastCanopyTemp = server.arg("temp").toFloat();
+  }
   if (!cameraReady) {
     server.sendHeader("Access-Control-Allow-Origin", "*");
     server.send(503, "application/json", "{\"status\":\"error\",\"message\":\"camera_offline\"}");

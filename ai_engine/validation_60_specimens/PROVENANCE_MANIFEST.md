@@ -1,6 +1,6 @@
 # KRISHI-DRISHTI :: 60-Specimen Botanical Validation Dataset Provenance Manifest
 
-This manifest establishes the formal botanical provenance, file integrity, and data independence for all 60 physical leaf specimens bundled in `ai_engine/validation_60_specimens/`.
+This manifest establishes the formal botanical provenance, file integrity, and data independence for all 60 held-out botanical dataset specimens bundled in `ai_engine/validation_60_specimens/`.
 
 ## 1. Dataset Provenance & Collection Methodology
 - **Source Dataset**: PlantVillage Dataset (published via KaggleHub: `abdallahalidev/plantvillage-dataset`, Release Version 3, Color Partition).
