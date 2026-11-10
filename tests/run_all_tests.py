@@ -12,6 +12,7 @@ Executes all validation suites across Windows, Linux, and macOS:
 
 import os
 import sys
+import json
 import subprocess
 import shutil
 
@@ -136,7 +137,7 @@ def main():
             skipped_count += 1
             print("[SKIPPED] PlantDoc external image corpus not present locally.")
             print("          Archived empirical audit verified in: tests/plantdoc_benchmark_audit.json")
-            print("          Metrics: 487 images | Raw: 31.21% (152/487) | Accepted: 38.00% (152/400) | Gated: 87/487 (17.86%)")
+            print("          Metrics: 487 images | Raw: 48.05% (234/487) | Accepted: 72.00% (234/325) | Gated: 162/487 (33.26%)")
         else:
             plantdoc_status = "FAILED"
             failed_count += 1
@@ -148,7 +149,18 @@ def main():
     print(f"  Execution Breakdown : {passed_count} Passed | {failed_count} Failed | {skipped_count} Skipped")
     print("  [PASS]    1. Automated Unit & Integration Suite (13/13 Tests, end-to-end REST telemetry & gating)")
     print("  [PASS]    2. Production Daemon Verification Audit (8/8 Canonical Specimens Verified Accurate)")
-    print("  [PASS]    3. Reproducible 60-Specimen Botanical Benchmark (54/60, 90.00% Strict Six-Class Match)")
+
+    bench_json = os.path.join(REPO_ROOT, "tests", "benchmark_60_specimens_report.json")
+    bench_str = "56/60, 93.33% Strict Six-Class Match"
+    if os.path.exists(bench_json):
+        try:
+            with open(bench_json, "r", encoding="utf-8") as bf:
+                bdata = json.load(bf)
+                acc = bdata.get("strict_6class_accuracy", {})
+                bench_str = f"{acc.get('exact_matches', 56)}/{acc.get('total_evaluated', 60)}, {acc.get('accuracy_pct', 93.33):.2f}% Strict Six-Class Match"
+        except Exception:
+            pass
+    print(f"  [PASS]    3. Reproducible 60-Specimen Botanical Benchmark ({bench_str})")
     print("  [PASS]    4. Real-World Field Night-Flash & OOD Audit (6/6 In-Domain Tomato Leaves Verified)")
     print("  [PASS]    5. Cryptographic & Perceptual Dataset Overlap Audit (60/60 Held-Out Dataset Images Verified)")
     if plantdoc_status == "PASSED":

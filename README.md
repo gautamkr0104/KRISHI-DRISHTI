@@ -73,7 +73,7 @@ KRISHI-DRISHTI/
 │   └── KRISHI_DRISHTI_Controller/
 │       └── KRISHI_DRISHTI_Controller.ino   # Controller wand firmware v2.2 (Real Wi-Fi + OLED + DHT11)
 ├── ai_engine/
-│   ├── krishi_drishti_model.tflite # Float16 Quantized MobileNetV3-Small (2.01 MB, Float32 I/O)
+│   ├── krishi_drishti_model.tflite # Float16 Quantized MobileNetV3-Small (2.03 MB, Float32 I/O)
 │   ├── krishi_ai_server.html       # Offline browser AI engine & live telemetry dashboard
 │   ├── krishi_ai_daemon.py         # Standalone headless edge Python daemon
 │   ├── model_evaluation_report.json# Full empirical metrics, confusion matrix & PlantDoc evaluation
@@ -82,7 +82,7 @@ KRISHI-DRISHTI/
 │   ├── validation_60_specimens/    # Bundled 60-specimen ground-truth dataset (10 per class)
 │   └── vendor/                     # Bundled 100% offline JS & WASM TFLite browser runtimes
 ├── tests/
-│   ├── test_ai_pipeline.py         # Automated hardware-independent test suite (11 Unit & Integration tests)
+│   ├── test_ai_pipeline.py         # Automated hardware-independent test suite (13 Unit & Integration tests)
 │   ├── test_microclimate_tracker.cpp# Native C++ unit test harness (-Wall -Wextra -Werror compliant)
 │   ├── verify_tflite_model.py      # Production daemon inference & gating verification audit
 │   ├── benchmark_60_specimens.py   # Reproducible 60-specimen botanical validation benchmark
@@ -128,10 +128,10 @@ Trained on the **New Plant Diseases Dataset (Augmented 87K, Solanaceae Partition
 | **Potato Early Blight F1** | **0.9665** | Precision: 98.09%, Recall: 95.26% |
 | **Potato Healthy Tissue F1** | **0.9824** | Precision: 98.46%, Recall: 98.03% |
 | **Tomato Healthy Tissue F1** | **0.9531** | Precision: 91.57%, Recall: 99.38% |
-| **Model Size (TFLite)** | **2.01 MB** | Float16 post-training weight optimization with Float32 I/O interfaces |
-| **Inference Latency** | **3.89 ms Mean (Host PC CPU Reference) / ~12–15 ms (Target Mobile Edge)** | Benchmark Mean: 3.89 ms on Host PC CPU reference interpreter (Intel Core i5 with XNNPACK, range: 3.60–4.33 ms across 60 specimens); Target Mobile Edge CPU: ~12–15 ms (Cortex-A55 engineering estimate, budget < 40 ms); Wand sync < 15 ms |
-| **60-Specimen Botanical Benchmark** | **90.0% Strict / 91.5% Accepted** | Strict 6-class exact match: 54/60 (90.0%); Accepted predictions: 54/59 (91.5%, 98.3% coverage, 1 gated UNCERTAIN) |
-| **PlantDoc Outdoor Benchmark** | **31.21% Raw (All Frames) $\rightarrow$ 38.00% (Accepted Frames)** | Evaluated on 487 uncalibrated outdoor images; Dual-Stage Gating flags 87 ambiguous frames (17.9%) as UNCERTAIN |
+| **Model Size (TFLite)** | **2.03 MB** | Float16 post-training weight optimization with Float32 I/O interfaces |
+| **Inference Latency** | **3.94 ms Mean (Host PC CPU Reference) / ~12–15 ms (Target Mobile Edge)** | Benchmark Mean: 3.94 ms on Host PC CPU reference interpreter (Intel Core i5 with XNNPACK, range: 3.74–4.14 ms across 60 specimens); Target Mobile Edge CPU: ~12–15 ms (Cortex-A55 engineering estimate, budget < 40 ms); Wand sync < 15 ms |
+| **60-Specimen Botanical Benchmark** | **93.3% Strict / 93.3% Accepted** | Strict 6-class exact match: 56/60 (93.33%); Accepted predictions: 56/60 (93.33%, 100% coverage, 0 gated UNCERTAIN; 57/60 95.0% pathogen match) |
+| **PlantDoc Outdoor Benchmark** | **48.05% Raw (All Frames) $\rightarrow$ 72.00% (Accepted Frames)** | Evaluated on 487 uncalibrated outdoor images; Dual-Stage Gating safely flags 162 ambiguous/cluttered frames (33.26%) as UNCERTAIN |
 | **Entropy Rejection Threshold** | **$H > 1.45$ nats** | Rejects non-foliar objects, bare soil, and ambiguous leaves |
 
 ---
@@ -159,7 +159,7 @@ python tests/benchmark_60_specimens.py
 g++ -Wall -Wextra -Werror -std=c++11 tests/test_microclimate_tracker.cpp firmware/KRISHI_DRISHTI_Controller/MicroclimateTracker.cpp -o test_tracker && ./test_tracker
 ```
 
-### Verified Test Coverage (11 Comprehensive Tests):
+### Verified Test Coverage (13 Comprehensive Tests):
 1. `test_labels_file_exists_and_matches_strict_classes`: Strict 1:1 index alignment with the 6 Solanaceae disease classes.
 2. `test_model_artifact_and_report_integrity`: Verifies TFLite model presence (>1 MB) and genuine validation metrics.
 3. `test_non_foliar_rejection`: Mathematical rejection of lens caps (all-black), walls (all-white), and noise.
