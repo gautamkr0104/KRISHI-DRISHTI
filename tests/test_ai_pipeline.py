@@ -137,6 +137,9 @@ class MockCameraServer(BaseHTTPRequestHandler):
     scan_counter = 0
     diagnosis_ready = False
     latest_diag = {}
+    last_humidity = 0.0
+    last_temperature = 0.0
+    telemetry_available = False
 
     def log_message(self, format, *args):
         pass  # Silence output during unit test
@@ -156,14 +159,35 @@ class MockCameraServer(BaseHTTPRequestHandler):
                 "camera_ready": True,
                 "sd_ready": True,
                 "psram_available": True,
+                "sensor": "OV5640",
                 "scan_count": MockCameraServer.scan_counter,
-                "diagnosis_ready": MockCameraServer.diagnosis_ready
+                "clients": 1,
+                "diagnosis_ready": MockCameraServer.diagnosis_ready,
+                "telemetry_available": MockCameraServer.telemetry_available,
+                "humidity": MockCameraServer.last_humidity,
+                "temperature": MockCameraServer.last_temperature
             }
             self.wfile.write(json.dumps(data).encode("utf-8"))
 
         elif path == "/api/capture":
             MockCameraServer.scan_counter += 1
             MockCameraServer.diagnosis_ready = False
+            # Reset telemetry availability on each new scan to prevent stale readings (mirrors KRISHI_DRISHTI_Camera.ino)
+            MockCameraServer.telemetry_available = False
+            MockCameraServer.last_humidity = 0.0
+            MockCameraServer.last_temperature = 0.0
+
+            if "hum" in query and "temp" in query:
+                try:
+                    h = float(query["hum"][0])
+                    t = float(query["temp"][0])
+                    if 0.0 < h <= 100.0 and -10.0 <= t <= 65.0:
+                        MockCameraServer.last_humidity = h
+                        MockCameraServer.last_temperature = t
+                        MockCameraServer.telemetry_available = True
+                except (ValueError, IndexError):
+                    pass
+
             self.send_response(200)
             self.send_header("Access-Control-Allow-Origin", "*")
             self.send_header("Content-Type", "application/json")
@@ -246,6 +270,98 @@ class TestESP32RestCycleSimulation(unittest.TestCase):
     def tearDownClass(cls):
         cls.server.shutdown()
         cls.server.server_close()
+
+    def test_end_to_end_rest_telemetry_pipeline_and_stale_cache_reset(self):
+        """
+        Demonstrate complete end-to-end telemetry chain & cache lifecycle:
+        Controller DHT11 -> /api/capture?temp=...&hum=... -> Camera cache -> /api/status JSON
+        -> Python daemon extraction -> run_inference(img, telemetry=...).
+        Tests all 5 required operational scenarios:
+        1. Valid RH 55%: Status exposes telemetry, daemon gates Late Blight with ADVISORY.
+        2. Valid RH 92%: Status exposes telemetry, daemon preserves standard Mancozeb.
+        3. Missing telemetry: /api/capture without params -> telemetry_available=False, standard spray.
+        4. Invalid telemetry: Out-of-bounds readings (-50% RH) -> rejected, telemetry_available=False.
+        5. Stale cache reset: After valid RH 55% scan, next scan without params resets cache immediately.
+        """
+        import urllib.request
+        from ai_engine.krishi_ai_daemon import KrishiAIDaemon
+        base = f"http://127.0.0.1:{self.port}"
+        labels_path = os.path.join(REPO_ROOT, "ai_engine", "labels.json")
+        model_path = os.path.join(REPO_ROOT, "ai_engine", "krishi_drishti_model.tflite")
+        daemon = KrishiAIDaemon(model_path=model_path, labels_path=labels_path)
+        lb_img = Image.open(os.path.join(REPO_ROOT, "ai_engine", "sample_leaves", "tomato_late_blight.jpg"))
+
+        # Scenario 1: Valid RH 55%
+        with urllib.request.urlopen(f"{base}/api/capture?temp=28.0&hum=55.0") as res:
+            cap1 = json.loads(res.read().decode())
+            self.assertEqual(cap1["status"], "success")
+
+        with urllib.request.urlopen(f"{base}/api/status") as res:
+            st1 = json.loads(res.read().decode())
+            self.assertTrue(st1["telemetry_available"])
+            self.assertEqual(st1["humidity"], 55.0)
+            self.assertEqual(st1["temperature"], 28.0)
+
+        # Extract telemetry as production daemon does:
+        telem1 = {"humidity": float(st1["humidity"]), "temperature": float(st1["temperature"])} if st1.get("telemetry_available") else None
+        diag1 = daemon.run_inference(lb_img, telemetry=telem1)
+        self.assertIn("Late Blight", diag1["disease"])
+        self.assertTrue(diag1["chemical"].startswith("ADVISORY"), f"RH 55% must trigger advisory, got: {diag1['chemical']}")
+
+        # Scenario 2: Valid RH 92%
+        with urllib.request.urlopen(f"{base}/api/capture?temp=19.5&hum=92.0") as res:
+            cap2 = json.loads(res.read().decode())
+            self.assertEqual(cap2["status"], "success")
+
+        with urllib.request.urlopen(f"{base}/api/status") as res:
+            st2 = json.loads(res.read().decode())
+            self.assertTrue(st2["telemetry_available"])
+            self.assertEqual(st2["humidity"], 92.0)
+
+        telem2 = {"humidity": float(st2["humidity"]), "temperature": float(st2["temperature"])} if st2.get("telemetry_available") else None
+        diag2 = daemon.run_inference(lb_img, telemetry=telem2)
+        self.assertIn("Late Blight", diag2["disease"])
+        self.assertFalse(diag2["chemical"].startswith("ADVISORY"))
+        self.assertIn("Mancozeb", diag2["chemical"])
+
+        # Scenario 3: Missing telemetry
+        with urllib.request.urlopen(f"{base}/api/capture") as res:
+            cap3 = json.loads(res.read().decode())
+            self.assertEqual(cap3["status"], "success")
+
+        with urllib.request.urlopen(f"{base}/api/status") as res:
+            st3 = json.loads(res.read().decode())
+            self.assertFalse(st3["telemetry_available"])
+
+        telem3 = {"humidity": float(st3["humidity"]), "temperature": float(st3["temperature"])} if st3.get("telemetry_available") else None
+        self.assertIsNone(telem3)
+        diag3 = daemon.run_inference(lb_img, telemetry=telem3)
+        self.assertFalse(diag3["chemical"].startswith("ADVISORY"))
+        self.assertIn("Mancozeb", diag3["chemical"])
+
+        # Scenario 4: Invalid telemetry (e.g. hum=-50.0, temp=999.0)
+        with urllib.request.urlopen(f"{base}/api/capture?temp=999.0&hum=-50.0") as res:
+            cap4 = json.loads(res.read().decode())
+            self.assertEqual(cap4["status"], "success")
+
+        with urllib.request.urlopen(f"{base}/api/status") as res:
+            st4 = json.loads(res.read().decode())
+            self.assertFalse(st4["telemetry_available"], "Out-of-range sensor readings must be rejected")
+
+        # Scenario 5: Stale cache reset check
+        # A) Perform valid scan with 55% RH
+        urllib.request.urlopen(f"{base}/api/capture?temp=27.0&hum=55.0")
+        with urllib.request.urlopen(f"{base}/api/status") as res:
+            st5a = json.loads(res.read().decode())
+            self.assertTrue(st5a["telemetry_available"])
+            self.assertEqual(st5a["humidity"], 55.0)
+
+        # B) Next scan without telemetry must immediately clear the cache
+        urllib.request.urlopen(f"{base}/api/capture")
+        with urllib.request.urlopen(f"{base}/api/status") as res:
+            st5b = json.loads(res.read().decode())
+            self.assertFalse(st5b["telemetry_available"], "New scan must reset telemetry_available flag")
+            self.assertEqual(st5b["humidity"], 0.0, "Stale humidity must be cleared to 0.0")
 
     def test_full_wand_phone_oled_telemetry_cycle(self):
         """Simulate the complete field telemetry round-trip."""

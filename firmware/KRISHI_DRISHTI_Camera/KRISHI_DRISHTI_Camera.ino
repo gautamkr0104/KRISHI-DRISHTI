@@ -1303,19 +1303,29 @@ void handleStatus() {
   json += "\"sensor\":\"" + sensorModel + "\",";
   json += "\"scan_count\":" + String(scanCounter) + ",";
   json += "\"clients\":" + String(WiFi.softAPgetStationNum()) + ",";
-  json += "\"diagnosis_ready\":" + String(diagnosisReady ? "true" : "false");
+  json += "\"diagnosis_ready\":" + String(diagnosisReady ? "true" : "false") + ",";
+  json += "\"telemetry_available\":" + String(canopyTelemetryPresent ? "true" : "false") + ",";
+  json += "\"humidity\":" + String(lastCanopyHum, 1) + ",";
+  json += "\"temperature\":" + String(lastCanopyTemp, 1);
   json += "}";
   server.sendHeader("Access-Control-Allow-Origin", "*");
   server.send(200, "application/json", json);
 }
 
 void handleCapture() {
-  if (server.hasArg("hum")) {
-    lastCanopyHum = server.arg("hum").toFloat();
-    canopyTelemetryPresent = true;
-  }
-  if (server.hasArg("temp")) {
-    lastCanopyTemp = server.arg("temp").toFloat();
+  // Reset telemetry availability for each new scan to prevent stale readings
+  canopyTelemetryPresent = false;
+  lastCanopyHum = 0.0f;
+  lastCanopyTemp = 0.0f;
+
+  if (server.hasArg("hum") && server.hasArg("temp")) {
+    float h = server.arg("hum").toFloat();
+    float t = server.arg("temp").toFloat();
+    if (h > 0.0f && h <= 100.0f && t >= -10.0f && t <= 65.0f) {
+      lastCanopyHum = h;
+      lastCanopyTemp = t;
+      canopyTelemetryPresent = true;
+    }
   }
   if (!cameraReady) {
     server.sendHeader("Access-Control-Allow-Origin", "*");

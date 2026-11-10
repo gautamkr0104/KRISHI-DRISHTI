@@ -159,7 +159,7 @@ def main():
         "scientific_interpretation": (
             "Accepted-frame accuracy measures triage precision on decisively resolved foliage, "
             "while raw accuracy includes out-of-focus background noise. Dual-Stage Gating prevents "
-            "confident pesticide mis-prescriptions on ambiguous field frames."
+            "flagging unresolvable field frames as UNCERTAIN, though outdoor uncalibrated accuracy remains limited by real-world foliar clutter."
         )
     }
 

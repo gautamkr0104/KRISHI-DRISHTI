@@ -1,6 +1,6 @@
 {
   "benchmark": "PlantDoc Outdoor Solanaceae Partition",
-  "timestamp": "2026-11-10T18:37:22Z",
+  "timestamp": "2026-11-10T18:54:45Z",
   "model_file": "krishi_drishti_model.tflite",
   "dataset_source": "https://github.com/pratikkayal/PlantDoc-Dataset",
   "total_evaluated": 487,
@@ -20,5 +20,5 @@
     "accepted_correct": 152,
     "accepted_accuracy_pct": 38.0
   },
-  "scientific_interpretation": "Accepted-frame accuracy measures triage precision on decisively resolved foliage, while raw accuracy includes out-of-focus background noise. Dual-Stage Gating prevents confident pesticide mis-prescriptions on ambiguous field frames."
+  "scientific_interpretation": "Accepted-frame accuracy measures triage precision on decisively resolved foliage, while raw accuracy includes out-of-focus background noise. Dual-Stage Gating prevents flagging unresolvable field frames as UNCERTAIN, though outdoor uncalibrated accuracy remains limited by real-world foliar clutter."
 }
