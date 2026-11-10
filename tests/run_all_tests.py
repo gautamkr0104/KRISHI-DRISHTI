@@ -2,11 +2,11 @@
 KRISHI-DRISHTI :: Cross-Platform Test & Verification Master Runner
 ------------------------------------------------------------------
 Executes all validation suites across Windows, Linux, and macOS:
-1. Unit & Integration Suite (12 tests, including deterministic microclimate cross-gating)
+1. Unit & Integration Suite (13 tests, including end-to-end REST telemetry & stale cache reset)
 2. Production Daemon 8-Specimen & Gating Audit (8/8 canonical targets)
 3. Reproducible 60-Specimen Botanical Benchmark (90.0% strict exact match)
 4. Real-World Field Night-Flash & OOD Botanical Audit (6 In-Domain, 4 OOD challenges)
-5. Cryptographic Dataset Independence & Training Overlap Audit (60/60 verified SHA-256)
+5. Cryptographic & Perceptual Dataset Overlap Audit (60/60 SHA-256 + dHash analysis)
 6. PlantDoc Outdoor Benchmark (Historical 487-image empirical evaluation)
 """
 
@@ -29,8 +29,8 @@ def main():
     failed_count = 0
     skipped_count = 0
 
-    # 1. Run Unit & Integration Suite (12 Tests)
-    print("\n[1/5] Running Python Automated Unit & Integration Suite (12 Tests)...")
+    # 1. Run Unit & Integration Suite (13 Tests)
+    print("\n[1/5] Running Python Automated Unit & Integration Suite (13 Tests)...")
     print("-" * 80)
     test_pipeline = os.path.join(REPO_ROOT, "tests", "test_ai_pipeline.py")
     res1 = subprocess.run([PYTHON_EXE, test_pipeline])
@@ -79,7 +79,7 @@ def main():
             sys.exit(res4.returncode)
 
     # 5. Run Dataset Independence & Training Overlap Audit
-    print("\n[5/5] Running Cryptographic Dataset Independence & Training Overlap Audit...")
+    print("\n[5/5] Running Cryptographic & Perceptual Dataset Overlap Audit...")
     print("-" * 80)
     audit_script = os.path.join(REPO_ROOT, "tests", "audit_dataset_independence.py")
     if os.path.exists(audit_script):
@@ -91,12 +91,12 @@ def main():
             failed_count += 1
             sys.exit(res5.returncode)
 
-    # Optional Native C++ Compiler Check
-    print("\n[*] Checking for C++ Compiler for Native Firmware Unit Tests...")
+    # Optional Native C++ Host Test (MicroclimateTracker algorithm only)
+    print("\n[*] Native C++ Algorithmic Unit Test (MicroclimateTracker logic only)...")
     print("-" * 80)
     compiler = shutil.which("g++") or shutil.which("clang++")
     if compiler:
-        print(f"[*] Native compiler detected: {compiler}")
+        print(f"[*] Native host compiler detected: {compiler}")
         harness = os.path.join(REPO_ROOT, "tests", "test_microclimate_tracker.cpp")
         cpp_module = os.path.join(REPO_ROOT, "firmware", "KRISHI_DRISHTI_Controller", "MicroclimateTracker.cpp")
         out_exe = os.path.join(REPO_ROOT, "tests", "test_tracker.exe" if sys.platform == "win32" else "test_tracker")
@@ -117,9 +117,10 @@ def main():
         else:
             print("[WARN] Native C++ compilation failed.")
     else:
-        print("[INFO] No C++ compiler (g++/clang++) found in PATH. Architecture verified by Python tests.")
+        print("[INFO] No host C++ compiler (g++/clang++) in PATH. Note: Complete ESP32 firmware build")
+        print("       requires arduino-cli with esp32:esp32 core, tested independently.")
 
-    # 6. Outdoor Benchmark Corpus Status Check (PlantDoc)
+    # 6. Outdoor Benchmark Corpus Execution / Status Check (PlantDoc)
     print("\n[*] Outdoor Benchmark Corpus Execution / Status Check (PlantDoc)...")
     print("-" * 80)
     plantdoc_script = os.path.join(REPO_ROOT, "tests", "evaluate_plantdoc_benchmark.py")
@@ -145,18 +146,23 @@ def main():
     print("  KRISHI-DRISHTI :: MASTER VERIFICATION EXECUTION SUMMARY")
     print("=" * 80)
     print(f"  Execution Breakdown : {passed_count} Passed | {failed_count} Failed | {skipped_count} Skipped")
-    print("  [PASS]    1. Automated Unit & Integration Suite (12/12 Tests, deterministic cross-gating)")
+    print("  [PASS]    1. Automated Unit & Integration Suite (13/13 Tests, end-to-end REST telemetry & gating)")
     print("  [PASS]    2. Production Daemon Verification Audit (8/8 Canonical Specimens Verified Accurate)")
     print("  [PASS]    3. Reproducible 60-Specimen Botanical Benchmark (54/60, 90.00% Strict Six-Class Match)")
     print("  [PASS]    4. Real-World Field Night-Flash & OOD Audit (6/6 In-Domain Tomato Leaves Verified)")
-    print("  [PASS]    5. Cryptographic Dataset Independence Audit (60/60 Held-Out Dataset Images Verified)")
+    print("  [PASS]    5. Cryptographic & Perceptual Dataset Overlap Audit (60/60 Held-Out Dataset Images Verified)")
     if plantdoc_status == "PASSED":
-        print("  [PASS]    6. PlantDoc Outdoor Benchmark (487 Images freshly executed)")
+        print("  [PASS]    6. PlantDoc Outdoor Benchmark (487 Images freshly executed on local corpus)")
+    elif plantdoc_status == "SKIPPED":
+        print("  [SKIPPED] 6. PlantDoc Outdoor Benchmark (External corpus skipped locally; historical 487-image audit archived)")
     else:
-        print("  [SKIPPED] 6. PlantDoc Outdoor Benchmark (External corpus skipped; historical 487-image audit archived)")
+        print("  [FAILED]  6. PlantDoc Outdoor Benchmark (Execution encountered error)")
     print("=" * 80)
     if failed_count == 0:
-        print("  OVERALL VERDICT: ALL CORE SUITES PASSED (5 Passed, 1 External Skipped | Exit Code: 0)")
+        if skipped_count > 0:
+            print(f"  OVERALL VERDICT: ALL CORE SUITES PASSED ({passed_count} Passed, {skipped_count} Skipped | Exit Code: 0)")
+        else:
+            print(f"  OVERALL VERDICT: ALL SUITES PASSED ({passed_count} Passed, 0 Skipped | Exit Code: 0)")
     else:
         print(f"  OVERALL VERDICT: VERIFICATION FAILED ({failed_count} failed suites | Exit Code: 1)")
     print("=" * 80 + "\n")

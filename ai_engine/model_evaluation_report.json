@@ -122,7 +122,7 @@
     "accepted_accuracy_pct": 38.0,
     "notes": "Empirically evaluated on 487 independent unaugmented outdoor images from PlantDoc Solanaceae partition.",
     "botanical_domain_gap_analysis": "PlantDoc images capture whole plants from 1-2 meters away with soil, weeds, sky, and inter-leaf shadowing. Without close-range macro framing, dark soil and shadow artifacts trigger necrotic lesion activations, yielding a raw baseline accuracy of 31.21% (152/487).",
-    "dual_stage_uncertainty_mitigation": "When KRISHI-DRISHTI Dual-Stage Uncertainty Gating is applied (Foliar Ratio >= 0.12 and Shannon Entropy H <= 1.45 nats), 87 ambiguous frames (17.86%) are flagged as UNCERTAIN, raising diagnostic accuracy on accepted frames from 31.21% to 38.00% while preventing confident false chemical recommendations on unresolvable images."
+    "dual_stage_uncertainty_mitigation": "When KRISHI-DRISHTI Dual-Stage Uncertainty Gating is applied (Foliar Ratio >= 0.12 and Shannon Entropy H <= 1.45 nats), 87 ambiguous frames (17.86%) are flagged as UNCERTAIN, improving diagnostic accuracy on accepted frames from 31.21% to 38.00%. However, 38.00% accepted-frame accuracy demonstrates that substantial domain shift remains between controlled laboratory leaves and uncalibrated outdoor field foliage, requiring microclimate cross-gating and physical standoffs."
   },
   "tflite_quantization": {
     "size_bytes": 2110100,
@@ -131,9 +131,9 @@
     "input_contract": "Float32 [1, 128, 128, 3] raw pixel values [0, 255]",
     "output_contract": "Float32 [1, 6] probabilities with internal Softmax",
     "verification_accuracy": 89.72,
-    "interpreter_latency_ms": 3.64,
-    "latency_benchmark": "3.42 - 3.98 ms Host CPU reference interpreter (benchmark mean: 3.64 ms with XNNPACK CPU); target on mobile Edge AI ~12-15 ms (< 40 ms budget)",
-    "benchmark_environment": "Host CPU Reference (Intel Core i5-4300U @ 1.9GHz with XNNPACK) - Target on-device mobile ~12-15 ms (Galaxy A03 Cortex-A55)"
+    "interpreter_latency_ms": 3.89,
+    "latency_benchmark": "3.60 - 4.33 ms Host CPU reference interpreter (benchmark mean: 3.89 ms with XNNPACK CPU); target on mobile Edge AI ~12-15 ms (< 40 ms budget)",
+    "benchmark_environment": "Host CPU Reference (Intel Core i5-4300U @ 1.9GHz with XNNPACK) - Target on-device mobile ~12-15 ms (Galaxy A03 Cortex-A55 estimate)"
   },
   "botanical_validation_60_specimens": {
     "total_tested": 60,

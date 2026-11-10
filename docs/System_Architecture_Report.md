@@ -94,7 +94,7 @@ To eliminate subjective bias during scientific evaluation, the KRISHI-DRISHTI ne
 2. **Canopy Data Augmentation:** Real-time affine transformations (`RandomFlip`, `RandomRotation(0.12)`, `RandomZoom(0.08)`, `RandomContrast(0.08)`) simulating field flutter and outdoor sun glare.
 3. **Stage 1 (Head Warmup):** 2 epochs with frozen backbone using Adam ($\text{lr} = 10^{-3}$), training dense classification layer with Dropout (0.25).
 4. **Stage 2 (Deep Fine-Tuning):** 2 epochs unfreezing top 25 convolutional layers ($\text{lr} = 10^{-4}$) to adapt high-level visual representations directly to foliar lesions.
-5. **Float16 Quantization:** Post-Training Quantization (PTQ) reducing weights to IEEE 754 half-precision float16 (reducing model footprint from 4.02 MB to **2.01 MB**), with standard Float32 input/output interfaces (`[1, 128, 128, 3]` raw pixels and `[1, 6]` probabilities with built-in Softmax), achieving **4.15–4.69 ms** inference on host CPU reference interpreter (benchmark mean: 4.29 ms with XNNPACK; target ~12–15 ms on smartphone mobile CPU, budget < 40 ms).
+5. **Float16 Quantization:** Post-Training Quantization (PTQ) reducing weights to IEEE 754 half-precision float16 (reducing model footprint from 4.02 MB to **2.01 MB**), with standard Float32 input/output interfaces (`[1, 128, 128, 3]` raw pixels and `[1, 6]` probabilities with built-in Softmax), achieving **3.60–4.33 ms** inference on host CPU reference interpreter (benchmark mean: **3.89 ms** with XNNPACK; target ~12–15 ms on smartphone mobile CPU engineering estimate, budget < 40 ms).
 
 ### 6.3 Empirical Performance Metrics
 | Metric | Benchmark Result | Practical Agricultural Significance |
@@ -108,7 +108,7 @@ To eliminate subjective bias during scientific evaluation, the KRISHI-DRISHTI ne
 | **60-Specimen Botanical Benchmark** | **90.0% Strict / 91.5% Accepted** | Strict 6-class: 54/60 (90.0%); Accepted: 54/59 (91.5% coverage, 1 gated UNCERTAIN) |
 | **PlantDoc Outdoor Field Benchmark** | **31.21% Raw (All Frames) $\rightarrow$ 38.00% (Accepted Frames)** | Evaluated across 487 uncalibrated outdoor images; Dual-Stage Gating flags 87 ambiguous frames (17.9%) as UNCERTAIN |
 | **Model Size (Quantized TFLite)** | **2.01 MB** | Fully cached in RAM on low-RAM phones (Galaxy A03) |
-| **Edge Inference Latency** | **3.64 ms Mean (Host CPU Reference)** | Benchmark mean 3.64 ms on Host CPU (Intel i5 with XNNPACK, range: 3.42–3.98 ms); Target Mobile Edge: ~12–15 ms (Galaxy A03 Cortex-A55) |
+| **Edge Inference Latency** | **3.89 ms Mean (Host CPU Reference)** | Benchmark mean: 3.89 ms on Host CPU (Intel i5 with XNNPACK, range: 3.60–4.33 ms); Target Mobile Edge: ~12–15 ms (Galaxy A03 Cortex-A55 engineering estimate, budget < 40 ms) |
 
 ### 6.4 Scientific Uncertainty & Plausibility Gating
 To prevent misleading predictions when pointed at bare soil, weeds, or hands:
