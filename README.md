@@ -73,7 +73,7 @@ KRISHI-DRISHTI/
 │   └── KRISHI_DRISHTI_Controller/
 │       └── KRISHI_DRISHTI_Controller.ino   # Controller wand firmware v2.2 (Real Wi-Fi + OLED + DHT11)
 ├── ai_engine/
-│   ├── krishi_drishti_model.tflite # INT8 Quantized MobileNetV3-Small (2.01 MB)
+│   ├── krishi_drishti_model.tflite # Float16 Quantized MobileNetV3-Small (2.01 MB, Float32 I/O)
 │   ├── krishi_ai_server.html       # Offline browser AI engine & live telemetry dashboard
 │   ├── krishi_ai_daemon.py         # Standalone headless edge Python daemon
 │   ├── model_evaluation_report.json# Full empirical metrics, confusion matrix & PlantDoc evaluation
@@ -129,9 +129,9 @@ Trained on the **New Plant Diseases Dataset (Augmented 87K, Solanaceae Partition
 | **Potato Healthy Tissue F1** | **0.9824** | Precision: 98.46%, Recall: 98.03% |
 | **Tomato Healthy Tissue F1** | **0.9531** | Precision: 91.57%, Recall: 99.38% |
 | **Model Size (TFLite)** | **2.01 MB** | Float16 post-training weight optimization with Float32 I/O interfaces |
-| **Inference Latency** | **3.68–5.50 ms (CPU Reference) / Target < 40 ms Mobile** | Measured with TFLite reference interpreter on host CPU |
-| **60-Specimen Botanical Benchmark** | **86.7% Strict / 91.2% Accepted** | Strict 6-class: 52/60; Accepted: 52/57 (95.0% coverage, 3 gated UNCERTAIN) |
-| **PlantDoc Field Benchmark** | **34.91% Raw $\rightarrow$ 46.51% Accepted** | Raw: 170/487; Dual-Stage Gating flags 57 ambiguous frames (11.7%) as UNCERTAIN |
+| **Inference Latency** | **4.15–4.69 ms (Host PC CPU Reference) / ~12–15 ms (Target Mobile Edge)** | Reference Host CPU: Intel Core i5 @ 1.9GHz / Target Mobile: Samsung Galaxy A03 Cortex-A55; Wand sync < 15 ms |
+| **60-Specimen Botanical Benchmark** | **90.0% Strict / 91.5% Accepted** | Strict 6-class exact match: 54/60 (90.0%); Accepted predictions: 54/59 (91.5%, 98.3% coverage, 1 gated UNCERTAIN) |
+| **PlantDoc Outdoor Benchmark** | **34.91% Raw (All Frames) $\rightarrow$ 46.51% (Accepted Frames)** | Evaluated on 487 uncalibrated outdoor images; Dual-Stage Gating flags 57 ambiguous frames (11.7%) as UNCERTAIN |
 | **Entropy Rejection Threshold** | **$H > 1.45$ nats** | Rejects non-foliar objects, bare soil, and ambiguous leaves |
 
 ---

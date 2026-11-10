@@ -1,0 +1,378 @@
+{
+  "timestamp": "2026-11-10T16:16:41Z",
+  "event": "54th National Children's Science Congress",
+  "benchmark_designation": "Documented Hold-Out Specimen Benchmark",
+  "total_specimens": 60,
+  "classes_evaluated": 6,
+  "class_balance": {
+    "Potato___Early_blight": 10,
+    "Potato___Late_blight": 10,
+    "Potato___healthy": 10,
+    "Tomato___Early_blight": 10,
+    "Tomato___Late_blight": 10,
+    "Tomato___healthy": 10
+  },
+  "independence_protocol": "These 60 physical leaf images were partitioned prior to local training, maintained in a separate directory tree, and held out entirely from gradient descent and weight updates. They serve as an immutable benchmark for reproducible evaluation.",
+  "specimens": [
+    {
+      "class": "Potato___Early_blight",
+      "filename": "Potato___Early_blight_01.jpg",
+      "size_bytes": 20183,
+      "sha256": "100079e00ccf046c761599235a1a73db03980fa4847b2a2fe8ea4092bca6bf5c"
+    },
+    {
+      "class": "Potato___Early_blight",
+      "filename": "Potato___Early_blight_02.jpg",
+      "size_bytes": 17224,
+      "sha256": "f82d5fed95db82eb2863eb2b236c3d4f0285a20966bd2048fdf12f97d3f4aa5a"
+    },
+    {
+      "class": "Potato___Early_blight",
+      "filename": "Potato___Early_blight_03.jpg",
+      "size_bytes": 21507,
+      "sha256": "15ac0f0ace743361f4645cbb5bc5ff7fb44f72e2dcddbd7b2a5c20268512ddc5"
+    },
+    {
+      "class": "Potato___Early_blight",
+      "filename": "Potato___Early_blight_04.jpg",
+      "size_bytes": 17949,
+      "sha256": "c4949cee5155170fc987d2080323c25b9ef7190770e7df2b4ae7d0c450e7fdb8"
+    },
+    {
+      "class": "Potato___Early_blight",
+      "filename": "Potato___Early_blight_05.jpg",
+      "size_bytes": 19165,
+      "sha256": "cc5b1868b8acb1e0f0c140e37a1fedf61c96fd4303d8259f90ce7563ca17f845"
+    },
+    {
+      "class": "Potato___Early_blight",
+      "filename": "Potato___Early_blight_06.jpg",
+      "size_bytes": 18469,
+      "sha256": "a5b86abe59b616942cf0855d472a6f1b753b3d5d95812f3ff6935b6145a93692"
+    },
+    {
+      "class": "Potato___Early_blight",
+      "filename": "Potato___Early_blight_07.jpg",
+      "size_bytes": 19289,
+      "sha256": "3fdce534a556378a718e002d842f785012d86b86bbd36a16fb1813cd1350b92c"
+    },
+    {
+      "class": "Potato___Early_blight",
+      "filename": "Potato___Early_blight_08.jpg",
+      "size_bytes": 19673,
+      "sha256": "cffafea78a90fc3e6bd419a36942a387720f8f649dedd5c8fc00bf9bdc6ccd7c"
+    },
+    {
+      "class": "Potato___Early_blight",
+      "filename": "Potato___Early_blight_09.jpg",
+      "size_bytes": 21057,
+      "sha256": "83b0d685bb113b8ab25717da3b2ecdd8fb8775e7160ec698267d89a7ef93e8c4"
+    },
+    {
+      "class": "Potato___Early_blight",
+      "filename": "Potato___Early_blight_10.jpg",
+      "size_bytes": 19784,
+      "sha256": "4951cb91537bcc5a40a5a9e0d863e6b574fb72cae925ae866c9b3680effad183"
+    },
+    {
+      "class": "Potato___Late_blight",
+      "filename": "Potato___Late_blight_01.jpg",
+      "size_bytes": 12780,
+      "sha256": "96baa8bba4a2397887e94753a8908e35108a88a1c4715c7eab259a3bfae00b27"
+    },
+    {
+      "class": "Potato___Late_blight",
+      "filename": "Potato___Late_blight_02.jpg",
+      "size_bytes": 14284,
+      "sha256": "19c795b1ef3b8b915d7a166fb1075c79017f24989361ad6620606d07c6b94b13"
+    },
+    {
+      "class": "Potato___Late_blight",
+      "filename": "Potato___Late_blight_03.jpg",
+      "size_bytes": 14157,
+      "sha256": "e2736064b143d773743c06c957b00ca5c2fc6c8dc81fc750e812732eac6bd6a8"
+    },
+    {
+      "class": "Potato___Late_blight",
+      "filename": "Potato___Late_blight_04.jpg",
+      "size_bytes": 15988,
+      "sha256": "06d5725ff2403a621774121d88376d76d819c53432797a3fb595869b706ff781"
+    },
+    {
+      "class": "Potato___Late_blight",
+      "filename": "Potato___Late_blight_05.jpg",
+      "size_bytes": 21419,
+      "sha256": "42bd63cee5f086073aa0ba6ecd90892220a48c7fa3a60e03cd046aa9d6e228ac"
+    },
+    {
+      "class": "Potato___Late_blight",
+      "filename": "Potato___Late_blight_06.jpg",
+      "size_bytes": 17973,
+      "sha256": "aa96dfb0eb59d551bccd95e605c87a390a860b76e04e0016f20667163f200252"
+    },
+    {
+      "class": "Potato___Late_blight",
+      "filename": "Potato___Late_blight_07.jpg",
+      "size_bytes": 19399,
+      "sha256": "981f39c85ff6acb235498b1a2d049413face14fa6af3a8913f0fa0ba457273d3"
+    },
+    {
+      "class": "Potato___Late_blight",
+      "filename": "Potato___Late_blight_08.jpg",
+      "size_bytes": 14690,
+      "sha256": "7d36972ff364e28c01b007d4e713d9ad439c75016fb5b1fd046ef57fdbe419ad"
+    },
+    {
+      "class": "Potato___Late_blight",
+      "filename": "Potato___Late_blight_09.jpg",
+      "size_bytes": 18586,
+      "sha256": "4975349cb0ed34630ede27cba6b65ab67b4bc00c12bfbe344618fb194527ee56"
+    },
+    {
+      "class": "Potato___Late_blight",
+      "filename": "Potato___Late_blight_10.jpg",
+      "size_bytes": 16179,
+      "sha256": "4507c053c41176bf0af40288186538d719b4c21259af30da23b78f64ea6e385f"
+    },
+    {
+      "class": "Potato___healthy",
+      "filename": "Potato___healthy_01.jpg",
+      "size_bytes": 21345,
+      "sha256": "1c057430715c288100b64ac6136b69f23f8708f92e7e4f0410ac16b110325946"
+    },
+    {
+      "class": "Potato___healthy",
+      "filename": "Potato___healthy_02.jpg",
+      "size_bytes": 20229,
+      "sha256": "ca02edeb23fcea64bae292a7b20f9a4b26484df6a287b3fb5d6b4fe53b131f33"
+    },
+    {
+      "class": "Potato___healthy",
+      "filename": "Potato___healthy_03.jpg",
+      "size_bytes": 21257,
+      "sha256": "aed52452d81d81597b1bac54981bcae6952906110f7aa47be945a6a28f4a7e60"
+    },
+    {
+      "class": "Potato___healthy",
+      "filename": "Potato___healthy_04.jpg",
+      "size_bytes": 24030,
+      "sha256": "19e47ed531b27e96708e33447d17075a20c7a28c5e4fea4212ecac0a65c0abcd"
+    },
+    {
+      "class": "Potato___healthy",
+      "filename": "Potato___healthy_05.jpg",
+      "size_bytes": 20048,
+      "sha256": "5b8d8f9041f427aa28dcb6bc36b8e4d7a8c92d7b7a60905ab62c329a1024bd13"
+    },
+    {
+      "class": "Potato___healthy",
+      "filename": "Potato___healthy_06.jpg",
+      "size_bytes": 16148,
+      "sha256": "081328b5e520f5606bf763771d08a7085f040ecad789f5d422b2f48db14fd21a"
+    },
+    {
+      "class": "Potato___healthy",
+      "filename": "Potato___healthy_07.jpg",
+      "size_bytes": 19453,
+      "sha256": "ad7859ad619e22ca6adaf7ca4b83a1c3130f5270dab3ac3c71e7c1f3fab1d71b"
+    },
+    {
+      "class": "Potato___healthy",
+      "filename": "Potato___healthy_08.jpg",
+      "size_bytes": 18420,
+      "sha256": "0f9b82836c810e4c782b44be63c8f89926b38e26d2d8e7f9069c43305fce458b"
+    },
+    {
+      "class": "Potato___healthy",
+      "filename": "Potato___healthy_09.jpg",
+      "size_bytes": 23700,
+      "sha256": "cd1ef2774e1af39ca7b1916188fb59d2ebef111dc86c9191810bc615dc442564"
+    },
+    {
+      "class": "Potato___healthy",
+      "filename": "Potato___healthy_10.jpg",
+      "size_bytes": 19226,
+      "sha256": "97ffd530447b2042eb52a12f59e7ddb77a39f672c92d0a15e12ef03dd0cad9b4"
+    },
+    {
+      "class": "Tomato___Early_blight",
+      "filename": "Tomato___Early_blight_01.jpg",
+      "size_bytes": 18261,
+      "sha256": "29b79036b67724f6a76895d17ef1b863ad7a7134e03141b1feb601a591336123"
+    },
+    {
+      "class": "Tomato___Early_blight",
+      "filename": "Tomato___Early_blight_02.jpg",
+      "size_bytes": 13734,
+      "sha256": "ec1e81f52511918a2f14ac0ef020a850b745230de9ef74485d505133af963525"
+    },
+    {
+      "class": "Tomato___Early_blight",
+      "filename": "Tomato___Early_blight_03.jpg",
+      "size_bytes": 20250,
+      "sha256": "896801c0cfcd0335be005844f254ff7f8c3a9c432398444f4539681f6e90603e"
+    },
+    {
+      "class": "Tomato___Early_blight",
+      "filename": "Tomato___Early_blight_04.jpg",
+      "size_bytes": 22691,
+      "sha256": "eb1520f70fb4f623a71e65b1431ed20a9123d1e406f49e8d372526f483e2f903"
+    },
+    {
+      "class": "Tomato___Early_blight",
+      "filename": "Tomato___Early_blight_05.jpg",
+      "size_bytes": 17866,
+      "sha256": "de01c3817dcbf1321a99d2dffea48698b9c776bccaef6ff8f23efad001da8aec"
+    },
+    {
+      "class": "Tomato___Early_blight",
+      "filename": "Tomato___Early_blight_06.jpg",
+      "size_bytes": 13727,
+      "sha256": "d0bcbf9dd2c47ace0d6c88809694dbd332a25b73e948f1bf8a031659d3e3c490"
+    },
+    {
+      "class": "Tomato___Early_blight",
+      "filename": "Tomato___Early_blight_07.jpg",
+      "size_bytes": 17493,
+      "sha256": "eb86ebb166b0e5f9ef5a0454a77e178b7d19fec9d0df6c6b9d29ead17439e934"
+    },
+    {
+      "class": "Tomato___Early_blight",
+      "filename": "Tomato___Early_blight_08.jpg",
+      "size_bytes": 17718,
+      "sha256": "4874a009e40ec9aefc031e89b61d8f070c7c9df8ef7c65fb21bc43e7e1e1be75"
+    },
+    {
+      "class": "Tomato___Early_blight",
+      "filename": "Tomato___Early_blight_09.jpg",
+      "size_bytes": 15786,
+      "sha256": "7f937f7c6a82f18b277599453bf98cf3ea58d6bec2f2f06c9270df9446c3d0f8"
+    },
+    {
+      "class": "Tomato___Early_blight",
+      "filename": "Tomato___Early_blight_10.jpg",
+      "size_bytes": 23427,
+      "sha256": "dac3102137b279c6a777c5d12637747c38ac4e787db5b28b59bea9cec1c92a52"
+    },
+    {
+      "class": "Tomato___Late_blight",
+      "filename": "Tomato___Late_blight_01.jpg",
+      "size_bytes": 11714,
+      "sha256": "355d9ed5d0212dfc72eeda78118c55966febe086b60ff46fd7702766e92827d3"
+    },
+    {
+      "class": "Tomato___Late_blight",
+      "filename": "Tomato___Late_blight_02.jpg",
+      "size_bytes": 17918,
+      "sha256": "5c99f2f40da356465b10881acb21b64f0dc75daccf58b9dae567953c25fcfc9c"
+    },
+    {
+      "class": "Tomato___Late_blight",
+      "filename": "Tomato___Late_blight_03.jpg",
+      "size_bytes": 20364,
+      "sha256": "23b964de025c5db45bd692dd461e6b40377adaa8f13c7835ec83f3a8f565cf5d"
+    },
+    {
+      "class": "Tomato___Late_blight",
+      "filename": "Tomato___Late_blight_04.jpg",
+      "size_bytes": 19294,
+      "sha256": "a9eebda1ea65fee7d9f42f975d8b30f962b7a12c9ffa4f38ac9d95b3eda549a3"
+    },
+    {
+      "class": "Tomato___Late_blight",
+      "filename": "Tomato___Late_blight_05.jpg",
+      "size_bytes": 17659,
+      "sha256": "70b1ba8718a4d1ef490adbced041915bf6a711c35751af8e059de3f5503c829b"
+    },
+    {
+      "class": "Tomato___Late_blight",
+      "filename": "Tomato___Late_blight_06.jpg",
+      "size_bytes": 14129,
+      "sha256": "7468d78dc3f7bd368162e584b528860a117d549fc6ab68d5d8498fc360a3e0a8"
+    },
+    {
+      "class": "Tomato___Late_blight",
+      "filename": "Tomato___Late_blight_07.jpg",
+      "size_bytes": 7282,
+      "sha256": "0ca9bcb7fbb8b6edd736e09af3ec72e7f7c708475fd11e3a4b12033e909967ed"
+    },
+    {
+      "class": "Tomato___Late_blight",
+      "filename": "Tomato___Late_blight_08.jpg",
+      "size_bytes": 11101,
+      "sha256": "dc9d4c1f32f83d3bad493074a3ef54d4d0d707b6c51d2bcfa5b0fd90eee511e9"
+    },
+    {
+      "class": "Tomato___Late_blight",
+      "filename": "Tomato___Late_blight_09.jpg",
+      "size_bytes": 8937,
+      "sha256": "6bf7642118790f2b8a7f7baf35bb438e388fc61e754efdbb64c9d178cccf79a9"
+    },
+    {
+      "class": "Tomato___Late_blight",
+      "filename": "Tomato___Late_blight_10.jpg",
+      "size_bytes": 8441,
+      "sha256": "b522026f659f57fbb20f653b1ce1803c4819d5873932cc6d9109555258c284bd"
+    },
+    {
+      "class": "Tomato___healthy",
+      "filename": "Tomato___healthy_01.jpg",
+      "size_bytes": 15646,
+      "sha256": "a294299b0518a50ebc275c0ec4519b022cab8b34735039f6c2a089a911f6964e"
+    },
+    {
+      "class": "Tomato___healthy",
+      "filename": "Tomato___healthy_02.jpg",
+      "size_bytes": 18557,
+      "sha256": "a0d4ca4c979a0ca63ebb20a66bbd1cd46a43138d849b53bce1921694ab91938b"
+    },
+    {
+      "class": "Tomato___healthy",
+      "filename": "Tomato___healthy_03.jpg",
+      "size_bytes": 26372,
+      "sha256": "fc4556527d5d059c9259d993b9b4774a2cee841b6cfab0444da17a6c0586d491"
+    },
+    {
+      "class": "Tomato___healthy",
+      "filename": "Tomato___healthy_04.jpg",
+      "size_bytes": 23195,
+      "sha256": "be6f8871878eb85d55b435e59fd3db57d3dcde7f29a13a57c93f35ed8c67247c"
+    },
+    {
+      "class": "Tomato___healthy",
+      "filename": "Tomato___healthy_05.jpg",
+      "size_bytes": 26669,
+      "sha256": "41ae744b5de0ef4daa7936b2bbfb3d02974c675800a5a514761591670612a014"
+    },
+    {
+      "class": "Tomato___healthy",
+      "filename": "Tomato___healthy_06.jpg",
+      "size_bytes": 24525,
+      "sha256": "f7364c811787aae4502fa9a1835c95858c63d79727e2e24e8760a52389a4ec92"
+    },
+    {
+      "class": "Tomato___healthy",
+      "filename": "Tomato___healthy_07.jpg",
+      "size_bytes": 25465,
+      "sha256": "d2b8f6188b0331ce6ac764925d9e45fc3ab933993b16501e175fe241652b1f51"
+    },
+    {
+      "class": "Tomato___healthy",
+      "filename": "Tomato___healthy_08.jpg",
+      "size_bytes": 25321,
+      "sha256": "a6174cffa1e76a7f6e7b26c98691530b307970692f36106a10d2a08e8badb801"
+    },
+    {
+      "class": "Tomato___healthy",
+      "filename": "Tomato___healthy_09.jpg",
+      "size_bytes": 25831,
+      "sha256": "c6be05aae640885191e0b84c5aaa70c0a3ae4fd14aa41d3b226bf3ff61d42bd2"
+    },
+    {
+      "class": "Tomato___healthy",
+      "filename": "Tomato___healthy_10.jpg",
+      "size_bytes": 13742,
+      "sha256": "5557dfec943cd45abb026d2e2a815ee2643eed7c892eb623cb6c0be9e9373e5e"
+    }
+  ]
+}
