@@ -131,9 +131,9 @@
     "input_contract": "Float32 [1, 128, 128, 3] raw pixel values [0, 255]",
     "output_contract": "Float32 [1, 6] probabilities with internal Softmax",
     "verification_accuracy": 89.72,
-    "interpreter_latency_ms": 4.78,
-    "latency_benchmark": "4.15 - 4.69 ms Host CPU reference interpreter (benchmark mean: 4.29 ms with XNNPACK CPU); target on mobile Edge AI ~12-15 ms (< 40 ms budget)",
-    "benchmark_environment": "Host CPU Reference (Intel Core i5-4300U @ 1.9GHz) - Target on-device mobile ~12-15 ms"
+    "interpreter_latency_ms": 3.64,
+    "latency_benchmark": "3.42 - 3.98 ms Host CPU reference interpreter (benchmark mean: 3.64 ms with XNNPACK CPU); target on mobile Edge AI ~12-15 ms (< 40 ms budget)",
+    "benchmark_environment": "Host CPU Reference (Intel Core i5-4300U @ 1.9GHz with XNNPACK) - Target on-device mobile ~12-15 ms (Galaxy A03 Cortex-A55)"
   },
   "botanical_validation_60_specimens": {
     "total_tested": 60,

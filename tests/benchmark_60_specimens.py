@@ -157,7 +157,7 @@ def main():
     print(f"  1. Strict 6-Class Exact Match Accuracy : {total_exact_correct}/{total_evaluated} ({strict_accuracy:.1f}%)")
     print(f"  2. Accuracy on Accepted Predictions     : {total_exact_correct}/{total_accepted} ({accepted_accuracy:.1f}%) [Coverage: {coverage_rate:.1f}%]")
     print(f"  3. Gated as UNCERTAIN by Safety Gate    : {total_evaluated - total_accepted}/{total_evaluated} ({(total_evaluated - total_accepted)/total_evaluated*100:.1f}%)")
-    print(f"  4. Pathogen Family (Late Blight) Match  : {total_pathogen_correct}/{total_evaluated} ({(total_pathogen_correct/total_evaluated)*100:.1f}%) [3 Tomato LB predicted as Potato LB]")
+    print(f"  4. Pathogen Family (Late Blight) Match  : {total_pathogen_correct}/{total_evaluated} ({(total_pathogen_correct/total_evaluated)*100:.1f}%) [{total_pathogen_correct - total_exact_correct} Tomato LB predicted as Potato LB]")
     print(f"  5. Mean Host CPU Interpreter Latency   : {mean_overall_latency:.2f} ms")
     print("=" * 85)
 
@@ -199,7 +199,7 @@ def main():
             "pathogen_matches": total_pathogen_correct,
             "accuracy_pct": round((total_pathogen_correct / total_evaluated) * 100.0, 2),
             "cross_crop_late_blight_count": total_pathogen_correct - total_exact_correct,
-            "note": "Phytophthora infestans causes Late Blight across both Tomato and Potato. 3 Tomato Late Blight specimens were predicted as Potato Late Blight with high pathogen confidence."
+            "note": f"Phytophthora infestans causes Late Blight across both Tomato and Potato. {total_pathogen_correct - total_exact_correct} Tomato Late Blight specimen(s) predicted across crop with high pathogen confidence."
         },
         "mean_pc_latency_ms": round(mean_overall_latency, 2),
         "per_class_summary": summary_by_class,

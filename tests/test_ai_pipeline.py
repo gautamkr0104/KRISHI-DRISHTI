@@ -510,30 +510,52 @@ class TestESP32RestCycleSimulation(unittest.TestCase):
 
     def test_microclimate_cross_gating_suppresses_false_fungicide_alert(self):
         """
-        Verify that microclimate cross-gating suppresses chemical fungicide
-        alerts when ambient canopy humidity is low (RH < 85%), preventing
-        wasteful chemical spraying on abiotic chlorosis or OOD foliage.
+        Deterministic, non-vacuous validation of microclimate-to-diagnosis cross-gating:
+        1. RH 55%: Defined advisory gate activates on Late Blight.
+        2. RH 92%: Low-humidity advisory does not activate; standard recommendation preserved.
+        3. Missing telemetry (None): No false assumption of dry conditions; advisory does not activate.
+        4. Non-Late-Blight diagnosis (Healthy): No unintended suppression.
         """
         from ai_engine.krishi_ai_daemon import KrishiAIDaemon
         labels_path = os.path.join(REPO_ROOT, "ai_engine", "labels.json")
         model_path = os.path.join(REPO_ROOT, "ai_engine", "krishi_drishti_model.tflite")
         daemon = KrishiAIDaemon(model_path=model_path, labels_path=labels_path)
 
-        leaf_img = Image.new("RGB", (128, 128), color=(40, 160, 40))
+        # Deterministic Late Blight foliar target from reference images
+        lb_img_path = os.path.join(REPO_ROOT, "ai_engine", "sample_leaves", "tomato_late_blight.jpg")
+        self.assertTrue(os.path.exists(lb_img_path), f"Reference Late Blight image must exist: {lb_img_path}")
+        lb_img = Image.open(lb_img_path)
 
-        # Case A: Dry microclimate (RH = 55%, low risk) -> Chemical alert MUST be WITHHELD
+        # 1. RH 55% -> Advisory gate MUST activate
         dry_telemetry = {"temperature": 28.0, "humidity": 55.0}
-        res_dry = daemon.run_inference(leaf_img, telemetry=dry_telemetry)
-        if "Late Blight" in res_dry["disease"]:
-            self.assertTrue(res_dry["chemical"].startswith("WITHHELD"),
-                            f"Chemical alert should be WITHHELD under dry RH, got: {res_dry['chemical']}")
+        res_dry = daemon.run_inference(lb_img, telemetry=dry_telemetry)
+        self.assertIn("Late Blight", res_dry["disease"], "Model must deterministically predict Late Blight")
+        self.assertTrue(res_dry["chemical"].startswith("ADVISORY"),
+                        f"Expected ADVISORY chemical recommendation on RH 55%, got: {res_dry['chemical']}")
 
-        # Case B: Humid microclimate (RH = 92%, high risk) -> Permitted
+        # 2. RH 92% -> Low-humidity advisory must NOT activate (standard chemical recommendation active)
         humid_telemetry = {"temperature": 19.5, "humidity": 92.0}
-        res_humid = daemon.run_inference(leaf_img, telemetry=humid_telemetry)
-        if "Late Blight" in res_humid["disease"]:
-            self.assertFalse(res_humid["chemical"].startswith("WITHHELD"),
-                             "Chemical alert should be active under high RH risk")
+        res_humid = daemon.run_inference(lb_img, telemetry=humid_telemetry)
+        self.assertIn("Late Blight", res_humid["disease"])
+        self.assertFalse(res_humid["chemical"].startswith("ADVISORY"),
+                         f"Advisory should not trigger under RH 92%, got: {res_humid['chemical']}")
+        self.assertIn("Mancozeb", res_humid["chemical"], "Standard agronomic chemical must be recommended")
+
+        # 3. Missing sensor telemetry -> Must NOT falsely assume dry conditions
+        res_missing = daemon.run_inference(lb_img, telemetry=None)
+        self.assertIn("Late Blight", res_missing["disease"])
+        self.assertFalse(res_missing["chemical"].startswith("ADVISORY"),
+                         "Missing telemetry must not falsely trigger low-RH advisory")
+        self.assertIn("Mancozeb", res_missing["chemical"])
+
+        # 4. Non-Late-Blight diagnosis (Healthy) -> No unintended suppression
+        healthy_img_path = os.path.join(REPO_ROOT, "ai_engine", "sample_leaves", "tomato_healthy.jpg")
+        self.assertTrue(os.path.exists(healthy_img_path))
+        healthy_img = Image.open(healthy_img_path)
+        res_healthy = daemon.run_inference(healthy_img, telemetry=dry_telemetry)
+        self.assertIn("healthy", res_healthy["disease"].lower())
+        self.assertFalse(res_healthy["chemical"].startswith("ADVISORY"),
+                         "Healthy foliage must not have Late Blight advisory attached")
 
 
 if __name__ == "__main__":
