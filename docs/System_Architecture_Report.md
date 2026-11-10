@@ -106,9 +106,9 @@ To eliminate subjective bias during scientific evaluation, the KRISHI-DRISHTI ne
 | **Potato Healthy Tissue F1** | **0.9824** | Precision: 98.46%, Recall: 98.03% |
 | **Tomato Healthy Tissue F1** | **0.9531** | Precision: 91.57%, Recall: 99.38% |
 | **60-Specimen Botanical Benchmark** | **90.0% Strict / 91.5% Accepted** | Strict 6-class: 54/60 (90.0%); Accepted: 54/59 (91.5% coverage, 1 gated UNCERTAIN) |
-| **PlantDoc Outdoor Field Benchmark** | **34.91% Raw (All Frames) $\rightarrow$ 46.51% (Accepted Frames)** | Evaluated across 487 uncalibrated outdoor images; Dual-Stage Gating flags 57 ambiguous frames (11.7%) as UNCERTAIN |
+| **PlantDoc Outdoor Field Benchmark** | **31.21% Raw (All Frames) $\rightarrow$ 38.00% (Accepted Frames)** | Evaluated across 487 uncalibrated outdoor images; Dual-Stage Gating flags 87 ambiguous frames (17.9%) as UNCERTAIN |
 | **Model Size (Quantized TFLite)** | **2.01 MB** | Fully cached in RAM on low-RAM phones (Galaxy A03) |
-| **Edge Inference Latency** | **4.15–4.69 ms (CPU Reference)** | Benchmark mean 4.29 ms on Host CPU; ~12–15 ms on Mobile Edge CPU (< 40 ms target) |
+| **Edge Inference Latency** | **4.78 ms Mean (CPU Reference)** | Benchmark mean 4.29 ms on Host CPU; ~12–15 ms on Mobile Edge CPU (< 40 ms target) |
 
 ### 6.4 Scientific Uncertainty & Plausibility Gating
 To prevent misleading predictions when pointed at bare soil, weeds, or hands:

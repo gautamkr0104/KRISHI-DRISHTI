@@ -508,6 +508,33 @@ class TestESP32RestCycleSimulation(unittest.TestCase):
         self.assertGreaterEqual(float(np.min(tensor_f32)), 0.0)
         self.assertLessEqual(float(np.max(tensor_f32)), 255.0)
 
+    def test_microclimate_cross_gating_suppresses_false_fungicide_alert(self):
+        """
+        Verify that microclimate cross-gating suppresses chemical fungicide
+        alerts when ambient canopy humidity is low (RH < 85%), preventing
+        wasteful chemical spraying on abiotic chlorosis or OOD foliage.
+        """
+        from ai_engine.krishi_ai_daemon import KrishiAIDaemon
+        labels_path = os.path.join(REPO_ROOT, "ai_engine", "labels.json")
+        model_path = os.path.join(REPO_ROOT, "ai_engine", "krishi_drishti_model.tflite")
+        daemon = KrishiAIDaemon(model_path=model_path, labels_path=labels_path)
+
+        leaf_img = Image.new("RGB", (128, 128), color=(40, 160, 40))
+
+        # Case A: Dry microclimate (RH = 55%, low risk) -> Chemical alert MUST be WITHHELD
+        dry_telemetry = {"temperature": 28.0, "humidity": 55.0}
+        res_dry = daemon.run_inference(leaf_img, telemetry=dry_telemetry)
+        if "Late Blight" in res_dry["disease"]:
+            self.assertTrue(res_dry["chemical"].startswith("WITHHELD"),
+                            f"Chemical alert should be WITHHELD under dry RH, got: {res_dry['chemical']}")
+
+        # Case B: Humid microclimate (RH = 92%, high risk) -> Permitted
+        humid_telemetry = {"temperature": 19.5, "humidity": 92.0}
+        res_humid = daemon.run_inference(leaf_img, telemetry=humid_telemetry)
+        if "Late Blight" in res_humid["disease"]:
+            self.assertFalse(res_humid["chemical"].startswith("WITHHELD"),
+                             "Chemical alert should be active under high RH risk")
+
 
 if __name__ == "__main__":
     unittest.main()

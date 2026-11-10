@@ -48,12 +48,13 @@ def main():
         plantdoc_dir = REPO_ROOT / "ai_engine" / "PlantDoc_Solanaceae"
 
     if not plantdoc_dir.exists():
-        print(f"[NOTICE] PlantDoc local image directory not found at {plantdoc_dir}.")
-        print("         The complete specimen-by-specimen audit is verified and archived in:")
-        print(f"         {REPO_ROOT / 'tests' / 'plantdoc_benchmark_audit.json'}")
-        print("         To rerun locally, download the PlantDoc Solanaceae partition:")
-        print("         https://github.com/pratikkayal/PlantDoc-Dataset")
-        return 0
+        print(f"[SKIPPED] PlantDoc outdoor image directory not found at {plantdoc_dir}.")
+        print("          The complete specimen-by-specimen audit is verified and archived in:")
+        print(f"          {REPO_ROOT / 'tests' / 'plantdoc_benchmark_audit.json'}")
+        print("          To rerun locally, download the PlantDoc Solanaceae partition:")
+        print("          https://github.com/pratikkayal/PlantDoc-Dataset")
+        # Exit code 2 explicitly denotes SKIPPED due to missing external corpus
+        return 2
 
     print(f"[+] Loading Model: {model_path.name}")
     print(f"[+] PlantDoc Corpus: {plantdoc_dir}")

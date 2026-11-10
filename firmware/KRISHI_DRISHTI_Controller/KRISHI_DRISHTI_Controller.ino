@@ -242,12 +242,19 @@ void renderPage3_Cure() {
 
     display.setCursor(0, 24);
     display.print("Chem: ");
-    display.print(diagChemical.substring(0, 15));
-
-    display.setCursor(0, 36);
-    display.print("Note: Preventative bio");
-    display.setCursor(0, 44);
-    display.print("spray under canopy");
+    if (diagChemical.startsWith("WITHHELD")) {
+      display.print("WITHHELD (Low RH)");
+      display.setCursor(0, 36);
+      display.printf("RH %d%%: Spores dormant", (int)currentHum);
+      display.setCursor(0, 46);
+      display.print("Check abiotic chlorosis");
+    } else {
+      display.print(diagChemical.substring(0, 15));
+      display.setCursor(0, 36);
+      display.print("Note: Preventative bio");
+      display.setCursor(0, 44);
+      display.print("spray under canopy");
+    }
   } else if (diagStatus == "UNCERTAIN") {
     display.setCursor(0, 16);
     display.print("Image unclear/shadowed");
@@ -333,7 +340,27 @@ void pollAiDiagnosisNonBlocking() {
         diagConfidence = diagDoc["confidence"].as<float>();
         diagStatus = diagDoc["status"].as<String>();
         diagOrganic = diagDoc["organic"].as<String>();
-        diagChemical = diagDoc["chemical"].as<String>();
+        String rawChem = diagDoc["chemical"].as<String>();
+
+        // -------------------------------------------------------------
+        // PHYSICAL MICROCLIMATE-TO-DIAGNOSIS CROSS-GATING:
+        // Phytophthora infestans (Late Blight) physically requires high
+        // sustained humidity (RH >= 85%) to produce viable sporangia.
+        // If ambient humidity is low (RH < 85%) or microclimate risk is LOW,
+        // SUPPRESS synthetic fungicide recommendation to protect farmers
+        // from costly, unnecessary chemical spraying on abiotic chlorosis!
+        // -------------------------------------------------------------
+        if (diagDisease.indexOf("Late Blight") >= 0 || diagDisease.indexOf("Blight") >= 0) {
+          if (dhtConnected && currentHum < 85.0f && microclimateTracker.getRiskLevel() == RISK_LOW) {
+            diagChemical = "WITHHELD: Low RH (" + String((int)currentHum) + "%). No spore risk.";
+            Serial.printf("[SAFETY GATE] Microclimate Cross-Gating ACTIVE: Low RH (%.1f%%) suppressed chemical alert for %s!\n",
+                          currentHum, diagDisease.c_str());
+          } else {
+            diagChemical = rawChem;
+          }
+        } else {
+          diagChemical = rawChem;
+        }
 
         diagScanId = retScanId;
         hasDiagnosis = true;
