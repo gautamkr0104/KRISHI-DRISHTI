@@ -18,7 +18,7 @@
       "confidence": 99.9,
       "status": "OPTIMAL",
       "in_domain_match": true,
-      "latency_ms": 22.48
+      "latency_ms": 26.8
     },
     {
       "filename": "V261110-191524-30fps-auto_exp-tmc_auto_0.jpg",
@@ -27,10 +27,10 @@
       "ground_truth": "Tomato Healthy",
       "description": "Healthy green tomato leaflet under nocturnal LED torch",
       "prediction": "Tomato Healthy",
-      "confidence": 97.9,
+      "confidence": 96.7,
       "status": "OPTIMAL",
       "in_domain_match": true,
-      "latency_ms": 26.16
+      "latency_ms": 22.25
     },
     {
       "filename": "V261110-191530-30fps-auto_exp-tmc_auto_0.jpg",
@@ -39,10 +39,10 @@
       "ground_truth": "OOD Non-Crop (Paan)",
       "description": "Yellow heart-shaped betel leaf (Piperaceae family)",
       "prediction": "Tomato Healthy",
-      "confidence": 99.7,
+      "confidence": 99.4,
       "status": "OPTIMAL",
       "in_domain_match": false,
-      "latency_ms": 18.96
+      "latency_ms": 30.31
     },
     {
       "filename": "V261110-191538-30fps-auto_exp-tmc_auto_0.jpg",
@@ -51,10 +51,10 @@
       "ground_truth": "Tomato Healthy",
       "description": "Healthy green tomato leaflet under nocturnal LED torch",
       "prediction": "Tomato Healthy",
-      "confidence": 99.9,
+      "confidence": 100.0,
       "status": "OPTIMAL",
       "in_domain_match": true,
-      "latency_ms": 19.85
+      "latency_ms": 29.42
     },
     {
       "filename": "V261110-191543-30fps-auto_exp-tmc_auto_0.jpg",
@@ -63,10 +63,10 @@
       "ground_truth": "Tomato Healthy",
       "description": "Healthy green tomato leaflet under nocturnal LED torch",
       "prediction": "Tomato Healthy",
-      "confidence": 98.9,
+      "confidence": 99.4,
       "status": "OPTIMAL",
       "in_domain_match": true,
-      "latency_ms": 31.88
+      "latency_ms": 27.14
     },
     {
       "filename": "V261110-191549-30fps-auto_exp-tmc_auto_0.jpg",
@@ -75,10 +75,10 @@
       "ground_truth": "Tomato Healthy",
       "description": "Healthy green tomato leaflet under nocturnal LED torch",
       "prediction": "Tomato Healthy",
-      "confidence": 99.8,
+      "confidence": 100.0,
       "status": "OPTIMAL",
       "in_domain_match": true,
-      "latency_ms": 22.67
+      "latency_ms": 19.47
     },
     {
       "filename": "V261110-191600-30fps-auto_exp-tmc_auto_0.jpg",
@@ -86,11 +86,11 @@
       "botanical_species": "Solanum lycopersicum (Tomato)",
       "ground_truth": "Tomato Healthy",
       "description": "Healthy green tomato leaflet under nocturnal LED torch",
-      "prediction": "Solanaceae Uncertain / Ambiguous",
-      "confidence": 34.9,
-      "status": "UNCERTAIN",
+      "prediction": "Potato Late Blight",
+      "confidence": 57.4,
+      "status": "SEVERE",
       "in_domain_match": false,
-      "latency_ms": 21.55
+      "latency_ms": 27.74
     },
     {
       "filename": "V261110-191626-30fps-auto_exp-tmc_auto_0.jpg",
@@ -99,10 +99,10 @@
       "ground_truth": "OOD Non-Crop (Hibiscus)",
       "description": "Yellow chlorotic Hibiscus leaf (Malvaceae family)",
       "prediction": "Solanaceae Uncertain / Ambiguous",
-      "confidence": 46.6,
+      "confidence": 35.7,
       "status": "UNCERTAIN",
       "in_domain_match": false,
-      "latency_ms": 19.61
+      "latency_ms": 23.67
     },
     {
       "filename": "V261110-191628-30fps-auto_exp-tmc_auto_0.jpg",
@@ -111,10 +111,10 @@
       "ground_truth": "OOD Non-Crop (Hibiscus)",
       "description": "Yellow chlorotic Hibiscus leaf (Malvaceae family)",
       "prediction": "Tomato Late Blight",
-      "confidence": 51.5,
+      "confidence": 54.2,
       "status": "SEVERE",
       "in_domain_match": false,
-      "latency_ms": 21.01
+      "latency_ms": 28.21
     },
     {
       "filename": "V261110-191634-30fps-auto_exp-tmc_auto_0.jpg",
@@ -123,10 +123,10 @@
       "ground_truth": "OOD Non-Crop (Hibiscus)",
       "description": "Green Hibiscus leaf (Malvaceae family)",
       "prediction": "Tomato Late Blight",
-      "confidence": 83.0,
+      "confidence": 94.9,
       "status": "SEVERE",
       "in_domain_match": false,
-      "latency_ms": 17.67
+      "latency_ms": 19.56
     }
   ]
 }

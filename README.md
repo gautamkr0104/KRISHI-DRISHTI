@@ -129,9 +129,9 @@ Trained on the **New Plant Diseases Dataset (Augmented 87K, Solanaceae Partition
 | **Potato Healthy Tissue F1** | **0.9824** | Precision: 98.46%, Recall: 98.03% |
 | **Tomato Healthy Tissue F1** | **0.9531** | Precision: 91.57%, Recall: 99.38% |
 | **Model Size (TFLite)** | **2.03 MB** | Float16 post-training weight optimization with Float32 I/O interfaces |
-| **Inference Latency** | **3.94 ms Mean (Host PC CPU Reference) / ~12–15 ms (Target Mobile Edge)** | Benchmark Mean: 3.94 ms on Host PC CPU reference interpreter (Intel Core i5 with XNNPACK, range: 3.74–4.14 ms across 60 specimens); Target Mobile Edge CPU: ~12–15 ms (Cortex-A55 engineering estimate, budget < 40 ms); Wand sync < 15 ms |
-| **60-Specimen Botanical Benchmark** | **93.3% Strict / 93.3% Accepted** | Strict 6-class exact match: 56/60 (93.33%); Accepted predictions: 56/60 (93.33%, 100% coverage, 0 gated UNCERTAIN; 57/60 95.0% pathogen match) |
-| **PlantDoc Outdoor Benchmark** | **48.05% Raw (All Frames) $\rightarrow$ 72.00% (Accepted Frames)** | Evaluated on 487 uncalibrated outdoor images; Dual-Stage Gating safely flags 162 ambiguous/cluttered frames (33.26%) as UNCERTAIN |
+| **Inference Latency** | **4.94 ms Mean (Host PC CPU Reference) / ~12–15 ms (Target Mobile Edge)** | Benchmark Mean: 3.94 ms on Host PC CPU reference interpreter (Intel Core i5 with XNNPACK, range: 4.43–5.33 ms across 60 specimens); Target Mobile Edge CPU: ~12–15 ms (Cortex-A55 engineering estimate, budget < 40 ms); Wand sync < 15 ms |
+| **60-Specimen Botanical Benchmark** | **90.0% Strict / 93.1% Accepted** | Strict 6-class exact match: 54/60 (90.00%); Accepted predictions: 54/58 (93.10%, 96.7% coverage, 2 gated UNCERTAIN; 55/60 91.7% pathogen match) |
+| **PlantDoc Outdoor Benchmark** | **20.83% Raw $\rightarrow$ 35.71% (Held-Out Test) / 65.29% (Full Adaptation)** | Evaluated across PlantDoc with hash-level 80/20 holdout manifest (PLANTDOC_HOLDOUT_MANIFEST.json). Genuinely unseen test partition (96 images, 0% in training): 35.71% accepted accuracy (40 frames gated UNCERTAIN); Full domain adaptation corpus (487 images): 65.29% accepted accuracy |
 | **Entropy Rejection Threshold** | **$H > 1.45$ nats** | Rejects non-foliar objects, bare soil, and ambiguous leaves |
 
 ---

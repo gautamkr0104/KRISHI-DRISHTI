@@ -1,8 +1,8 @@
 {
-  "timestamp": "2026-11-10T19:34:07Z",
+  "timestamp": "2026-11-10T20:20:19Z",
   "model_file": "krishi_drishti_model.tflite",
   "file_size_bytes": 2123856,
-  "sha256": "b18e46716c9fa9bfcc79a81a22b7540413bb3d98a20d4c27261a60a30d43f027",
+  "sha256": "a9ec0373882eaf4ad1046ae89e99651d62e7a5334a2b95eebc008a353aed4383",
   "runtime_backend": "TensorFlow 2.21.0",
   "pipeline": "KrishiAIDaemon.run_inference (Full Production Method)",
   "tensors": {
@@ -37,11 +37,11 @@
       "filename": "potato_early_blight.jpg",
       "ground_truth": "Potato Early Blight",
       "predicted_class": "Potato Early Blight",
-      "confidence_pct": 99.9,
+      "confidence_pct": 100.0,
       "decision": "ACCEPTED (WARNING)",
       "status": "WARNING",
       "verified_match": true,
-      "latency_ms": 5.95,
+      "latency_ms": 5.08,
       "pathogen": "Alternaria solani",
       "organic_recommendation": "Crop rotation with non-solanaceous crops + Neem cake soil application.",
       "chemical_recommendation": "Azoxystrobin 23% SC @ 1.0ml/L."
@@ -50,11 +50,11 @@
       "filename": "potato_healthy.jpg",
       "ground_truth": "Potato Healthy",
       "predicted_class": "Potato Healthy",
-      "confidence_pct": 99.8,
+      "confidence_pct": 99.9,
       "decision": "ACCEPTED (OPTIMAL)",
       "status": "OPTIMAL",
       "verified_match": true,
-      "latency_ms": 4.97,
+      "latency_ms": 3.62,
       "pathogen": "None (Healthy Tissue)",
       "organic_recommendation": "Regular earthing-up and balanced potassium application.",
       "chemical_recommendation": "No chemical intervention needed."
@@ -67,7 +67,7 @@
       "decision": "ACCEPTED (SEVERE)",
       "status": "SEVERE",
       "verified_match": true,
-      "latency_ms": 3.88,
+      "latency_ms": 5.78,
       "pathogen": "Phytophthora infestans",
       "organic_recommendation": "Copper soap spray + destroy infected haulms 10 days before harvest.",
       "chemical_recommendation": "Cymoxanil 8% + Mancozeb 64% WP @ 2.5g/L."
@@ -80,7 +80,7 @@
       "decision": "REJECTED (No Leaf Detected)",
       "status": "UNCERTAIN",
       "verified_match": true,
-      "latency_ms": 1.47,
+      "latency_ms": 2.58,
       "pathogen": "Insufficient foliar tissue in frame",
       "organic_recommendation": "Aim camera lens squarely at leaf surface",
       "chemical_recommendation": "Ensure good ambient daylight"
@@ -93,7 +93,7 @@
       "decision": "REJECTED (No Leaf Detected)",
       "status": "UNCERTAIN",
       "verified_match": true,
-      "latency_ms": 1.42,
+      "latency_ms": 2.97,
       "pathogen": "Insufficient foliar tissue in frame",
       "organic_recommendation": "Aim camera lens squarely at leaf surface",
       "chemical_recommendation": "Ensure good ambient daylight"
@@ -106,7 +106,7 @@
       "decision": "ACCEPTED (WARNING)",
       "status": "WARNING",
       "verified_match": true,
-      "latency_ms": 3.19,
+      "latency_ms": 7.72,
       "pathogen": "Alternaria solani",
       "organic_recommendation": "Baking soda 5g/L spray + compost tea soil amendment.",
       "chemical_recommendation": "Chlorothalonil 75% WP @ 2.0g/L or Copper Oxychloride @ 3.0g/L."
@@ -119,7 +119,7 @@
       "decision": "ACCEPTED (OPTIMAL)",
       "status": "OPTIMAL",
       "verified_match": true,
-      "latency_ms": 4.74,
+      "latency_ms": 4.44,
       "pathogen": "None (Healthy Tissue)",
       "organic_recommendation": "Maintain balanced NPK fertilizer and drip irrigation schedule.",
       "chemical_recommendation": "No chemical intervention needed."
@@ -128,11 +128,11 @@
       "filename": "tomato_late_blight.jpg",
       "ground_truth": "Tomato Late Blight",
       "predicted_class": "Tomato Late Blight",
-      "confidence_pct": 99.2,
+      "confidence_pct": 99.9,
       "decision": "ACCEPTED (SEVERE)",
       "status": "SEVERE",
       "verified_match": true,
-      "latency_ms": 5.14,
+      "latency_ms": 3.62,
       "pathogen": "Phytophthora infestans",
       "organic_recommendation": "Neem Oil 5ml/L + Trichoderma viride drench. Prune infected leaves.",
       "chemical_recommendation": "Mancozeb 75% WP @ 2.5g/L or Ridomil Gold @ 2.0g/L."

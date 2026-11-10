@@ -94,7 +94,7 @@ To eliminate subjective bias during scientific evaluation, the KRISHI-DRISHTI ne
 2. **Canopy Data Augmentation:** Real-time affine transformations (`RandomFlip`, `RandomRotation(0.12)`, `RandomZoom(0.08)`, `RandomContrast(0.08)`) simulating field flutter and outdoor sun glare.
 3. **Stage 1 (Head Warmup):** 2 epochs with frozen backbone using Adam ($\text{lr} = 10^{-3}$), training dense classification layer with Dropout (0.25).
 4. **Stage 2 (Deep Fine-Tuning):** 2 epochs unfreezing top 25 convolutional layers ($\text{lr} = 10^{-4}$) to adapt high-level visual representations directly to foliar lesions.
-5. **Float16 Quantization:** Post-Training Quantization (PTQ) reducing weights to IEEE 754 half-precision float16 (reducing model footprint from 4.02 MB to **2.03 MB**), with standard Float32 input/output interfaces (`[1, 128, 128, 3]` raw pixels and `[1, 6]` probabilities with built-in Softmax), achieving **3.74–4.14 ms** inference on host CPU reference interpreter (benchmark mean: **3.94 ms** with XNNPACK; target ~12–15 ms on smartphone mobile CPU engineering estimate, budget < 40 ms).
+5. **Float16 Quantization:** Post-Training Quantization (PTQ) reducing weights to IEEE 754 half-precision float16 (reducing model footprint from 4.02 MB to **2.03 MB**), with standard Float32 input/output interfaces (`[1, 128, 128, 3]` raw pixels and `[1, 6]` probabilities with built-in Softmax), achieving **3.74–4.14 ms** inference on host CPU reference interpreter (benchmark mean: **4.94 ms** with XNNPACK; target ~12–15 ms on smartphone mobile CPU engineering estimate, budget < 40 ms).
 
 ### 6.3 Empirical Performance Metrics
 | Metric | Benchmark Result | Practical Agricultural Significance |
@@ -105,10 +105,10 @@ To eliminate subjective bias during scientific evaluation, the KRISHI-DRISHTI ne
 | **Potato Early Blight F1** | **0.9665** | Precision: 98.09%, Recall: 95.26% |
 | **Potato Healthy Tissue F1** | **0.9824** | Precision: 98.46%, Recall: 98.03% |
 | **Tomato Healthy Tissue F1** | **0.9531** | Precision: 91.57%, Recall: 99.38% |
-| **60-Specimen Botanical Benchmark** | **93.3% Strict / 93.3% Accepted** | Strict 6-class: 56/60 (93.33%); Accepted: 56/60 (93.33% coverage, 0 gated UNCERTAIN; 57/60 95.0% pathogen match) |
-| **PlantDoc Outdoor Field Benchmark** | **48.05% Raw (All Frames) $\rightarrow$ 72.00% (Accepted Frames)** | Evaluated across 487 uncalibrated outdoor images; Dual-Stage Gating safely flags 162 ambiguous/cluttered frames (33.26%) as UNCERTAIN |
+| **60-Specimen Botanical Benchmark** | **90.0% Strict / 93.1% Accepted** | Strict 6-class: 54/60 (90.00%); Accepted: 54/58 (93.10% coverage, 2 gated UNCERTAIN; 55/60 91.7% pathogen match) |
+| **PlantDoc Outdoor Field Benchmark** | **20.83% Raw $\rightarrow$ 35.71% (Held-Out Test) / 65.29% (Full Adaptation)** | Hash-level 80/20 holdout manifest (PLANTDOC_HOLDOUT_MANIFEST.json). Genuinely unseen test partition (96 images, 0% in training): 35.71% accepted accuracy (40 frames gated UNCERTAIN); Full domain adaptation corpus (487 images): 65.29% accepted accuracy |
 | **Model Size (Quantized TFLite)** | **2.03 MB** | Fully cached in RAM on low-RAM phones (Galaxy A03) |
-| **Edge Inference Latency** | **3.94 ms Mean (Host CPU Reference)** | Benchmark mean: 3.94 ms on Host CPU (Intel i5 with XNNPACK, range: 3.74–4.14 ms); Target Mobile Edge: ~12–15 ms (Galaxy A03 Cortex-A55 engineering estimate, budget < 40 ms) |
+| **Edge Inference Latency** | **4.94 ms Mean (Host CPU Reference)** | Benchmark mean: 4.94 ms on Host CPU (Intel i5 with XNNPACK, range: 4.43–5.33 ms); Target Mobile Edge: ~12–15 ms (Galaxy A03 Cortex-A55 engineering estimate, budget < 40 ms) |
 
 ### 6.4 Scientific Uncertainty & Plausibility Gating
 To prevent misleading predictions when pointed at bare soil, weeds, or hands:
