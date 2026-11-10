@@ -1,24 +1,40 @@
 {
   "benchmark": "PlantDoc Outdoor Solanaceae Partition",
-  "timestamp": "2026-11-10T19:35:07Z",
+  "timestamp": "2026-11-10T20:21:34Z",
   "model_file": "krishi_drishti_model.tflite",
   "dataset_source": "https://github.com/pratikkayal/PlantDoc-Dataset",
-  "total_evaluated": 487,
-  "raw_accuracy": {
-    "correct": 234,
-    "total": 487,
-    "accuracy_pct": 48.05
+  "provenance_manifest": "ai_engine/PLANTDOC_HOLDOUT_MANIFEST.json",
+  "held_out_unseen_outdoor_test": {
+    "total_evaluated": 96,
+    "raw_correct": 20,
+    "raw_accuracy_pct": 20.83,
+    "dual_stage_gating": {
+      "total_gated_uncertain": 40,
+      "gated_pct": 41.67,
+      "foliar_ratio_rejected": 0,
+      "entropy_confidence_rejected": 40
+    },
+    "accepted_frame_triage": {
+      "accepted_frames": 56,
+      "accepted_correct": 20,
+      "accepted_accuracy_pct": 35.71
+    },
+    "independence_statement": "100% cryptographically excluded from training. Guaranteed zero overlap via SHA-256 hash manifest."
   },
-  "dual_stage_gating": {
-    "total_gated_uncertain": 162,
-    "gated_pct": 33.26,
-    "foliar_ratio_rejected": 1,
-    "entropy_confidence_rejected": 161
-  },
-  "accepted_frame_triage": {
-    "accepted_frames": 325,
-    "accepted_correct": 234,
-    "accepted_accuracy_pct": 72.0
-  },
-  "scientific_interpretation": "Accepted-frame accuracy measures triage precision on decisively resolved foliage, while raw accuracy includes out-of-focus background noise. Dual-Stage Gating prevents flagging unresolvable field frames as UNCERTAIN, though outdoor uncalibrated accuracy remains limited by real-world foliar clutter."
+  "domain_adaptation_full_corpus": {
+    "total_evaluated": 487,
+    "raw_correct": 222,
+    "raw_accuracy_pct": 45.59,
+    "dual_stage_gating": {
+      "total_gated_uncertain": 147,
+      "gated_pct": 30.18,
+      "foliar_ratio_rejected": 1,
+      "entropy_confidence_rejected": 146
+    },
+    "accepted_frame_triage": {
+      "accepted_frames": 340,
+      "accepted_correct": 222,
+      "accepted_accuracy_pct": 65.29
+    }
+  }
 }
