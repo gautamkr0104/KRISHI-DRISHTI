@@ -106,7 +106,7 @@ To eliminate subjective bias during scientific evaluation, the KRISHI-DRISHTI ne
 | **Potato Healthy Tissue F1** | **0.9824** | Precision: 98.46%, Recall: 98.03% |
 | **Tomato Healthy Tissue F1** | **0.9531** | Precision: 91.57%, Recall: 99.38% |
 | **60-Specimen Botanical Benchmark** | **90.0% Strict / 93.1% Accepted** | Strict 6-class: 54/60 (90.00%); Accepted: 54/58 (93.10% coverage, 2 gated UNCERTAIN; 55/60 91.7% pathogen match) |
-| **PlantDoc Outdoor Field Benchmark** | **20.83% Raw $\rightarrow$ 35.71% (Held-Out Test) / 65.29% (Full Adaptation)** | Hash-level 80/20 holdout manifest (PLANTDOC_HOLDOUT_MANIFEST.json). Genuinely unseen test partition (96 images, 0% in training): 35.71% accepted accuracy (40 frames gated UNCERTAIN); Full domain adaptation corpus (487 images): 65.29% accepted accuracy |
+| **PlantDoc Outdoor Field Benchmark** | **35.48% Raw $\rightarrow$ 57.89% (Held-Out Test) / 67.47% (Full Adaptation)** | Hash-level 80/20 holdout manifest (PLANTDOC_HOLDOUT_MANIFEST.json). Genuinely unseen test partition (93 unique images, 100% excluded from training, 0 duplicate hashes): 35.48% raw accuracy (33/93), 57.89% diagnostic accuracy on accepted frames (33/57, 36 frames gated UNCERTAIN); Full domain adaptation corpus (487 images): 46.00% raw (224/487) / 67.47% accepted (224/332) |
 | **Model Size (Quantized TFLite)** | **2.03 MB** | Fully cached in RAM on low-RAM phones (Galaxy A03) |
 | **Edge Inference Latency** | **4.94 ms Mean (Host CPU Reference)** | Benchmark mean: 4.94 ms on Host CPU (Intel i5 with XNNPACK, range: 4.43–5.33 ms); Target Mobile Edge: ~12–15 ms (Galaxy A03 Cortex-A55 engineering estimate, budget < 40 ms) |
 
