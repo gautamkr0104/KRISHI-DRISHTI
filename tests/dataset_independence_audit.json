@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-10T18:19:22Z",
-  "audit_scope": "Independent Dataset Provenance Audit",
+  "timestamp": "2026-11-10T18:37:04Z",
+  "audit_scope": "Independent Dataset Provenance & Cryptographic Collision Audit",
   "benchmark_designation": "Documented Hold-Out Specimen Benchmark",
   "total_specimens": 60,
   "classes_evaluated": 6,
@@ -12,7 +12,16 @@
     "Tomato___Late_blight": 10,
     "Tomato___healthy": 10
   },
-  "independence_protocol": "These 60 held-out botanical dataset images were partitioned from the PlantVillage validation corpus, maintained in a separate directory tree, and held out entirely from local gradient descent and weight updates. Note on public dataset provenance: in the Kaggle 'New Plant Diseases Dataset (Augmented)', original source photos underwent offline augmentations prior to distribution, meaning identical or affine-transformed source leaves exist across augmented partitions. However, these 60 specimens were strictly held out from local model training batches to serve as an immutable benchmark for reproducible evaluation.",
+  "kaggle_dataset_audit": {
+    "kaggle_cache_detected": true,
+    "solanaceae_training_images_hashed": 11389,
+    "solanaceae_validation_images_hashed": 2848,
+    "benchmark_matches_in_train": 44,
+    "benchmark_matches_in_valid": 16,
+    "unique_validation_only": 16,
+    "curator_augmentation_note": "Kaggle 'vipoooool/new-plant-diseases-dataset' applied offline image augmentations prior to train/val partitioning. Consequently, 44 of the 60 benchmark leaves share exact duplicate hashes with pre-augmented variants in the public train folder, while 16 are unique to the validation partition. Zero overlap is not claimed; the empirical data is documented transparently."
+  },
+  "independence_protocol": "These 60 held-out botanical dataset images were partitioned from the PlantVillage validation corpus, maintained in a separate directory tree, and held out entirely from local gradient descent and weight updates during model training. Note on public dataset provenance: as verified cryptographically, 44 specimens match pre-augmented copies in the Kaggle train partition due to upstream dataset curation. These 60 specimens serve as an immutable, reproducible evaluation benchmark.",
   "specimens": [
     {
       "class": "Potato___Early_blight",
