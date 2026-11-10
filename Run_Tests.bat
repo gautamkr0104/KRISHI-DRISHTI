@@ -3,6 +3,7 @@ setlocal enabledelayedexpansion
 
 echo ======================================================================
 echo KRISHI-DRISHTI :: Automated Verification and Validation Suite
+echo 54th National Children's Science Congress (NCSC 2026)
 echo ======================================================================
 echo.
 
@@ -23,7 +24,7 @@ if exist "D:\tools\krishi_ai_env\Scripts\python.exe" (
 )
 
 echo.
-echo [1/4] Running Python Automated Unit and Integration Tests (11 Tests)...
+echo [1/5] Running Python Automated Unit and Integration Tests (11 Tests)...
 echo ----------------------------------------------------------------------
 %PYTHON_CMD% "%~dp0tests\test_ai_pipeline.py"
 if %errorlevel% neq 0 (
@@ -33,7 +34,7 @@ if %errorlevel% neq 0 (
 )
 
 echo.
-echo [2/4] Running Production Daemon 8-Specimen & Gating Verification Audit...
+echo [2/5] Running Production Daemon 8-Specimen & Gating Verification Audit...
 echo ----------------------------------------------------------------------
 %PYTHON_CMD% "%~dp0tests\verify_tflite_model.py"
 if %errorlevel% neq 0 (
@@ -43,7 +44,7 @@ if %errorlevel% neq 0 (
 )
 
 echo.
-echo [3/4] Running Reproducible 60-Specimen Botanical Benchmark...
+echo [3/5] Running Reproducible 60-Specimen Botanical Benchmark...
 echo ----------------------------------------------------------------------
 %PYTHON_CMD% "%~dp0tests\benchmark_60_specimens.py"
 if %errorlevel% neq 0 (
@@ -53,7 +54,19 @@ if %errorlevel% neq 0 (
 )
 
 echo.
-echo [4/4] Checking for C++ Compiler for Native Firmware Module Tests...
+echo [4/5] Running Real-World Field Night-Flash & OOD Audit...
+echo ----------------------------------------------------------------------
+if exist "%~dp0tests\evaluate_field_images.py" (
+    %PYTHON_CMD% "%~dp0tests\evaluate_field_images.py"
+    if %errorlevel% neq 0 (
+        echo [FAIL] Field test images evaluation encountered errors.
+        if "%1" neq "--no-pause" pause
+        exit /b %errorlevel%
+    )
+)
+
+echo.
+echo [5/5] Checking for C++ Compiler for Native Firmware Module Tests...
 echo ----------------------------------------------------------------------
 where g++ >nul 2>&1
 if %errorlevel% equ 0 (

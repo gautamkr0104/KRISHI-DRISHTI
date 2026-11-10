@@ -116,7 +116,7 @@ To prevent misleading predictions when pointed at bare soil, weeds, or hands:
 
 ---
 
-## 7. Judge Defense & Engineering Q&A Strategy (CBSE / NCSC Mentorship)
+## 7. Judge Defense & Engineering Q&A Strategy (NCSC 2026 Evaluation)
 
 ### Q1: "Where did you learn your coding? Did you just copy-paste this from YouTube or GitHub?"
 > **Student Defense:**  

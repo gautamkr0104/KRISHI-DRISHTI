@@ -5,7 +5,8 @@ Executes all validation suites across Windows, Linux, and macOS:
 1. Unit & Integration Suite (11 tests)
 2. Production Daemon 8-Specimen & Gating Audit
 3. Reproducible 60-Specimen Botanical Benchmark
-4. Native C++ MicroclimateTracker Unit Test Harness
+4. Real-World Field Night-Flash & OOD Audit
+5. Native C++ MicroclimateTracker Unit Test Harness
 """
 
 import os
@@ -19,11 +20,12 @@ PYTHON_EXE = sys.executable
 def main():
     print("=" * 75)
     print("  KRISHI-DRISHTI :: COMPREHENSIVE MASTER TEST & VERIFICATION SUITE")
+    print("  54th National Children's Science Congress (NCSC 2026)")
     print("=" * 75)
     print(f"[*] Python Interpreter: {PYTHON_EXE}")
 
     # 1. Run Unit & Integration Suite
-    print("\n[1/4] Running Python Automated Unit & Integration Suite (11 Tests)...")
+    print("\n[1/5] Running Python Automated Unit & Integration Suite (11 Tests)...")
     print("-" * 75)
     test_pipeline = os.path.join(REPO_ROOT, "tests", "test_ai_pipeline.py")
     res1 = subprocess.run([PYTHON_EXE, test_pipeline])
@@ -32,7 +34,7 @@ def main():
         sys.exit(res1.returncode)
 
     # 2. Run Production Daemon Verification Audit
-    print("\n[2/4] Running Production Daemon 8-Specimen & Gating Verification Audit...")
+    print("\n[2/5] Running Production Daemon 8-Specimen & Gating Verification Audit...")
     print("-" * 75)
     verify_script = os.path.join(REPO_ROOT, "tests", "verify_tflite_model.py")
     res2 = subprocess.run([PYTHON_EXE, verify_script])
@@ -41,7 +43,7 @@ def main():
         sys.exit(res2.returncode)
 
     # 3. Run 60-Specimen Botanical Benchmark
-    print("\n[3/4] Running Reproducible 60-Specimen Botanical Benchmark...")
+    print("\n[3/5] Running Reproducible 60-Specimen Botanical Benchmark...")
     print("-" * 75)
     bench_script = os.path.join(REPO_ROOT, "tests", "benchmark_60_specimens.py")
     res3 = subprocess.run([PYTHON_EXE, bench_script])
@@ -49,8 +51,18 @@ def main():
         print("[FAIL] 60-specimen benchmark script failed.")
         sys.exit(res3.returncode)
 
-    # 4. Check for Native C++ Compiler
-    print("\n[4/4] Checking for C++ Compiler for Native Firmware Unit Tests...")
+    # 4. Run Real-World Field Night-Flash & OOD Audit
+    print("\n[4/5] Running Real-World Field Night-Flash & OOD Audit...")
+    print("-" * 75)
+    field_script = os.path.join(REPO_ROOT, "tests", "evaluate_field_images.py")
+    if os.path.exists(field_script):
+        res4 = subprocess.run([PYTHON_EXE, field_script])
+        if res4.returncode != 0:
+            print("[FAIL] Field image evaluation failed.")
+            sys.exit(res4.returncode)
+
+    # 5. Check for Native C++ Compiler
+    print("\n[5/5] Checking for C++ Compiler for Native Firmware Unit Tests...")
     print("-" * 75)
     compiler = shutil.which("g++") or shutil.which("clang++")
     if compiler:
