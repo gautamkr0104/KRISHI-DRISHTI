@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-10T17:27:52Z",
+  "timestamp": "2026-11-10T17:38:54Z",
   "model_file": "krishi_drishti_model.tflite",
   "file_size_bytes": 2110100,
   "sha256": "c275731b0190c99daff3f7dfb54b9b544c5e670447fead9b8310788cb2b8a53b",
@@ -41,7 +41,7 @@
       "decision": "ACCEPTED (WARNING)",
       "status": "WARNING",
       "verified_match": true,
-      "latency_ms": 7.02,
+      "latency_ms": 5.51,
       "pathogen": "Alternaria solani",
       "organic_recommendation": "Crop rotation with non-solanaceous crops + Neem cake soil application.",
       "chemical_recommendation": "Azoxystrobin 23% SC @ 1.0ml/L."
@@ -54,7 +54,7 @@
       "decision": "ACCEPTED (OPTIMAL)",
       "status": "OPTIMAL",
       "verified_match": true,
-      "latency_ms": 9.16,
+      "latency_ms": 4.99,
       "pathogen": "None (Healthy Tissue)",
       "organic_recommendation": "Regular earthing-up and balanced potassium application.",
       "chemical_recommendation": "No chemical intervention needed."
@@ -67,7 +67,7 @@
       "decision": "ACCEPTED (SEVERE)",
       "status": "SEVERE",
       "verified_match": true,
-      "latency_ms": 6.19,
+      "latency_ms": 3.24,
       "pathogen": "Phytophthora infestans",
       "organic_recommendation": "Copper soap spray + destroy infected haulms 10 days before harvest.",
       "chemical_recommendation": "Cymoxanil 8% + Mancozeb 64% WP @ 2.5g/L."
@@ -80,7 +80,7 @@
       "decision": "REJECTED (No Leaf Detected)",
       "status": "UNCERTAIN",
       "verified_match": true,
-      "latency_ms": 2.41,
+      "latency_ms": 1.76,
       "pathogen": "Insufficient foliar tissue in frame",
       "organic_recommendation": "Aim camera lens squarely at leaf surface",
       "chemical_recommendation": "Ensure good ambient daylight"
@@ -93,7 +93,7 @@
       "decision": "REJECTED (No Leaf Detected)",
       "status": "UNCERTAIN",
       "verified_match": true,
-      "latency_ms": 4.74,
+      "latency_ms": 2.8,
       "pathogen": "Insufficient foliar tissue in frame",
       "organic_recommendation": "Aim camera lens squarely at leaf surface",
       "chemical_recommendation": "Ensure good ambient daylight"
@@ -106,7 +106,7 @@
       "decision": "ACCEPTED (WARNING)",
       "status": "WARNING",
       "verified_match": true,
-      "latency_ms": 5.15,
+      "latency_ms": 3.38,
       "pathogen": "Alternaria solani",
       "organic_recommendation": "Baking soda 5g/L spray + compost tea soil amendment.",
       "chemical_recommendation": "Chlorothalonil 75% WP @ 2.0g/L or Copper Oxychloride @ 3.0g/L."
@@ -119,7 +119,7 @@
       "decision": "ACCEPTED (OPTIMAL)",
       "status": "OPTIMAL",
       "verified_match": true,
-      "latency_ms": 6.14,
+      "latency_ms": 3.27,
       "pathogen": "None (Healthy Tissue)",
       "organic_recommendation": "Maintain balanced NPK fertilizer and drip irrigation schedule.",
       "chemical_recommendation": "No chemical intervention needed."
@@ -132,7 +132,7 @@
       "decision": "ACCEPTED (SEVERE)",
       "status": "SEVERE",
       "verified_match": true,
-      "latency_ms": 6.32,
+      "latency_ms": 4.13,
       "pathogen": "Phytophthora infestans",
       "organic_recommendation": "Neem Oil 5ml/L + Trichoderma viride drench. Prune infected leaves.",
       "chemical_recommendation": "Mancozeb 75% WP @ 2.5g/L or Ridomil Gold @ 2.0g/L."

@@ -99,7 +99,7 @@ class KrishiAIDaemon:
         tensor = np.expand_dims(tensor_data, axis=0)
         return tensor, foliar_ratio
 
-    def run_inference(self, pil_img):
+    def run_inference(self, pil_img, telemetry=None):
         """
         Runs genuine inference and returns real probabilities, confidence, and uncertainty flags.
         Zero Math.random() or simulated numbers.
@@ -160,6 +160,17 @@ class KrishiAIDaemon:
             }
             
         matched = self.labels[max_idx]
+        chem_rec = matched["chemical"]
+
+        # Microclimate-to-Diagnosis Cross-Gating:
+        # Phytophthora infestans (Late Blight) physically requires high sustained
+        # relative humidity (RH >= 85%) to produce viable sporangia.
+        # If telemetry shows dry canopy (RH < 85%), suppress chemical fungicide recommendation.
+        if "Late Blight" in matched["disease"] and telemetry:
+            hum = telemetry.get("humidity", 0.0)
+            if hum > 0.0 and hum < 85.0:
+                chem_rec = f"WITHHELD: Low RH ({hum:.0f}%). Spores dormant under dry canopy (requires RH >= 85%). Suppressing fungicide; inspect for abiotic chlorosis."
+
         return {
             "crop": matched["crop"],
             "disease": matched["disease"],
@@ -167,7 +178,7 @@ class KrishiAIDaemon:
             "confidence": conf_percent,
             "status": matched["severity"],
             "organic": matched["organic"],
-            "chemical": matched["chemical"],
+            "chemical": chem_rec,
             "latency_ms": latency,
             "probabilities": [round(float(p), 4) for p in probs]
         }

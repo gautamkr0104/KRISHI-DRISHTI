@@ -129,9 +129,9 @@ Trained on the **New Plant Diseases Dataset (Augmented 87K, Solanaceae Partition
 | **Potato Healthy Tissue F1** | **0.9824** | Precision: 98.46%, Recall: 98.03% |
 | **Tomato Healthy Tissue F1** | **0.9531** | Precision: 91.57%, Recall: 99.38% |
 | **Model Size (TFLite)** | **2.01 MB** | Float16 post-training weight optimization with Float32 I/O interfaces |
-| **Inference Latency** | **4.15–4.69 ms (Host PC CPU Reference) / ~12–15 ms (Target Mobile Edge)** | Reference Host CPU: Intel Core i5 @ 1.9GHz / Target Mobile: Samsung Galaxy A03 Cortex-A55; Wand sync < 15 ms |
+| **Inference Latency** | **4.78 ms Mean (Host PC CPU Reference) / ~12–15 ms (Target Mobile Edge)** | Benchmark Mean: 4.78 ms on Host PC CPU (Intel Core i5, range: 3.50–10.75 ms); Target Mobile Edge CPU: ~12–15 ms; Wand sync < 15 ms |
 | **60-Specimen Botanical Benchmark** | **90.0% Strict / 91.5% Accepted** | Strict 6-class exact match: 54/60 (90.0%); Accepted predictions: 54/59 (91.5%, 98.3% coverage, 1 gated UNCERTAIN) |
-| **PlantDoc Outdoor Benchmark** | **34.91% Raw (All Frames) $\rightarrow$ 46.51% (Accepted Frames)** | Evaluated on 487 uncalibrated outdoor images; Dual-Stage Gating flags 57 ambiguous frames (11.7%) as UNCERTAIN |
+| **PlantDoc Outdoor Benchmark** | **31.21% Raw (All Frames) $\rightarrow$ 38.00% (Accepted Frames)** | Evaluated on 487 uncalibrated outdoor images; Dual-Stage Gating flags 87 ambiguous frames (17.9%) as UNCERTAIN |
 | **Entropy Rejection Threshold** | **$H > 1.45$ nats** | Rejects non-foliar objects, bare soil, and ambiguous leaves |
 
 ---

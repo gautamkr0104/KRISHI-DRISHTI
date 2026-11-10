@@ -826,6 +826,11 @@
       }
 
       const match = KB_CLASSES[maxIdx];
+      let chemRec = match.chemical;
+      // Microclimate-to-Diagnosis Cross-Gating
+      if (match.disease.includes("Late Blight") && currentTelemetry && currentTelemetry.humidity > 0 && currentTelemetry.humidity < 85.0) {
+        chemRec = `WITHHELD: Low RH (${Math.round(currentTelemetry.humidity)}%). Spores dormant under dry canopy (requires RH >= 85%). Suppressing fungicide; inspect for abiotic chlorosis.`;
+      }
       return {
         crop: match.crop,
         disease: match.disease,
@@ -833,7 +838,7 @@
         confidence: confPercent,
         status: match.status,
         organic: match.organic,
-        chemical: match.chemical,
+        chemical: chemRec,
         entropy: entropy.toFixed(2)
       };
     }
