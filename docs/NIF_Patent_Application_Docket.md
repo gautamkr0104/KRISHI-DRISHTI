@@ -21,7 +21,7 @@ Gandhinagar, Gujarat — 382650
 ### 1. INNOVATOR PROFILE
 * **Name of Innovator:** Gautam Kumar
 * **Nationality:** Indian
-* **State / District:** Begusarai, Bihar, India
+* **State / District:** Bihar, India, India
 * **Innovation Category:** Mechanical / Agricultural Engineering & Edge Artificial Intelligence
 * **Stage of Innovation:** Fully Functional Working Hardware Prototype & Verified Neural Model
 
@@ -127,4 +127,4 @@ I hereby declare that:
 
 **Dated:** 9th November 2026  
 **Innovator / Applicant:** Gautam Kumar  
-**Location:** Begusarai, Bihar, India
+**Location:** Bihar, India, India

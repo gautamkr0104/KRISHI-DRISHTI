@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-10T16:54:43Z",
+  "timestamp": "2026-11-10T17:28:14Z",
   "model_file": "krishi_drishti_model.tflite",
   "total_specimens_evaluated": 60,
   "strict_6class_accuracy": {
@@ -20,7 +20,7 @@
     "cross_crop_late_blight_count": 1,
     "note": "Phytophthora infestans causes Late Blight across both Tomato and Potato. 3 Tomato Late Blight specimens were predicted as Potato Late Blight with high pathogen confidence."
   },
-  "mean_pc_latency_ms": 4.78,
+  "mean_pc_latency_ms": 8.75,
   "per_class_summary": {
     "Potato Early Blight": {
       "tested": 10,
@@ -28,7 +28,7 @@
       "accepted_count": 10,
       "strict_accuracy_pct": 90.0,
       "mean_confidence_pct": 99.79,
-      "mean_latency_ms": 5.07
+      "mean_latency_ms": 9.61
     },
     "Potato Late Blight": {
       "tested": 10,
@@ -36,7 +36,7 @@
       "accepted_count": 10,
       "strict_accuracy_pct": 100.0,
       "mean_confidence_pct": 97.17,
-      "mean_latency_ms": 6.04
+      "mean_latency_ms": 6.76
     },
     "Potato Healthy": {
       "tested": 10,
@@ -44,7 +44,7 @@
       "accepted_count": 10,
       "strict_accuracy_pct": 100.0,
       "mean_confidence_pct": 95.23,
-      "mean_latency_ms": 4.82
+      "mean_latency_ms": 10.15
     },
     "Tomato Early Blight": {
       "tested": 10,
@@ -52,7 +52,7 @@
       "accepted_count": 10,
       "strict_accuracy_pct": 70.0,
       "mean_confidence_pct": 77.52,
-      "mean_latency_ms": 4.07
+      "mean_latency_ms": 10.75
     },
     "Tomato Late Blight": {
       "tested": 10,
@@ -60,7 +60,7 @@
       "accepted_count": 9,
       "strict_accuracy_pct": 80.0,
       "mean_confidence_pct": 80.8,
-      "mean_latency_ms": 3.5
+      "mean_latency_ms": 7.01
     },
     "Tomato Healthy": {
       "tested": 10,
@@ -68,7 +68,7 @@
       "accepted_count": 10,
       "strict_accuracy_pct": 100.0,
       "mean_confidence_pct": 99.99,
-      "mean_latency_ms": 5.15
+      "mean_latency_ms": 8.24
     }
   },
   "specimens": [
@@ -79,7 +79,7 @@
       "predicted_class": "Potato Early Blight",
       "confidence_pct": 100.0,
       "status": "WARNING",
-      "latency_ms": 7.99,
+      "latency_ms": 11.66,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -91,7 +91,7 @@
       "predicted_class": "Potato Early Blight",
       "confidence_pct": 99.9,
       "status": "WARNING",
-      "latency_ms": 3.3,
+      "latency_ms": 5.43,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -103,7 +103,7 @@
       "predicted_class": "Potato Early Blight",
       "confidence_pct": 99.9,
       "status": "WARNING",
-      "latency_ms": 3.32,
+      "latency_ms": 8.66,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -115,7 +115,7 @@
       "predicted_class": "Potato Late Blight",
       "confidence_pct": 98.5,
       "status": "SEVERE",
-      "latency_ms": 4.95,
+      "latency_ms": 5.38,
       "exact_match": false,
       "pathogen_match": false,
       "gated_uncertain": false
@@ -127,7 +127,7 @@
       "predicted_class": "Potato Early Blight",
       "confidence_pct": 100.0,
       "status": "WARNING",
-      "latency_ms": 3.81,
+      "latency_ms": 11.39,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -139,7 +139,7 @@
       "predicted_class": "Potato Early Blight",
       "confidence_pct": 100.0,
       "status": "WARNING",
-      "latency_ms": 3.4,
+      "latency_ms": 13.06,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -151,7 +151,7 @@
       "predicted_class": "Potato Early Blight",
       "confidence_pct": 100.0,
       "status": "WARNING",
-      "latency_ms": 3.36,
+      "latency_ms": 5.69,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -163,7 +163,7 @@
       "predicted_class": "Potato Early Blight",
       "confidence_pct": 99.6,
       "status": "WARNING",
-      "latency_ms": 7.61,
+      "latency_ms": 15.23,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -175,7 +175,7 @@
       "predicted_class": "Potato Early Blight",
       "confidence_pct": 100.0,
       "status": "WARNING",
-      "latency_ms": 3.49,
+      "latency_ms": 13.75,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -187,7 +187,7 @@
       "predicted_class": "Potato Early Blight",
       "confidence_pct": 100.0,
       "status": "WARNING",
-      "latency_ms": 9.45,
+      "latency_ms": 5.8,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -199,7 +199,7 @@
       "predicted_class": "Potato Late Blight",
       "confidence_pct": 99.9,
       "status": "SEVERE",
-      "latency_ms": 8.4,
+      "latency_ms": 7.73,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -211,7 +211,7 @@
       "predicted_class": "Potato Late Blight",
       "confidence_pct": 99.9,
       "status": "SEVERE",
-      "latency_ms": 14.11,
+      "latency_ms": 9.2,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -223,7 +223,7 @@
       "predicted_class": "Potato Late Blight",
       "confidence_pct": 99.1,
       "status": "SEVERE",
-      "latency_ms": 8.71,
+      "latency_ms": 5.52,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -235,7 +235,7 @@
       "predicted_class": "Potato Late Blight",
       "confidence_pct": 99.9,
       "status": "SEVERE",
-      "latency_ms": 3.23,
+      "latency_ms": 5.22,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -247,7 +247,7 @@
       "predicted_class": "Potato Late Blight",
       "confidence_pct": 97.1,
       "status": "SEVERE",
-      "latency_ms": 3.28,
+      "latency_ms": 6.58,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -259,7 +259,7 @@
       "predicted_class": "Potato Late Blight",
       "confidence_pct": 82.0,
       "status": "SEVERE",
-      "latency_ms": 4.37,
+      "latency_ms": 5.17,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -271,7 +271,7 @@
       "predicted_class": "Potato Late Blight",
       "confidence_pct": 98.7,
       "status": "SEVERE",
-      "latency_ms": 4.3,
+      "latency_ms": 8.29,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -283,7 +283,7 @@
       "predicted_class": "Potato Late Blight",
       "confidence_pct": 99.2,
       "status": "SEVERE",
-      "latency_ms": 3.19,
+      "latency_ms": 4.98,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -295,7 +295,7 @@
       "predicted_class": "Potato Late Blight",
       "confidence_pct": 96.2,
       "status": "SEVERE",
-      "latency_ms": 3.27,
+      "latency_ms": 9.59,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -307,7 +307,7 @@
       "predicted_class": "Potato Late Blight",
       "confidence_pct": 99.7,
       "status": "SEVERE",
-      "latency_ms": 7.54,
+      "latency_ms": 5.32,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -319,7 +319,7 @@
       "predicted_class": "Potato Healthy",
       "confidence_pct": 99.9,
       "status": "OPTIMAL",
-      "latency_ms": 5.89,
+      "latency_ms": 8.41,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -331,7 +331,7 @@
       "predicted_class": "Potato Healthy",
       "confidence_pct": 98.3,
       "status": "OPTIMAL",
-      "latency_ms": 3.28,
+      "latency_ms": 5.91,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -343,7 +343,7 @@
       "predicted_class": "Potato Healthy",
       "confidence_pct": 99.3,
       "status": "OPTIMAL",
-      "latency_ms": 6.65,
+      "latency_ms": 9.52,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -355,7 +355,7 @@
       "predicted_class": "Potato Healthy",
       "confidence_pct": 100.0,
       "status": "OPTIMAL",
-      "latency_ms": 3.85,
+      "latency_ms": 6.27,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -367,7 +367,7 @@
       "predicted_class": "Potato Healthy",
       "confidence_pct": 97.9,
       "status": "OPTIMAL",
-      "latency_ms": 3.44,
+      "latency_ms": 10.67,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -379,7 +379,7 @@
       "predicted_class": "Potato Healthy",
       "confidence_pct": 99.9,
       "status": "OPTIMAL",
-      "latency_ms": 7.57,
+      "latency_ms": 5.77,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -391,7 +391,7 @@
       "predicted_class": "Potato Healthy",
       "confidence_pct": 82.8,
       "status": "OPTIMAL",
-      "latency_ms": 4.67,
+      "latency_ms": 27.17,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -403,7 +403,7 @@
       "predicted_class": "Potato Healthy",
       "confidence_pct": 99.8,
       "status": "OPTIMAL",
-      "latency_ms": 3.26,
+      "latency_ms": 5.1,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -415,7 +415,7 @@
       "predicted_class": "Potato Healthy",
       "confidence_pct": 100.0,
       "status": "OPTIMAL",
-      "latency_ms": 6.23,
+      "latency_ms": 7.0,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -427,7 +427,7 @@
       "predicted_class": "Potato Healthy",
       "confidence_pct": 74.4,
       "status": "OPTIMAL",
-      "latency_ms": 3.31,
+      "latency_ms": 15.67,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -439,7 +439,7 @@
       "predicted_class": "Tomato Early Blight",
       "confidence_pct": 55.1,
       "status": "WARNING",
-      "latency_ms": 3.25,
+      "latency_ms": 18.6,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -451,7 +451,7 @@
       "predicted_class": "Tomato Late Blight",
       "confidence_pct": 50.2,
       "status": "SEVERE",
-      "latency_ms": 5.01,
+      "latency_ms": 7.29,
       "exact_match": false,
       "pathogen_match": false,
       "gated_uncertain": false
@@ -463,7 +463,7 @@
       "predicted_class": "Tomato Early Blight",
       "confidence_pct": 98.5,
       "status": "WARNING",
-      "latency_ms": 4.71,
+      "latency_ms": 12.64,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -475,7 +475,7 @@
       "predicted_class": "Tomato Healthy",
       "confidence_pct": 96.6,
       "status": "OPTIMAL",
-      "latency_ms": 3.31,
+      "latency_ms": 9.41,
       "exact_match": false,
       "pathogen_match": false,
       "gated_uncertain": false
@@ -487,7 +487,7 @@
       "predicted_class": "Tomato Early Blight",
       "confidence_pct": 81.0,
       "status": "WARNING",
-      "latency_ms": 3.23,
+      "latency_ms": 14.66,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -499,7 +499,7 @@
       "predicted_class": "Tomato Early Blight",
       "confidence_pct": 97.8,
       "status": "WARNING",
-      "latency_ms": 5.9,
+      "latency_ms": 13.84,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -511,7 +511,7 @@
       "predicted_class": "Tomato Early Blight",
       "confidence_pct": 87.8,
       "status": "WARNING",
-      "latency_ms": 3.23,
+      "latency_ms": 11.9,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -523,7 +523,7 @@
       "predicted_class": "Tomato Late Blight",
       "confidence_pct": 63.4,
       "status": "SEVERE",
-      "latency_ms": 3.24,
+      "latency_ms": 5.07,
       "exact_match": false,
       "pathogen_match": false,
       "gated_uncertain": false
@@ -535,7 +535,7 @@
       "predicted_class": "Tomato Early Blight",
       "confidence_pct": 75.5,
       "status": "WARNING",
-      "latency_ms": 3.2,
+      "latency_ms": 8.89,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -547,7 +547,7 @@
       "predicted_class": "Tomato Early Blight",
       "confidence_pct": 69.3,
       "status": "WARNING",
-      "latency_ms": 5.66,
+      "latency_ms": 5.22,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -559,7 +559,7 @@
       "predicted_class": "Tomato Late Blight",
       "confidence_pct": 58.3,
       "status": "SEVERE",
-      "latency_ms": 3.16,
+      "latency_ms": 9.48,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -571,7 +571,7 @@
       "predicted_class": "Potato Late Blight",
       "confidence_pct": 72.4,
       "status": "SEVERE",
-      "latency_ms": 3.23,
+      "latency_ms": 5.41,
       "exact_match": false,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -583,7 +583,7 @@
       "predicted_class": "Tomato Late Blight",
       "confidence_pct": 85.6,
       "status": "SEVERE",
-      "latency_ms": 3.46,
+      "latency_ms": 8.34,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -595,7 +595,7 @@
       "predicted_class": "Solanaceae Uncertain / Ambiguous",
       "confidence_pct": 38.0,
       "status": "UNCERTAIN",
-      "latency_ms": 4.39,
+      "latency_ms": 4.93,
       "exact_match": false,
       "pathogen_match": false,
       "gated_uncertain": true
@@ -607,7 +607,7 @@
       "predicted_class": "Tomato Late Blight",
       "confidence_pct": 76.3,
       "status": "SEVERE",
-      "latency_ms": 3.25,
+      "latency_ms": 3.85,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -619,7 +619,7 @@
       "predicted_class": "Tomato Late Blight",
       "confidence_pct": 91.7,
       "status": "SEVERE",
-      "latency_ms": 3.18,
+      "latency_ms": 5.83,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -631,7 +631,7 @@
       "predicted_class": "Tomato Late Blight",
       "confidence_pct": 91.5,
       "status": "SEVERE",
-      "latency_ms": 3.82,
+      "latency_ms": 7.4,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -643,7 +643,7 @@
       "predicted_class": "Tomato Late Blight",
       "confidence_pct": 99.8,
       "status": "SEVERE",
-      "latency_ms": 4.32,
+      "latency_ms": 9.98,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -655,7 +655,7 @@
       "predicted_class": "Tomato Late Blight",
       "confidence_pct": 100.0,
       "status": "SEVERE",
-      "latency_ms": 3.12,
+      "latency_ms": 10.85,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -667,7 +667,7 @@
       "predicted_class": "Tomato Late Blight",
       "confidence_pct": 94.4,
       "status": "SEVERE",
-      "latency_ms": 3.1,
+      "latency_ms": 4.06,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -679,7 +679,7 @@
       "predicted_class": "Tomato Healthy",
       "confidence_pct": 100.0,
       "status": "OPTIMAL",
-      "latency_ms": 4.58,
+      "latency_ms": 8.21,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -691,7 +691,7 @@
       "predicted_class": "Tomato Healthy",
       "confidence_pct": 100.0,
       "status": "OPTIMAL",
-      "latency_ms": 4.17,
+      "latency_ms": 4.09,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -703,7 +703,7 @@
       "predicted_class": "Tomato Healthy",
       "confidence_pct": 100.0,
       "status": "OPTIMAL",
-      "latency_ms": 3.37,
+      "latency_ms": 4.8,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -715,7 +715,7 @@
       "predicted_class": "Tomato Healthy",
       "confidence_pct": 99.9,
       "status": "OPTIMAL",
-      "latency_ms": 3.3,
+      "latency_ms": 6.28,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -727,7 +727,7 @@
       "predicted_class": "Tomato Healthy",
       "confidence_pct": 100.0,
       "status": "OPTIMAL",
-      "latency_ms": 6.38,
+      "latency_ms": 3.47,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -739,7 +739,7 @@
       "predicted_class": "Tomato Healthy",
       "confidence_pct": 100.0,
       "status": "OPTIMAL",
-      "latency_ms": 3.53,
+      "latency_ms": 11.8,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -751,7 +751,7 @@
       "predicted_class": "Tomato Healthy",
       "confidence_pct": 100.0,
       "status": "OPTIMAL",
-      "latency_ms": 4.02,
+      "latency_ms": 5.78,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -763,7 +763,7 @@
       "predicted_class": "Tomato Healthy",
       "confidence_pct": 100.0,
       "status": "OPTIMAL",
-      "latency_ms": 12.31,
+      "latency_ms": 20.69,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -775,7 +775,7 @@
       "predicted_class": "Tomato Healthy",
       "confidence_pct": 100.0,
       "status": "OPTIMAL",
-      "latency_ms": 5.53,
+      "latency_ms": 12.08,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false
@@ -787,7 +787,7 @@
       "predicted_class": "Tomato Healthy",
       "confidence_pct": 100.0,
       "status": "OPTIMAL",
-      "latency_ms": 4.36,
+      "latency_ms": 5.18,
       "exact_match": true,
       "pathogen_match": true,
       "gated_uncertain": false

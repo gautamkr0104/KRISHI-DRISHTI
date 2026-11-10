@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 
 echo ======================================================================
 echo KRISHI-DRISHTI :: Automated Verification and Validation Suite
-echo 54th National Children's Science Congress (NCSC 2026)
+echo Offline Edge-AI Master Verification Suite
 echo ======================================================================
 echo.
 

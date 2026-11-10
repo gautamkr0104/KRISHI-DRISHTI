@@ -1,11 +1,10 @@
 # KRISHI-DRISHTI: Project Synopsis & Science Report
 
 **Title:** KRISHI-DRISHTI: Low-Cost Edge-AI Handheld Wand and Microclimate Telemetry for Predictive Plant Health Screening  
-**Event:** 54th National Children's Science Congress (NCSC 2026)  
-**Focal Theme:** Science and Innovation for Sustainability  
-**Level & Venue:** District Level Round | B.S.S. Collegiate +2 High School, Begusarai, Bihar  
-**Grade Level:** Class 9 (Secondary School)  
-**Lead Presenter:** Gautam Kumar (Udaan International School, Begusarai, Bihar)  
+**Domain:** Edge Agritech & Computational Plant Pathology  
+**Focus:** Offline-First Foliar Disease Screening & Microclimate Risk Modeling  
+**Target Platform:** Ultra-Low-Cost Microcontrollers (ESP32) & Budget Smartphones  
+**Author / Maintainer:** Gautam Kumar  
 **License:** Source-Available Non-Commercial License
 
 ---
@@ -29,7 +28,7 @@ $$\text{Disease Outbreak} = \text{Susceptible Host} + \text{Virulent Pathogen} +
 Commercial smartphone apps only perform **reactive** classification after leaves have already turned brown, necrotic, and infectious. KRISHI-DRISHTI correlates **visual foliar classification** with **canopy microclimate telemetry**:
 * **Late Blight Outbreak Risk Envelope:** Sustained canopy Relative Humidity $> 85\%$ combined with temperatures between $18^\circ\text{C} - 24.5^\circ\text{C}$ for $> 6$ hours.
 * **Early Blight Risk Envelope:** Warm canopy temperatures ($24^\circ\text{C} - 29^\circ\text{C}$) paired with alternating wet-dry dew cycles.
-* The system alerts the farmer **BEFORE** visual symptoms escalate across the canopy, advising withholding irrigation or preemptive biological protective sprays (*Trichoderma* / Neem oil).
+* The system tracks **microclimate disease-risk incubation conditions** (temperature and humidity thresholds) alongside visual foliar screening, alerting the farmer when environmental factors favor pathogen incubation so that irrigation or cultural interventions can be applied proactively.
 
 ---
 
@@ -118,7 +117,7 @@ To prevent misleading predictions when pointed at bare soil, weeds, or hands:
 
 ---
 
-## 7. Judge Defense & Engineering Q&A Strategy (NCSC 2026 Evaluation)
+## 7. Technical Defense & System Architecture Q&A Strategy
 
 ### Q1: "Where did you learn your coding? Did you just copy-paste this from YouTube or GitHub?"
 > **Student Defense:**  
@@ -136,7 +135,7 @@ To prevent misleading predictions when pointed at bare soil, weeds, or hands:
 > *"An ESP32-S has 520 KB of internal SRAM and ~4 MB external PSRAM running at 240 MHz without hardware vector or NEON SIMD acceleration. Running a convolutional backbone like MobileNet directly on the microcontroller causes two major hardware failures:  
 > 1. Frame buffer starvation: The OV5640 5MP camera DMA channels compete with neural tensor allocations in PSRAM, leading to memory heap fragmentation and kernel panics.  
 > 2. Latency: Inference takes over 3.8 seconds per frame on an MCU, draining battery power.  
-> By delegating inference to the farmer's pocket smartphone over local Wi-Fi SoftAP, we achieve a **3.68 to 5.50-millisecond reference inference time (< 40 ms on budget smartphones)** on the phone's CPU while keeping the wand lightweight, ultra-low power, and strictly under ₹1,500 total cost."*
+> By delegating inference to the farmer's pocket smartphone over local Wi-Fi SoftAP, we achieve a **4.15 to 4.69-millisecond host reference inference time (~12–15 ms on budget smartphone CPUs)** on the phone's CPU while keeping the wand lightweight, ultra-low power, and strictly under ₹1,500 total cost."*
 
 ---
 

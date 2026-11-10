@@ -1,8 +1,7 @@
 # KRISHI-DRISHTI — 50-Condition Multi-Factor Robustness & Repeatability Protocol
 
-**Author:** Gautam Kumar (Class IX)  
-**Institution:** Udaan International School, Begusarai, Bihar  
-**Purpose:** Standardized physical verification protocol to demonstrate edge diagnostic repeatability, focus stability, illumination invariance, and uncertainty rejection across 50 distinct test conditions to science fair judges.
+**Author:** Gautam Kumar  
+**Focus:** Standardized physical verification protocol to demonstrate edge diagnostic repeatability, focus stability, illumination invariance, and uncertainty rejection across 50 distinct test conditions.
 
 ---
 
@@ -70,7 +69,7 @@ In a live judging environment, testing the wand across **50 controlled experimen
 
 > [!NOTE]
 > **Pre-Registration vs. Live Execution Protocol:**
-> The end-to-end software pipeline (8-specimen daemon verification and 60-specimen reproducible botanical benchmark) is 100% verified and reproducible in automated testing. The 50 physical trials tabulated below constitute the **Pre-Registered Live Demonstration Protocol** to be executed sequentially on the physical wand in front of the NCSC evaluation committee upon hardware assembly. All conditions are pre-registered with strict quantitative acceptance criteria.
+> The end-to-end software pipeline (8-specimen daemon verification and 60-specimen reproducible botanical benchmark) is 100% verified and reproducible in automated testing. The 50 physical trials tabulated below constitute the **Pre-Registered Live Demonstration Protocol** to be executed sequentially on the physical wand upon hardware assembly. All conditions are pre-registered with strict quantitative acceptance criteria.
 
 | Scan # | Target Specimen | Test Condition / Variable | Expected Classification | Expected Status | Gating Action | Live Demo Verification Status |
 | :---: | :--- | :--- | :--- | :---: | :--- | :---: |

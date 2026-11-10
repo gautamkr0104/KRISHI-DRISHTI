@@ -1,7 +1,7 @@
 """
 KRISHI-DRISHTI :: 60-Specimen Hold-Out Benchmark Independence & Provenance Auditor
 Author: Gautam Kumar / KRISHI-DRISHTI Project
-Event: 54th National Children's Science Congress (NCSC 2026)
+Event: Independent Dataset Provenance Audit
 ----------------------------------------------------------------------------------
 Audits the 60 botanical validation specimens bundled in `ai_engine/validation_60_specimens/`:
 1. Cryptographic SHA-256 integrity verification against PROVENANCE_MANIFEST.md.
@@ -28,7 +28,7 @@ def compute_sha256(filepath):
 def main():
     print("=" * 80)
     print("  KRISHI-DRISHTI :: 60-SPECIMEN HOLD-OUT BENCHMARK INDEPENDENCE AUDIT")
-    print("  54th National Children's Science Congress (NCSC 2026)")
+    print("  Independent Dataset Provenance Audit")
     print("=" * 80)
 
     val_dir = REPO_ROOT / "ai_engine" / "validation_60_specimens"
@@ -83,7 +83,7 @@ def main():
     # Write audit JSON
     audit = {
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        "event": "54th National Children's Science Congress",
+        "audit_scope": "Independent Dataset Provenance Audit",
         "benchmark_designation": "Documented Hold-Out Specimen Benchmark",
         "total_specimens": total_specimens,
         "classes_evaluated": len(classes),

@@ -1,7 +1,7 @@
 """
 KRISHI-DRISHTI :: Independent PlantDoc Outdoor Benchmark & Dual-Stage Gating Evaluator
 Author: Gautam Kumar / KRISHI-DRISHTI Project
-Event: 54th National Children's Science Congress (NCSC 2026)
+Event: PlantDoc Outdoor Field Benchmark
 ----------------------------------------------------------------------------------------
 Evaluates the offline quantized TFLite model and production KrishiAIDaemon pipeline
 across 487 uncalibrated outdoor images from the PlantDoc dataset (Solanaceae partition).

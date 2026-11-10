@@ -1,9 +1,9 @@
 # KRISHI-DRISHTI (कृषि-दृष्टि)
 > **Offline-First Edge-AI Handheld Wand and Microclimate Telemetry System for Predictive Agricultural Plant Health Screening**
 >
-> 🏆 **54th National Children's Science Congress (NCSC 2026)**  
-> 🌍 **Focal Theme:** *Science and Innovation for Sustainability*  
-> 📍 **Evaluation:** District Level Evaluation Round | B.S.S. Collegiate +2 High School, Begusarai, Bihar
+> 🌿 **Autonomous Agritech Edge-AI & IoT Diagnostic Framework**  
+> 🎯 **Focus:** *Affordable, Offline-First Precision Plant Pathology for Smallholder Farmers*  
+> 💡 **Core Stack:** ESP32-CAM | TensorFlow Lite | FreeRTOS | Mobile Edge Computing
 
 [![License: Source Available](https://img.shields.io/badge/License-Source--Available-blue.svg)](LICENSE)
 [![Platform: ESP32](https://img.shields.io/badge/Platform-ESP32%20%7C%20FreeRTOS-blue.svg)](https://www.espressif.com/)

@@ -20,7 +20,7 @@ PYTHON_EXE = sys.executable
 def main():
     print("=" * 75)
     print("  KRISHI-DRISHTI :: COMPREHENSIVE MASTER TEST & VERIFICATION SUITE")
-    print("  54th National Children's Science Congress (NCSC 2026)")
+    print("  Offline Edge-AI Agritech Verification Suite")
     print("=" * 75)
     print(f"[*] Python Interpreter: {PYTHON_EXE}")
 
