@@ -140,8 +140,8 @@ def main():
             match = (expected_gt == "NON_FOLIAR_CONTROL")
         else:
             decision = f"ACCEPTED ({status})"
-            match = (predicted_class == expected_gt) or \
-                    ("Late Blight" in expected_gt and "Late Blight" in predicted_class)
+            # Strict 1:1 exact crop and disease matching (zero cross-crop leeway)
+            match = (predicted_class == expected_gt)
 
         if match:
             correct_evaluations += 1

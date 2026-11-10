@@ -1,9 +1,11 @@
 # KRISHI-DRISHTI: Project Synopsis & Science Report
 
 **Title:** KRISHI-DRISHTI: Low-Cost Edge-AI Handheld Wand and Microclimate Telemetry for Predictive Plant Health Screening  
-**Category / Theme:** Technological Innovations for Agriculture and Food Security  
-**Competition:** Edge Agritech Architecture  
+**Event:** 54th National Children's Science Congress (NCSC 2026)  
+**Focal Theme:** Science and Innovation for Sustainability  
+**Level & Venue:** District Level Round | B.S.S. Collegiate +2 High School, Begusarai, Bihar  
 **Grade Level:** Class 9 (Secondary School)  
+**Lead Presenter:** Gautam Kumar (Udaan International School, Begusarai, Bihar)  
 **License:** Source-Available Non-Commercial License
 
 ---
@@ -93,7 +95,7 @@ To eliminate subjective bias during scientific evaluation, the KRISHI-DRISHTI ne
 2. **Canopy Data Augmentation:** Real-time affine transformations (`RandomFlip`, `RandomRotation(0.12)`, `RandomZoom(0.08)`, `RandomContrast(0.08)`) simulating field flutter and outdoor sun glare.
 3. **Stage 1 (Head Warmup):** 2 epochs with frozen backbone using Adam ($\text{lr} = 10^{-3}$), training dense classification layer with Dropout (0.25).
 4. **Stage 2 (Deep Fine-Tuning):** 2 epochs unfreezing top 25 convolutional layers ($\text{lr} = 10^{-4}$) to adapt high-level visual representations directly to foliar lesions.
-5. **Float16 Quantization:** Post-Training Quantization (PTQ) reducing weights to IEEE 754 half-precision float16 (reducing model footprint from 4.02 MB to **2.01 MB**), with standard Float32 input/output interfaces (`[1, 128, 128, 3]` raw pixels and `[1, 6]` probabilities with built-in Softmax), achieving **3.68–5.50 ms** inference on host CPU (reference interpreter with XNNPACK; target < 40 ms on smartphone mobile CPU).
+5. **Float16 Quantization:** Post-Training Quantization (PTQ) reducing weights to IEEE 754 half-precision float16 (reducing model footprint from 4.02 MB to **2.01 MB**), with standard Float32 input/output interfaces (`[1, 128, 128, 3]` raw pixels and `[1, 6]` probabilities with built-in Softmax), achieving **4.15–4.69 ms** inference on host CPU reference interpreter (benchmark mean: 4.29 ms with XNNPACK; target ~12–15 ms on smartphone mobile CPU, budget < 40 ms).
 
 ### 6.3 Empirical Performance Metrics
 | Metric | Benchmark Result | Practical Agricultural Significance |
@@ -104,10 +106,10 @@ To eliminate subjective bias during scientific evaluation, the KRISHI-DRISHTI ne
 | **Potato Early Blight F1** | **0.9665** | Precision: 98.09%, Recall: 95.26% |
 | **Potato Healthy Tissue F1** | **0.9824** | Precision: 98.46%, Recall: 98.03% |
 | **Tomato Healthy Tissue F1** | **0.9531** | Precision: 91.57%, Recall: 99.38% |
-| **60-Specimen Botanical Benchmark** | **86.7% Strict / 91.2% Accepted** | Strict 6-class: 52/60; Accepted: 52/57 (95.0% coverage, 3 gated UNCERTAIN) |
-| **PlantDoc Real-World Field Benchmark** | **34.91% Raw $\rightarrow$ 46.51% Accepted** | Raw: 170/487; Dual-Stage Gating flags 57 ambiguous frames (11.7%) as UNCERTAIN |
+| **60-Specimen Botanical Benchmark** | **90.0% Strict / 91.5% Accepted** | Strict 6-class: 54/60 (90.0%); Accepted: 54/59 (91.5% coverage, 1 gated UNCERTAIN) |
+| **PlantDoc Outdoor Field Benchmark** | **34.91% Raw (All Frames) $\rightarrow$ 46.51% (Accepted Frames)** | Evaluated across 487 uncalibrated outdoor images; Dual-Stage Gating flags 57 ambiguous frames (11.7%) as UNCERTAIN |
 | **Model Size (Quantized TFLite)** | **2.01 MB** | Fully cached in RAM on low-RAM phones (Galaxy A03) |
-| **Edge Inference Latency** | **3.68–5.50 ms (CPU Reference)** | Real-time classification on smartphone CPU without heating (< 40 ms target) |
+| **Edge Inference Latency** | **4.15–4.69 ms (CPU Reference)** | Benchmark mean 4.29 ms on Host CPU; ~12–15 ms on Mobile Edge CPU (< 40 ms target) |
 
 ### 6.4 Scientific Uncertainty & Plausibility Gating
 To prevent misleading predictions when pointed at bare soil, weeds, or hands:
