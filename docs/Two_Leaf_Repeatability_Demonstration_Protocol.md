@@ -66,28 +66,32 @@ In a live judging environment, testing the wand across **50 controlled experimen
 
 ---
 
-## 4. Master 50-Condition Demonstration Run Sheet
+## 4. Master 50-Condition Demonstration Run Sheet (Pre-Registered Protocol)
 
-| Scan # | Target Specimen | Test Condition / Variable | Expected Classification | Expected Status | Gating Action | Verified? |
+> [!NOTE]
+> **Pre-Registration vs. Live Execution Protocol:**
+> The end-to-end software pipeline (8-specimen daemon verification and 60-specimen reproducible botanical benchmark) is 100% verified and reproducible in automated testing. The 50 physical trials tabulated below constitute the **Pre-Registered Live Demonstration Protocol** to be executed sequentially on the physical wand in front of the CBSE science fair judges upon hardware assembly. All conditions are pre-registered with strict quantitative acceptance criteria.
+
+| Scan # | Target Specimen | Test Condition / Variable | Expected Classification | Expected Status | Gating Action | Live Demo Verification Status |
 | :---: | :--- | :--- | :--- | :---: | :--- | :---: |
-| **01–05** | Tomato Healthy Leaf | Baseline (8–10 cm, 500 lux) | `Tomato Healthy` (>95%) | `OPTIMAL` | Accepted | **PASS** |
-| **06–10** | Tomato Late Blight Leaf | Baseline (8–10 cm, 500 lux) | `Tomato Late Blight` (>90%) | `SEVERE` | Accepted | **PASS** |
-| **11–12** | Tomato Healthy Leaf | 6 cm (Macro Close-Up) | `Tomato Healthy` (>85%) | `OPTIMAL` | Accepted | **PASS** |
-| **13–14** | Tomato Healthy Leaf | 10 cm (Optimal Spacer) | `Tomato Healthy` (>95%) | `OPTIMAL` | Accepted | **PASS** |
-| **15–16** | Tomato Late Blight Leaf | 10 cm (Optimal Spacer) | `Tomato Late Blight` (>95%) | `SEVERE` | Accepted | **PASS** |
-| **17–18** | Tomato Late Blight Leaf | 12 cm (Spacer Boundary) | `Tomato Late Blight` (>85%) | `SEVERE` | Accepted | **PASS** |
-| **19–20** | Tomato Healthy Leaf | 15 cm (Extended Distance) | `Tomato Healthy` (>80%) | `OPTIMAL` | Accepted | **PASS** |
-| **21–23** | Tomato Healthy Leaf | 15° Off-Axis Tilt | `Tomato Healthy` (>90%) | `OPTIMAL` | Accepted | **PASS** |
-| **24–27** | Tomato Late Blight Leaf | 30° Off-Axis Tilt | `Tomato Late Blight` (>85%) | `SEVERE` | Accepted | **PASS** |
-| **28–30** | Tomato Healthy Leaf | 45° Steep Oblique Tilt | `Tomato Healthy` / Gated | `OPTIMAL`/`UNCERTAIN` | Accepted / Safe Gate | **PASS** |
-| **31–33** | Tomato Late Blight Leaf | Deep Shade (100 lux + Flash) | `Tomato Late Blight` (>85%) | `SEVERE` | Accepted | **PASS** |
-| **34–37** | Tomato Healthy Leaf | Diffuse Daylight (400 lux) | `Tomato Healthy` (>95%) | `OPTIMAL` | Accepted | **PASS** |
-| **38–40** | Tomato Late Blight Leaf | Bright Ambient (1,000 lux) | `Tomato Late Blight` (>85%) | `SEVERE` | Accepted | **PASS** |
-| **41–42** | Lens Cap (All-Black) | Zero Lux / Occluded | `No Leaf Detected` (0.0%) | `UNCERTAIN` | **REJECTED (Foliar Gate)** | **PASS** |
-| **43–44** | Blank White Paper | Non-Foliar Background | `No Leaf Detected` (0.0%) | `UNCERTAIN` | **REJECTED (Foliar Gate)** | **PASS** |
-| **45–46** | Bare Dry Soil | Agricultural Ground Control | `No Leaf Detected` (0.0%) | `UNCERTAIN` | **REJECTED (Foliar Gate)** | **PASS** |
-| **47–48** | Human Palm | Skin Cuticle Control | `No Leaf Detected` (0.0%) | `UNCERTAIN` | **REJECTED (Foliar Gate)** | **PASS** |
-| **49–50** | Extreme Glare / Ambiguous | Specular Highlight Glare | `Uncertain / Ambiguous` (<50%) | `UNCERTAIN` | **REJECTED (Entropy Gate)** | **PASS** |
+| **01–05** | Tomato Healthy Leaf | Baseline (8–10 cm, 500 lux) | `Tomato Healthy` (>95%) | `OPTIMAL` | Accepted | **PENDING LIVE DEMO** (Criteria: Conf > 95%, H < 0.10) |
+| **06–10** | Tomato Late Blight Leaf | Baseline (8–10 cm, 500 lux) | `Tomato Late Blight` (>90%) | `SEVERE` | Accepted | **PENDING LIVE DEMO** (Criteria: Conf > 90%, H < 0.20) |
+| **11–12** | Tomato Healthy Leaf | 6 cm (Macro Close-Up) | `Tomato Healthy` (>85%) | `OPTIMAL` | Accepted | **PENDING LIVE DEMO** (Criteria: Conf > 85%, focal blur toleration) |
+| **13–14** | Tomato Healthy Leaf | 10 cm (Optimal Spacer) | `Tomato Healthy` (>95%) | `OPTIMAL` | Accepted | **PENDING LIVE DEMO** (Criteria: Conf > 95%, sharp focus) |
+| **15–16** | Tomato Late Blight Leaf | 10 cm (Optimal Spacer) | `Tomato Late Blight` (>95%) | `SEVERE` | Accepted | **PENDING LIVE DEMO** (Criteria: Conf > 95%, lesion resolved) |
+| **17–18** | Tomato Late Blight Leaf | 12 cm (Spacer Boundary) | `Tomato Late Blight` (>85%) | `SEVERE` | Accepted | **PENDING LIVE DEMO** (Criteria: Conf > 85%, foliar area > 20%) |
+| **19–20** | Tomato Healthy Leaf | 15 cm (Extended Distance) | `Tomato Healthy` (>80%) | `OPTIMAL` | Accepted | **PENDING LIVE DEMO** (Criteria: Conf > 80%, foliar ratio >= 12%) |
+| **21–23** | Tomato Healthy Leaf | 15° Off-Axis Tilt | `Tomato Healthy` (>90%) | `OPTIMAL` | Accepted | **PENDING LIVE DEMO** (Criteria: Minimal angular variance < 2%) |
+| **24–27** | Tomato Late Blight Leaf | 30° Off-Axis Tilt | `Tomato Late Blight` (>85%) | `SEVERE` | Accepted | **PENDING LIVE DEMO** (Criteria: Stable diagnosis under mild glare) |
+| **28–30** | Tomato Healthy Leaf | 45° Steep Oblique Tilt | `Tomato Healthy` / Gated | `OPTIMAL`/`UNCERTAIN` | Accepted / Safe Gate | **PENDING LIVE DEMO** (Criteria: Safe classification or entropy gate) |
+| **31–33** | Tomato Late Blight Leaf | Deep Shade (100 lux + Flash) | `Tomato Late Blight` (>85%) | `SEVERE` | Accepted | **PENDING LIVE DEMO** (Criteria: Flash assist restores SNR, Conf > 85%) |
+| **34–37** | Tomato Healthy Leaf | Diffuse Daylight (400 lux) | `Tomato Healthy` (>95%) | `OPTIMAL` | Accepted | **PENDING LIVE DEMO** (Criteria: Daylight baseline Conf > 95%) |
+| **38–40** | Tomato Late Blight Leaf | Bright Ambient (1,000 lux) | `Tomato Late Blight` (>85%) | `SEVERE` | Accepted | **PENDING LIVE DEMO** (Criteria: Glare immunity, Conf > 85%) |
+| **41–42** | Lens Cap (All-Black) | Zero Lux / Occluded | `No Leaf Detected` (0.0%) | `UNCERTAIN` | **REJECTED (Foliar Gate)** | **PENDING LIVE DEMO** (Criteria: Foliar ratio < 12% -> UNCERTAIN) |
+| **43–44** | Blank White Paper | Non-Foliar Background | `No Leaf Detected` (0.0%) | `UNCERTAIN` | **REJECTED (Foliar Gate)** | **PENDING LIVE DEMO** (Criteria: Foliar ratio < 12% -> UNCERTAIN) |
+| **45–46** | Bare Dry Soil | Agricultural Ground Control | `No Leaf Detected` (0.0%) | `UNCERTAIN` | **REJECTED (Foliar Gate)** | **PENDING LIVE DEMO** (Criteria: Foliar ratio < 12% -> UNCERTAIN) |
+| **47–48** | Human Palm | Skin Cuticle Control | `No Leaf Detected` (0.0%) | `UNCERTAIN` | **REJECTED (Foliar Gate)** | **PENDING LIVE DEMO** (Criteria: Foliar ratio < 12% -> UNCERTAIN) |
+| **49–50** | Extreme Glare / Ambiguous | Specular Highlight Glare | `Uncertain / Ambiguous` (<50%) | `UNCERTAIN` | **REJECTED (Entropy Gate)** | **PENDING LIVE DEMO** (Criteria: Entropy H > 1.45 nats -> UNCERTAIN) |
 
 ---
 

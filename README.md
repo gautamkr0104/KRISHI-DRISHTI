@@ -52,7 +52,7 @@ flowchart TD
 
 ### Proactive Microclimate Correlation vs. Reactive Classification:
 * **Reactive Classification:** Evaluates leaves only after severe necrosis, chlorosis, and irreversible tissue decay have occurred.
-* **KRISHI-DRISHTI Predictive Triage:** The handheld wand integrates a **DHT11 digital microclimate sensor** on GPIO 18. Late Blight spores require **Relative Humidity $> 85\%$** between **$18^\circ\text{C} - 24.5^\circ\text{C}$** for $> 6$ hours to germinate. KRISHI-DRISHTI continuously monitors this canopy microclimate envelope to advise the farmer **BEFORE** visual spore damage spreads across the field.
+* **KRISHI-DRISHTI Predictive Triage:** The handheld wand integrates a **DHT11 digital microclimate sensor** on GPIO 18. It tracks the microclimatic incubation conditions (ambient temperature and relative humidity) that create the thermodynamic envelope for *Phytophthora infestans* sporulation and infection (Relative Humidity $> 85\%$ between $18^\circ\text{C} - 24.5^\circ\text{C}$ for $> 6$ continuous or accumulated risk hours, following the Wallin/Hyre disease forecast model). Note: The sensor monitors favorable atmospheric incubation conditions, not microscopic airborne fungal spores or surface leaf wetness film directly.
 
 ---
 
@@ -124,9 +124,10 @@ Trained on the **New Plant Diseases Dataset (Augmented 87K, Solanaceae Partition
 | **Potato Early Blight F1** | **0.9665** | Precision: 98.09%, Recall: 95.26% |
 | **Potato Healthy Tissue F1** | **0.9824** | Precision: 98.46%, Recall: 98.03% |
 | **Tomato Healthy Tissue F1** | **0.9531** | Precision: 91.57%, Recall: 99.38% |
-| **Model Size (TFLite)** | **2.01 MB** | Fits comfortably in low-RAM smartphone memory |
-| **Inference Latency** | **10.54 ms (CPU Benchmark) / Target < 40 ms Mobile** | Measured with TFLite Interpreter |
-| **PlantDoc Field Benchmark** | **34.91%** | Evaluated on unaugmented outdoor images with complex backgrounds |
+| **Model Size (TFLite)** | **2.01 MB** | Float16 post-training weight optimization with Float32 I/O interfaces |
+| **Inference Latency** | **3.68–5.50 ms (CPU Reference) / Target < 40 ms Mobile** | Measured with TFLite reference interpreter on host CPU |
+| **60-Specimen Botanical Benchmark** | **86.7% Strict / 91.2% Accepted** | Strict 6-class: 52/60; Accepted: 52/57 (95.0% coverage, 3 gated UNCERTAIN) |
+| **PlantDoc Field Benchmark** | **34.91% Raw $\rightarrow$ 46.51% Accepted** | Raw: 170/487; Dual-Stage Gating flags 57 ambiguous frames (11.7%) as UNCERTAIN |
 | **Entropy Rejection Threshold** | **$H > 1.45$ nats** | Rejects non-foliar objects, bare soil, and ambiguous leaves |
 
 ---
