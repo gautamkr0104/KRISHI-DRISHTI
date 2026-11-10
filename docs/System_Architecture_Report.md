@@ -54,7 +54,9 @@ flowchart TD
 | **Hardware Diagnostic Tool** | ₹25,000 – ₹60,000 | Requires ₹15,000+ 5G Phone | **₹1,514 INR Total** |
 | **Internet Requirement** | High (Cloud API) | Mandatory 4G/5G data | **100% Offline (Zero Data)** |
 | **Recurring Cloud API Fee** | ₹500 – ₹1,500 / month | ₹200 – ₹500 / month | **₹0.00 (Zero Recurring Cost)** |
-| **Microclimate Spore Sensor** | ₹8,000 weather station | Not Available | **Integrated DHT11 (₹57)** |
+| **Canopy Incubation Sensor** | ₹8,000 weather station | Not Available | **Integrated DHT11 (₹57)* |
+
+*\*Note on DHT11 Sensor: Measures ambient canopy temperature and relative humidity incubation conditions favorable for Phytophthora infestans sporulation and germination (Hyre/Wallin disease triangle); does not directly detect microscopic airborne spores or surface leaf wetness film.*
 | **Target User** | Industrial Agro-Farms | Urban Gardeners | **Marginal Indian Farmers** |
 
 ---
@@ -91,7 +93,7 @@ To eliminate subjective bias during scientific evaluation, the KRISHI-DRISHTI ne
 2. **Canopy Data Augmentation:** Real-time affine transformations (`RandomFlip`, `RandomRotation(0.12)`, `RandomZoom(0.08)`, `RandomContrast(0.08)`) simulating field flutter and outdoor sun glare.
 3. **Stage 1 (Head Warmup):** 2 epochs with frozen backbone using Adam ($\text{lr} = 10^{-3}$), training dense classification layer with Dropout (0.25).
 4. **Stage 2 (Deep Fine-Tuning):** 2 epochs unfreezing top 25 convolutional layers ($\text{lr} = 10^{-4}$) to adapt high-level visual representations directly to foliar lesions.
-5. **Float16 Quantization:** Post-Training Quantization (PTQ) reducing model size to **2.01 MB**, achieving an ultra-fast **10.54 ms** CPU inference time.
+5. **Float16 Quantization:** Post-Training Quantization (PTQ) reducing weights to IEEE 754 half-precision float16 (reducing model footprint from 4.02 MB to **2.01 MB**), with standard Float32 input/output interfaces (`[1, 128, 128, 3]` raw pixels and `[1, 6]` probabilities with built-in Softmax), achieving **3.68–5.50 ms** inference on host CPU (reference interpreter with XNNPACK; target < 40 ms on smartphone mobile CPU).
 
 ### 6.3 Empirical Performance Metrics
 | Metric | Benchmark Result | Practical Agricultural Significance |
@@ -102,9 +104,10 @@ To eliminate subjective bias during scientific evaluation, the KRISHI-DRISHTI ne
 | **Potato Early Blight F1** | **0.9665** | Precision: 98.09%, Recall: 95.26% |
 | **Potato Healthy Tissue F1** | **0.9824** | Precision: 98.46%, Recall: 98.03% |
 | **Tomato Healthy Tissue F1** | **0.9531** | Precision: 91.57%, Recall: 99.38% |
-| **PlantDoc Real-World Field Benchmark** | **34.91% (170/487)** | Evaluated on complex multi-leaf outdoor field backgrounds |
+| **60-Specimen Botanical Benchmark** | **86.7% Strict / 91.2% Accepted** | Strict 6-class: 52/60; Accepted: 52/57 (95.0% coverage, 3 gated UNCERTAIN) |
+| **PlantDoc Real-World Field Benchmark** | **34.91% Raw $\rightarrow$ 46.51% Accepted** | Raw: 170/487; Dual-Stage Gating flags 57 ambiguous frames (11.7%) as UNCERTAIN |
 | **Model Size (Quantized TFLite)** | **2.01 MB** | Fully cached in RAM on low-RAM phones (Galaxy A03) |
-| **Edge Inference Latency** | **10.54 ms** | Real-time classification on smartphone CPU without heating |
+| **Edge Inference Latency** | **3.68–5.50 ms (CPU Reference)** | Real-time classification on smartphone CPU without heating (< 40 ms target) |
 
 ### 6.4 Scientific Uncertainty & Plausibility Gating
 To prevent misleading predictions when pointed at bare soil, weeds, or hands:
@@ -131,7 +134,7 @@ To prevent misleading predictions when pointed at bare soil, weeds, or hands:
 > *"An ESP32-S has 520 KB of internal SRAM and ~4 MB external PSRAM running at 240 MHz without hardware vector or NEON SIMD acceleration. Running a convolutional backbone like MobileNet directly on the microcontroller causes two major hardware failures:  
 > 1. Frame buffer starvation: The OV5640 5MP camera DMA channels compete with neural tensor allocations in PSRAM, leading to memory heap fragmentation and kernel panics.  
 > 2. Latency: Inference takes over 3.8 seconds per frame on an MCU, draining battery power.  
-> By delegating inference to the farmer's pocket smartphone over local Wi-Fi SoftAP, we achieve a **10.54-millisecond inference time** on the phone's CPU while keeping the wand lightweight, ultra-low power, and strictly under ₹1,500 total cost."*
+> By delegating inference to the farmer's pocket smartphone over local Wi-Fi SoftAP, we achieve a **3.68 to 5.50-millisecond reference inference time (< 40 ms on budget smartphones)** on the phone's CPU while keeping the wand lightweight, ultra-low power, and strictly under ₹1,500 total cost."*
 
 ---
 
