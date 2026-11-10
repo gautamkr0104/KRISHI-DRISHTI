@@ -23,7 +23,9 @@ Thumbs.db
 Desktop.ini
 
 # Competition / Temporary drafts
-*AgriTech*
+*draft*
 
 
 scratch/
+
+*.bak

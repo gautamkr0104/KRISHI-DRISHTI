@@ -1,0 +1,99 @@
+{
+  "test_date": "2026-11-10",
+  "event": "54th National Children's Science Congress",
+  "evaluator": "Gautam Kumar",
+  "total_specimens": 10,
+  "tomato_recognition_rate": "6/7",
+  "specimens": [
+    {
+      "filename": "V261110-191510-30fps-auto_exp-tmc_auto_0.jpg",
+      "type": "Tomato Field Leaf (Night Flash)",
+      "ground_truth": "Tomato",
+      "prediction": "Tomato Late Blight",
+      "confidence": 85.3,
+      "status": "SEVERE",
+      "latency_ms": 24.38
+    },
+    {
+      "filename": "V261110-191524-30fps-auto_exp-tmc_auto_0.jpg",
+      "type": "Tomato Field Leaf (Night Flash)",
+      "ground_truth": "Tomato",
+      "prediction": "Tomato Late Blight",
+      "confidence": 94.0,
+      "status": "SEVERE",
+      "latency_ms": 22.17
+    },
+    {
+      "filename": "V261110-191530-30fps-auto_exp-tmc_auto_0.jpg",
+      "type": "Tomato Field Leaf (Night Flash)",
+      "ground_truth": "Tomato",
+      "prediction": "Tomato Late Blight",
+      "confidence": 62.6,
+      "status": "SEVERE",
+      "latency_ms": 22.89
+    },
+    {
+      "filename": "V261110-191538-30fps-auto_exp-tmc_auto_0.jpg",
+      "type": "Tomato Field Leaf (Night Flash)",
+      "ground_truth": "Tomato Healthy",
+      "prediction": "Tomato Healthy",
+      "confidence": 90.9,
+      "status": "OPTIMAL",
+      "latency_ms": 23.76
+    },
+    {
+      "filename": "V261110-191543-30fps-auto_exp-tmc_auto_0.jpg",
+      "type": "Tomato Field Leaf (Night Flash)",
+      "ground_truth": "Tomato",
+      "prediction": "Tomato Late Blight",
+      "confidence": 69.6,
+      "status": "SEVERE",
+      "latency_ms": 26.88
+    },
+    {
+      "filename": "V261110-191549-30fps-auto_exp-tmc_auto_0.jpg",
+      "type": "Tomato Field Leaf (Night Flash)",
+      "ground_truth": "Tomato",
+      "prediction": "Tomato Late Blight",
+      "confidence": 98.1,
+      "status": "SEVERE",
+      "latency_ms": 28.93
+    },
+    {
+      "filename": "V261110-191600-30fps-auto_exp-tmc_auto_0.jpg",
+      "type": "Tomato Field Leaf (Night Flash)",
+      "ground_truth": "Tomato",
+      "prediction": "Solanaceae Uncertain / Ambiguous",
+      "confidence": 40.9,
+      "status": "UNCERTAIN",
+      "latency_ms": 35.24
+    },
+    {
+      "filename": "V261110-191626-30fps-auto_exp-tmc_auto_0.jpg",
+      "type": "Hibiscus Foliage (OOD Control)",
+      "ground_truth": "Out-of-Distribution",
+      "prediction": "Tomato Late Blight",
+      "confidence": 98.4,
+      "status": "SEVERE",
+      "latency_ms": 26.5
+    },
+    {
+      "filename": "V261110-191628-30fps-auto_exp-tmc_auto_0.jpg",
+      "type": "Hibiscus Foliage (OOD Control)",
+      "ground_truth": "Out-of-Distribution",
+      "prediction": "Tomato Late Blight",
+      "confidence": 97.2,
+      "status": "SEVERE",
+      "latency_ms": 24.62
+    },
+    {
+      "filename": "V261110-191634-30fps-auto_exp-tmc_auto_0.jpg",
+      "type": "Hibiscus Foliage (OOD Control)",
+      "ground_truth": "Out-of-Distribution",
+      "prediction": "Tomato Late Blight",
+      "confidence": 99.0,
+      "status": "SEVERE",
+      "latency_ms": 17.83
+    }
+  ]
+}
