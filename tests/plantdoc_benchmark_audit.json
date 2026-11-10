@@ -1,6 +1,6 @@
 {
   "benchmark": "PlantDoc Outdoor Solanaceae Partition",
-  "timestamp": "2026-11-10T18:19:42Z",
+  "timestamp": "2026-11-10T18:37:22Z",
   "model_file": "krishi_drishti_model.tflite",
   "dataset_source": "https://github.com/pratikkayal/PlantDoc-Dataset",
   "total_evaluated": 487,
