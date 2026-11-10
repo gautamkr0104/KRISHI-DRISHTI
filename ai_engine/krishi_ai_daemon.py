@@ -35,6 +35,8 @@ DEFAULT_POLL_INTERVAL = 1.0
 MIN_CONFIDENCE_THRESHOLD = 0.50  # 50% minimum top-1 probability
 MAX_ENTROPY_THRESHOLD = 1.45     # Maximum Shannon entropy for decisive classification
 MIN_FOLIAR_RATIO = 0.12          # Reject images with virtually no leaf tissue
+MIN_DECISION_MARGIN = 0.12       # Minimum top1-top2 probability margin (rejects ambiguous / OOD species)
+MAX_DARK_FRACTION = 0.45         # Rejects frames with >45% peripheral dark void (unshielded night flash / off-center leaf)
 
 def load_labels(labels_path):
     with open(labels_path, "r", encoding="utf-8") as f:
@@ -73,8 +75,13 @@ class KrishiAIDaemon:
         # Check foliar plausibility (reject lens cap, black frame, all-white surface)
         r, g, b = arr[:, :, 0], arr[:, :, 1], arr[:, :, 2]
         is_foliar = ((g > r * 0.95) & (g > b * 1.05)) | ((r > 60) & (g > 50) & (b < 80))
-        foliar_ratio = np.mean(is_foliar)
+        foliar_ratio = float(np.mean(is_foliar))
         
+        # Check peripheral dark void fraction (unshielded night flash / off-center leaf)
+        dark_fraction = float(np.mean((r < 35) & (g < 35) & (b < 35)))
+        if dark_fraction > MAX_DARK_FRACTION:
+            return None, foliar_ratio
+            
         if foliar_ratio < MIN_FOLIAR_RATIO:
             return None, foliar_ratio
         
@@ -108,6 +115,21 @@ class KrishiAIDaemon:
         tensor, foliar_ratio = self.preprocess_image(pil_img)
         
         if tensor is None:
+            img = pil_img.convert("RGB").resize(IMAGE_SIZE, Image.BILINEAR)
+            arr = np.array(img, dtype=np.float32)
+            dark_frac = float(np.mean((arr[:, :, 0] < 35) & (arr[:, :, 1] < 35) & (arr[:, :, 2] < 35)))
+            if dark_frac > MAX_DARK_FRACTION:
+                return {
+                    "crop": "Unknown",
+                    "disease": "Framing / Void Detected",
+                    "pathogen": f"Excessive peripheral dark void ({dark_frac*100:.1f}%). Leaf must be centered in optical shroud.",
+                    "confidence": 0.0,
+                    "status": "UNCERTAIN",
+                    "organic": "Center camera wand shroud directly over leaf surface",
+                    "chemical": "Ensure optical shroud blocks peripheral background",
+                    "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
+                    "probabilities": []
+                }
             return {
                 "crop": "Unknown",
                 "disease": "No Leaf Detected",
@@ -142,21 +164,27 @@ class KrishiAIDaemon:
         max_prob = float(probs[max_idx])
         conf_percent = round(max_prob * 100.0, 1)
         
-        # Shannon entropy calculation
+        # Shannon entropy and decision margin calculation
+        sorted_probs = np.sort(probs)[::-1]
+        top1 = float(sorted_probs[0])
+        top2 = float(sorted_probs[1]) if len(sorted_probs) > 1 else 0.0
+        margin = top1 - top2
         entropy = -float(np.sum([p * np.log(p) for p in probs if p > 1e-6]))
         
-        # Uncertainty and Unknown Image Gate
-        if max_prob < MIN_CONFIDENCE_THRESHOLD or entropy > MAX_ENTROPY_THRESHOLD:
+        # Uncertainty and Unknown Image Gate (Confidence, Entropy, and Decision Margin)
+        if max_prob < MIN_CONFIDENCE_THRESHOLD or entropy > MAX_ENTROPY_THRESHOLD or margin < MIN_DECISION_MARGIN:
             return {
                 "crop": "Solanaceae",
                 "disease": "Uncertain / Ambiguous",
-                "pathogen": f"Low classification certainty (Entropy: {entropy:.2f})",
+                "pathogen": f"Low classification certainty (Entropy: {entropy:.2f}, Margin: {margin*100:.1f}%)",
                 "confidence": conf_percent,
                 "status": "UNCERTAIN",
-                "organic": "Retake photo with steady focus and no harsh glare",
-                "chemical": "Microclimate monitoring advised",
+                "organic": "Retake photo with steady focus and center leaf in shroud",
+                "chemical": "Microclimate monitoring advised; avoid premature chemical spraying",
                 "latency_ms": latency,
-                "probabilities": [round(float(p), 4) for p in probs]
+                "probabilities": [round(float(p), 4) for p in probs],
+                "entropy": round(entropy, 3),
+                "margin": round(margin, 3)
             }
             
         matched = self.labels[max_idx]

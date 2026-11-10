@@ -1,0 +1,124 @@
+{
+  "manifest_version": "1.0",
+  "timestamp": "2026-11-10T21:08:00Z",
+  "model_architecture": "MobileNetV3-Small",
+  "input_contract": "Float32 [1, 128, 128, 3] raw pixel range [0.0, 255.0]",
+  "output_contract": "Float32 [1, 6] probabilities with internal Softmax",
+  "total_training_records": 7740,
+  "provenance_breakdown": {
+    "plantvillage_clean_subsampled_records": 6600,
+    "plantvillage_per_class_count": 1100,
+    "plantdoc_clean_train_unique_images": 380,
+    "plantdoc_clean_train_replicated_records": 1140,
+    "total_records": 7740
+  },
+  "cryptographic_and_perceptual_exclusion_audit": {
+    "master_blacklist_unique_hashes_count": 171,
+    "benchmark_60_exact_hashes_excluded": 60,
+    "benchmark_60_perceptual_dhash_near_duplicates_excluded": 14,
+    "perceptual_near_duplicates_details": [
+      {
+        "file": "03da9931-e514-4cc7-b04a-8f474a133ce5___RS_HL 1830_newGGR.JPG",
+        "class": "Potato___healthy",
+        "hamming_distance": 0,
+        "sha256": "1e1f71225cc546c4c59a64b3915d84d6af9fbaaa30129514972fe4fc44c1e8c1"
+      },
+      {
+        "file": "03da9931-e514-4cc7-b04a-8f474a133ce5___RS_HL 1830_newGRR.JPG",
+        "class": "Potato___healthy",
+        "hamming_distance": 1,
+        "sha256": "e6b89d6cfb7277a1508aa34a92399c1746a0546f51858a16d5cd0f6bd6131ec1"
+      },
+      {
+        "file": "04481ca2-f94c-457e-b785-1ac05800b7ec___RS_HL 1930_newGGR.JPG",
+        "class": "Potato___healthy",
+        "hamming_distance": 0,
+        "sha256": "6681b7cb3c48e5edd7e549d8f9466ede903c7e4038c45d86ac1a936b53d528ca"
+      },
+      {
+        "file": "04481ca2-f94c-457e-b785-1ac05800b7ec___RS_HL 1930_newGRR.JPG",
+        "class": "Potato___healthy",
+        "hamming_distance": 1,
+        "sha256": "bd6c9cdc1a6983930856218dcf62ab1a9e21a1bea86a3a3c25422436828a4c54"
+      },
+      {
+        "file": "046641c1-f837-49eb-b5f2-4109910a027c___RS_HL 1878_newGGR.JPG",
+        "class": "Potato___healthy",
+        "hamming_distance": 0,
+        "sha256": "f2eea8230797b91dd3dbd36d66c62ebcae10c65e0a0dadf0ab3a0fb86e549175"
+      },
+      {
+        "file": "07dfb451-4378-49d1-b699-33a5fc49ff07___RS_HL 5399_newGGR.JPG",
+        "class": "Potato___healthy",
+        "hamming_distance": 0,
+        "sha256": "cb5849959ad9892f1b4d61468dbe9dd1c09a6cd93bbf649be91aa0b5a789bc02"
+      },
+      {
+        "file": "07dfb451-4378-49d1-b699-33a5fc49ff07___RS_HL 5399_newGRR.JPG",
+        "class": "Potato___healthy",
+        "hamming_distance": 0,
+        "sha256": "5cc88ed54426eef81dbfafc28e7460715447bd23da23e9bbd483260e4f68e928"
+      },
+      {
+        "file": "0b3e5032-8ae8-49ac-8157-a1cac3df01dd___RS_HL 1817_newGGR.JPG",
+        "class": "Potato___healthy",
+        "hamming_distance": 1,
+        "sha256": "c4c3c9eff10064a79076355041d6dd61437e79ebf7fc87781ff9185a2cb2a230"
+      },
+      {
+        "file": "0b3e5032-8ae8-49ac-8157-a1cac3df01dd___RS_HL 1817_newGRR.JPG",
+        "class": "Potato___healthy",
+        "hamming_distance": 0,
+        "sha256": "34b85e0455795bf5af364c4ad18f837183cd6d2d6f8eede7afd8df3fbcfe4a93"
+      },
+      {
+        "file": "0be9d721-82f5-42c3-b535-7494afe01dbe___RS_HL 1814_newGGR.JPG",
+        "class": "Potato___healthy",
+        "hamming_distance": 1,
+        "sha256": "2454bdec63fb786d7b44740b3050c3fc85dc7fc5465b462938c323278db58a38"
+      },
+      {
+        "file": "0be9d721-82f5-42c3-b535-7494afe01dbe___RS_HL 1814_newGRR.JPG",
+        "class": "Potato___healthy",
+        "hamming_distance": 1,
+        "sha256": "c2ea42981b9694790ed02caebfc4b463a114614ea03606a9ca6b2f34076fc6e0"
+      },
+      {
+        "file": "0f4ebc5a-d646-436a-919d-961342997cde___RS_HL 4183_newGGR.JPG",
+        "class": "Potato___healthy",
+        "hamming_distance": 2,
+        "sha256": "1a1b5ad9f5d4e080473f9cdd04fd420eb55460b48af6b4055cb084cd7b989de2"
+      },
+      {
+        "file": "1106c3fc-92cb-41a6-a6c6-8f08b9b45108___RS_HL 1914_newGGR.JPG",
+        "class": "Potato___healthy",
+        "hamming_distance": 2,
+        "sha256": "dc1e4eb59ae04a9d16946e390c593d03c33f887f497b88478f0d6ff065704fc7"
+      },
+      {
+        "file": "1106c3fc-92cb-41a6-a6c6-8f08b9b45108___RS_HL 1914_newGRR.JPG",
+        "class": "Potato___healthy",
+        "hamming_distance": 2,
+        "sha256": "af293cb4696862f9c8d55fa811cf00b80122797044a858cbde5e8911079ac73c"
+      }
+    ],
+    "real_world_field_test_hashes_excluded": 10,
+    "canonical_sample_leaves_hashes_excluded": 8,
+    "plantdoc_held_out_unseen_test_hashes_excluded": 93,
+    "plantdoc_conflicting_label_hashes_excluded": 5,
+    "training_leakage_assertion": "PASSED (0 exact collisions, 0 perceptual near-duplicates with Hamming distance <= 2)"
+  },
+  "training_hyperparameters": {
+    "batch_size": 32,
+    "image_size": [
+      128,
+      128
+    ],
+    "phase_1_warmup_epochs": 4,
+    "phase_1_learning_rate": 0.001,
+    "phase_2_fine_tuning_epochs": 3,
+    "phase_2_learning_rate": 0.00012,
+    "unfrozen_backbone_layers": 25,
+    "quantization": "Float16 (FP16 Post-Training Optimization)"
+  }
+}

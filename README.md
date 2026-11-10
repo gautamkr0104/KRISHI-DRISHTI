@@ -118,7 +118,7 @@ KRISHI-DRISHTI/
 
 ## 📊 Genuine Empirical AI Metrics
 
-Trained on the **New Plant Diseases Dataset (Augmented 87K, Solanaceae Partition)** with 11,399 training and 2,850 validation images, and benchmarked on independent real-world field photographs from **PlantDoc**:
+Trained on the **Dual-Domain Pure Solanaceae Corpus** (7,740 total training records: 6,600 clean PlantVillage samples [1,100/class] strictly filtered for zero exact and perceptual overlap, plus 1,140 clean outdoor PlantDoc representations; fully documented in `ai_engine/TRAINING_RUN_MANIFEST.json`), and benchmarked on independent real-world field photographs from **PlantDoc** and the 60-specimen botanical benchmark:
 
 | Metric | Measured Value | Practical Significance |
 | :--- | :--- | :--- |

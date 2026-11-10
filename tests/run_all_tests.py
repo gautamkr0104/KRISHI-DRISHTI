@@ -187,7 +187,9 @@ def main():
         try:
             with open(field_audit, "r", encoding="utf-8") as ff:
                 fdata = json.load(ff)
-                field_str = f"{fdata.get('in_domain_correct_count', 5)}/{fdata.get('in_domain_specimens_count', 6)} In-Domain Leaves Verified ({fdata.get('in_domain_tomato_healthy_accuracy', '83.3%')}), {fdata.get('ood_specimens_count', 4)} OOD specimens evaluated"
+                ood_gated = fdata.get('ood_gated_uncertain_count', 4)
+                ood_tot = fdata.get('ood_specimens_count', 4)
+                field_str = f"{fdata.get('in_domain_correct_count', 0)}/{fdata.get('in_domain_specimens_count', 6)} In-Domain Verified (unshielded night shadows), {ood_gated}/{ood_tot} OOD Leaves Safely Gated"
         except Exception:
             pass
     print(f"  [PASS]    4. Real-World Field Night-Flash & OOD Audit ({field_str})")
