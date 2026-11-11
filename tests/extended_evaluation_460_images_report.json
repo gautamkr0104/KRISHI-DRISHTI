@@ -1,0 +1,75 @@
+{
+  "evaluation_timestamp": "2026-11-11T08:45:00Z",
+  "model_file": "ai_engine/krishi_drishti_model.tflite",
+  "model_sha256": "be71ededc29f19f69ab98b63bebf281c6a1d88f468b6dc1a2a2dac655f406aaa",
+  "total_images_tested": 460,
+  "part_1_unseen_in_domain": {
+    "total_tested": 300,
+    "strict_exact_correct": 268,
+    "strict_accuracy_pct": 89.33,
+    "gated_uncertain": 12,
+    "gated_uncertain_pct": 4.0,
+    "accepted_predictions": 288,
+    "accepted_accuracy_pct": 93.06,
+    "per_class": {
+      "Tomato___Late_blight": {
+        "tested": 50,
+        "correct": 31,
+        "uncertain": 5,
+        "accuracy_pct": 62.0
+      },
+      "Tomato___Early_blight": {
+        "tested": 50,
+        "correct": 44,
+        "uncertain": 3,
+        "accuracy_pct": 88.0
+      },
+      "Tomato___healthy": {
+        "tested": 50,
+        "correct": 50,
+        "uncertain": 0,
+        "accuracy_pct": 100.0
+      },
+      "Potato___Late_blight": {
+        "tested": 50,
+        "correct": 49,
+        "uncertain": 0,
+        "accuracy_pct": 98.0
+      },
+      "Potato___Early_blight": {
+        "tested": 50,
+        "correct": 47,
+        "uncertain": 1,
+        "accuracy_pct": 94.0
+      },
+      "Potato___healthy": {
+        "tested": 50,
+        "correct": 47,
+        "uncertain": 3,
+        "accuracy_pct": 94.0
+      }
+    }
+  },
+  "part_2_ood_non_crop": {
+    "total_tested": 100,
+    "intercepted_uncertain": 22,
+    "interception_rate_pct": 22.0,
+    "crops_tested": [
+      "Apple___healthy",
+      "Corn_(maize)___healthy",
+      "Grape___healthy",
+      "Peach___healthy",
+      "Strawberry___healthy"
+    ]
+  },
+  "part_3_unknown_solanaceae_diseases": {
+    "total_tested": 60,
+    "flagged_uncertain": 7,
+    "flagged_uncertain_pct": 11.67,
+    "diseases_tested": [
+      "Tomato___Bacterial_spot",
+      "Tomato___Septoria_leaf_spot",
+      "Tomato___Tomato_mosaic_virus"
+    ]
+  }
+}
