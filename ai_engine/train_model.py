@@ -8,9 +8,10 @@ Author: Gautam Kumar / KRISHI-DRISHTI Project
 -------------------------------------------------------------------------------
 Zero-Leakage Assurance:
   1. Cryptographic SHA-256 Master Blacklist (171 evaluation hashes strictly excluded)
-  2. Perceptual dHash Near-Duplicate Exclusion (Hamming distance <= 2 across 60 benchmark specimens)
-  3. Pre-training Hard Assertions: Exactly 1,100 clean records per class, 7,740 total
-  4. Post-Export Manifest Generation: Records exported model SHA-256, duration, and all record hashes
+  2. Perceptual dHash Near-Duplicate Exclusion against 60 benchmark specimens (14 PV files excluded)
+  3. Crop-Tolerant & Multi-Scale Exclusion against 93 PlantDoc held-out test specimens (10 train files excluded)
+  4. Pre-training Hard Assertions: Exactly 1,100 clean records per class, 370 clean PlantDoc, 7,710 total records
+  5. Post-Export Manifest Generation: Records exported model SHA-256, duration, and all 6,970 unique hashes
 """
 
 import os
@@ -42,12 +43,16 @@ IMAGE_SIZE = (128, 128)
 BATCH_SIZE = 32
 RANDOM_SEED = 42
 
-def compute_dhash(img_bytes, hash_size=8):
+def compute_dhash(img_or_bytes, hash_size=8):
     """Compute 64-bit difference hash (dHash) for perceptual near-duplicate detection."""
     try:
         import io
-        img = Image.open(io.BytesIO(img_bytes)).convert("L").resize((hash_size + 1, hash_size), Image.Resampling.BILINEAR)
-        pixels = np.array(img, dtype=np.int32)
+        if isinstance(img_or_bytes, (bytes, bytearray)):
+            img = Image.open(io.BytesIO(img_or_bytes))
+        else:
+            img = img_or_bytes
+        im = img.convert("L").resize((hash_size + 1, hash_size), Image.Resampling.BILINEAR)
+        pixels = np.array(im, dtype=np.int32)
         diff = pixels[:, 1:] > pixels[:, :-1]
         val = 0
         for idx, v in enumerate(diff.flatten()):
@@ -61,16 +66,24 @@ def hamming_dist(n1, n2):
     """Compute Hamming distance between two 64-bit integers."""
     return bin(n1 ^ n2).count("1")
 
+def get_crops(img):
+    w, h = img.size
+    return [
+        img,
+        img.crop((w * 0.125, h * 0.125, w * 0.875, h * 0.875)),
+        img.crop((w * 0.25, h * 0.25, w * 0.75, h * 0.75))
+    ]
+
 def main():
     t_start_iso = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
     t0_wall = time.time()
 
     print("=" * 80)
     print("  KRISHI-DRISHTI :: PRODUCTION STRICT ZERO-LEAKAGE DUAL-DOMAIN TRAINING")
-    print("  Cryptographic SHA-256 & Perceptual dHash Near-Duplicate Elimination")
+    print("  Cryptographic SHA-256 & Perceptual / Crop-Tolerant Near-Duplicate Elimination")
     print("=" * 80)
 
-    # 1. Collect Comprehensive Evaluation Targets for Master Blacklist & Perceptual dHash Audit
+    # 1. Collect Comprehensive Evaluation Targets for Master Blacklist
     bench_dir = REPO_ROOT / "ai_engine" / "validation_60_specimens"
     field_dir = REPO_ROOT / "ai_engine" / "field_test_images"
     sample_dir = REPO_ROOT / "ai_engine" / "sample_leaves"
@@ -84,14 +97,18 @@ def main():
         mdata = json.load(mf)
 
     plantdoc_test_specimens = mdata.get("held_out_test_specimens", [])
-    plantdoc_train_specimens = mdata.get("train_specimens", [])
+    plantdoc_raw_train_specimens = mdata.get("train_specimens", [])
     conflicting_hashes = set(mdata.get("conflicting_hashes", []))
 
     bench_items = []
     for f in bench_dir.glob("*/*.*"):
         if f.suffix.lower() in [".jpg", ".jpeg", ".png"]:
             b = f.read_bytes()
-            bench_items.append({"name": f.name, "sha": hashlib.sha256(b).hexdigest(), "dhash": compute_dhash(b)})
+            bench_items.append({
+                "name": f.name,
+                "sha": hashlib.sha256(b).hexdigest(),
+                "dhash": compute_dhash(b)
+            })
 
     bench_hashes = set(item["sha"] for item in bench_items)
     bench_dhashes = [(item["name"], item["dhash"]) for item in bench_items]
@@ -105,6 +122,15 @@ def main():
     print(f"[+] Loaded {len(bench_hashes)} Benchmark, {len(sample_hashes)} Canonical, {len(field_hashes)} Field, {len(plantdoc_test_hashes)} PlantDoc Held-Out hashes.")
     print(f"[+] MASTER BLACKLIST: {len(master_blacklist)} unique hashes strictly prohibited from training.")
 
+    # Build PlantDoc Held-Out Crop Hashes for crop-tolerant comparison
+    test_crop_hashes = []
+    for s in plantdoc_test_specimens:
+        p = Path(s["path"])
+        if p.exists():
+            img = Image.open(p)
+            dhashes = [compute_dhash(c) for c in get_crops(img)]
+            test_crop_hashes.append({"fn": s["filename"], "dhashes": dhashes, "sha256": s["sha256"]})
+
     # 2. Assemble Pure Dual-Domain Training Dataset with Hard Assertions
     pv_train_dir = Path(r"C:\Users\DELL\.cache\kagglehub\datasets\vipoooool\new-plant-diseases-dataset\versions\2\New Plant Diseases Dataset(Augmented)\New Plant Diseases Dataset(Augmented)\train")
     if not pv_train_dir.exists():
@@ -113,7 +139,8 @@ def main():
     all_paths = []
     all_labels = []
     all_record_hashes = []
-    excluded_perceptual_records = []
+    excluded_pv_near_duplicates = []
+    excluded_plantdoc_near_duplicates = []
     per_class_selected_counts = {}
 
     random.seed(RANDOM_SEED)
@@ -148,7 +175,7 @@ def main():
                     min_d = d
                     min_match = b_name
             if min_d <= 2:
-                excluded_perceptual_records.append({
+                excluded_pv_near_duplicates.append({
                     "class": cname,
                     "file": f.name,
                     "sha256": sha,
@@ -158,7 +185,6 @@ def main():
                 continue
             clean_files.append((str(f), sha))
 
-        # Explicit count assertion per class
         assert len(clean_files) >= 1100, f"[FAIL] Insufficient clean files for {cname}: {len(clean_files)} < 1100"
         selected = random.sample(clean_files, 1100)
         assert len(selected) == 1100, f"[FAIL] Selection count mismatch for {cname}: {len(selected)} != 1100"
@@ -170,12 +196,70 @@ def main():
             all_record_hashes.append(s_sha)
         print(f"  [PV Clean Train] {cname:<24}: {len(selected)} samples (zero exact overlap, dHash-filtered)")
 
-    print(f"[+] Total Perceptual dHash Near-Duplicates Excluded Across Benchmark Targets: {len(excluded_perceptual_records)}")
+    print(f"[+] Total Perceptual dHash Near-Duplicates Excluded Across Benchmark Targets: {len(excluded_pv_near_duplicates)}")
 
-    # (B) PlantDoc Clean Train Split (380 unique images replicated 3x = 1,140 records)
-    assert len(plantdoc_train_specimens) == 380, f"[FAIL] Expected 380 PlantDoc training images, got {len(plantdoc_train_specimens)}"
-    for item in plantdoc_train_specimens:
-        assert item["sha256"] not in master_blacklist, f"LEAK DETECTED in PlantDoc train: {item['filename']}"
+    # (B) PlantDoc Clean Train Split (Filter against test crop/dHash and identical source families)
+    plantdoc_source_family_exclusions = {
+        "train_45035_1.jpg",
+        "train_late-blight-leaves.jpg",
+        "train_earlyblightpotato.jpg",
+        "train_Early-blight.jpg",
+        "train_tomato_late-blight_04_zoom.jpg",
+        "train_LBleaf2INIA_0.jpg",
+        "train_IMG_5813.jpg",
+        "train_a7710b5901ba1f8e9759ef7576cd9f09.jpg",
+        "train_IMG_5360.jpg",
+        "train_tomato-leaf.jpg"
+    }
+
+    clean_plantdoc_train = []
+    for item in plantdoc_raw_train_specimens:
+        if item["sha256"] in master_blacklist:
+            continue
+        if item["filename"] in plantdoc_source_family_exclusions:
+            excluded_plantdoc_near_duplicates.append({
+                "class": item["class"],
+                "file": item["filename"],
+                "sha256": item["sha256"],
+                "reason": "Crop / zoom / identical source family match to held-out test specimen"
+            })
+            continue
+            
+        p = Path(item["path"])
+        if not p.exists():
+            continue
+        img = Image.open(p)
+        tr_dhashes = [compute_dhash(c) for c in get_crops(img)]
+        
+        # Crop-tolerant dHash check against held-out test specimens
+        has_crop_collision = False
+        for tch in test_crop_hashes:
+            for tdh in tch["dhashes"]:
+                for tr_dh in tr_dhashes:
+                    if hamming_dist(tdh, tr_dh) <= 2:
+                        has_crop_collision = True
+                        break
+                if has_crop_collision:
+                    break
+            if has_crop_collision:
+                break
+                
+        if has_crop_collision:
+            excluded_plantdoc_near_duplicates.append({
+                "class": item["class"],
+                "file": item["filename"],
+                "sha256": item["sha256"],
+                "reason": f"Crop dHash collision (dist <= 2) with test specimen {tch['fn']}"
+            })
+            continue
+
+        clean_plantdoc_train.append(item)
+
+    print(f"[+] Total PlantDoc Near-Duplicate / Crop Source Families Excluded: {len(excluded_plantdoc_near_duplicates)}")
+    assert len(clean_plantdoc_train) == 370, f"[FAIL] Expected 370 clean PlantDoc training images, got {len(clean_plantdoc_train)}"
+
+    # Replicate clean PlantDoc train specimens 3x
+    for item in clean_plantdoc_train:
         if item["class"] in CLASS_TO_IDX:
             c_idx = CLASS_TO_IDX[item["class"]]
             for _ in range(3):
@@ -183,17 +267,17 @@ def main():
                 all_labels.append(c_idx)
                 all_record_hashes.append(item["sha256"])
 
-    print(f"  [PlantDoc Clean Train] {len(plantdoc_train_specimens)} unique outdoor images added (replicated 3x = {len(plantdoc_train_specimens)*3})")
+    print(f"  [PlantDoc Clean Train] {len(clean_plantdoc_train)} unique outdoor images added (replicated 3x = {len(clean_plantdoc_train)*3})")
 
     # Hard Global Assertions
-    assert len(all_paths) == 7740, f"[FAIL] Total assembled paths mismatch: {len(all_paths)} != 7740"
-    assert len(all_labels) == 7740, f"[FAIL] Total assembled labels mismatch: {len(all_labels)} != 7740"
-    print(f"[OK] HARD ASSERTIONS PASSED: Exactly 7,740 training records assembled (6,600 clean PV + 1,140 clean PlantDoc).")
+    assert len(all_paths) == 7710, f"[FAIL] Total assembled paths mismatch: {len(all_paths)} != 7710"
+    assert len(all_labels) == 7710, f"[FAIL] Total assembled labels mismatch: {len(all_labels)} != 7710"
+    print(f"[OK] HARD ASSERTIONS PASSED: Exactly 7,710 training records assembled (6,600 clean PV + 1,110 clean PlantDoc).")
 
     # 3. Double-Pass Verification Against Master Blacklist & Perceptual Near-Duplicates
-    print("\n[*] Auditing assembled 7,740 training paths against master blacklist & benchmark perceptual near-duplicates...")
+    print("\n[*] Auditing assembled 7,710 training paths against master blacklist & benchmark perceptual near-duplicates...")
     leak_count = 0
-    dhash_leak_count = 0
+    bench_dhash_leak_count = 0
     for p in all_paths:
         b = Path(p).read_bytes()
         h = hashlib.sha256(b).hexdigest()
@@ -203,11 +287,11 @@ def main():
         dh = compute_dhash(b)
         min_d = min(hamming_dist(dh, b_dh) for _, b_dh in bench_dhashes)
         if min_d <= 2:
-            print(f"[CRITICAL ERROR] Perceptual near-duplicate in training: {p} (dist: {min_d})")
-            dhash_leak_count += 1
+            print(f"[CRITICAL ERROR] Perceptual benchmark near-duplicate in training: {p} (dist: {min_d})")
+            bench_dhash_leak_count += 1
 
     assert leak_count == 0, f"Found {leak_count} leaked hashes!"
-    assert dhash_leak_count == 0, f"Found {dhash_leak_count} perceptual near-duplicates!"
+    assert bench_dhash_leak_count == 0, f"Found {bench_dhash_leak_count} perceptual near-duplicates!"
     print("[OK] ZERO LEAKAGE INDEPENDENTLY CONFIRMED: 0 exact collisions against master blacklist, 0 perceptual near-duplicates against benchmark.")
 
     # 4. Model Training & Export
@@ -298,14 +382,19 @@ def main():
 
     manifest_out = REPO_ROOT / "ai_engine" / "TRAINING_RUN_MANIFEST.json"
     training_manifest = {
-        "manifest_version": "2.0",
+        "manifest_version": "2.1",
         "training_run_metadata": {
-            "training_timestamp": t_start_iso,
+            "training_start_time": t_start_iso,
             "training_completed_time": t_end_iso,
             "training_duration_seconds": duration_sec,
             "random_seed": RANDOM_SEED,
-            "status": "COMPLETED & VERIFIED",
-            "provenance_statement": "The model was trained from scratch using MobileNetV3-Small on 7,740 clean dual-domain records with exact blacklist exclusion and benchmark dHash near-duplicate filtering."
+            "status": "COMPLETED & VERIFIED (SUCCESSFUL ZERO-LEAKAGE RUN)",
+            "provenance_statement": (
+                f"The model was successfully retrained from scratch using MobileNetV3-Small on {len(all_paths)} "
+                f"clean dual-domain records representing {len(unique_training_hashes)} unique image files. "
+                "All exact master blacklist collisions, 14 benchmark dHash near-duplicates, and 10 PlantDoc "
+                "crop/zoom test-matching source families were purged prior to training."
+            )
         },
         "exported_model_artifact": {
             "model_file": "ai_engine/krishi_drishti_model.tflite",
@@ -320,12 +409,16 @@ def main():
         },
         "training_corpus_provenance": {
             "total_training_records": len(all_paths),
-            "asserted_record_count": 7740,
+            "asserted_record_count": 7710,
             "unique_training_specimens_count": len(unique_training_hashes),
             "plantvillage_clean_subsampled_records": 6600,
             "plantvillage_per_class_counts": per_class_selected_counts,
-            "plantdoc_clean_train_unique_images": len(plantdoc_train_specimens),
-            "plantdoc_clean_train_replicated_records": len(plantdoc_train_specimens) * 3
+            "plantdoc_clean_train_unique_images": len(clean_plantdoc_train),
+            "plantdoc_clean_train_replicated_records": len(clean_plantdoc_train) * 3,
+            "records_vs_unique_distinction": (
+                f"The model was trained using {len(all_paths)} training records representing {len(unique_training_hashes)} "
+                f"unique image files (6,600 clean PlantVillage + 370 clean PlantDoc repeated 3x = 1,110)."
+            )
         },
         "cryptographic_and_perceptual_exclusion_audit": {
             "master_blacklist_unique_hashes_count": len(master_blacklist),
@@ -334,10 +427,14 @@ def main():
             "real_world_field_tests_exact_hashes_excluded": len(field_hashes),
             "plantdoc_held_out_unseen_test_hashes_excluded": len(plantdoc_test_hashes),
             "plantdoc_conflicting_label_hashes_excluded": len(conflicting_hashes),
-            "perceptual_dhash_near_duplicates_excluded_count": len(excluded_perceptual_records),
-            "perceptual_exclusion_scope": "Perceptual dHash near-duplicate exclusion (Hamming distance <= 2) is enforced against the 60-specimen botanical benchmark; exact SHA-256 exclusion is enforced against the complete 171-hash master blacklist across benchmark, canonical, field test, and PlantDoc held-out partitions.",
-            "perceptual_near_duplicates_details": excluded_perceptual_records,
-            "training_leakage_assertion": "PASSED (0 exact collisions against master blacklist, 0 perceptual near-duplicates against 60-specimen benchmark)"
+            "plantvillage_perceptual_dhash_near_duplicates_excluded": len(excluded_pv_near_duplicates),
+            "plantvillage_near_duplicates_details": excluded_pv_near_duplicates,
+            "plantdoc_crop_and_perceptual_near_duplicates_excluded": len(excluded_plantdoc_near_duplicates),
+            "plantdoc_near_duplicates_details": excluded_plantdoc_near_duplicates,
+            "training_leakage_assertion": (
+                "PASSED (0 exact collisions against 171-hash master blacklist, 0 benchmark dHash near-duplicates, "
+                "0 PlantDoc test crop/dHash collisions)"
+            )
         },
         "training_hyperparameters": {
             "batch_size": BATCH_SIZE,
@@ -358,6 +455,7 @@ def main():
     print(f"\n[OK] Saved complete post-training provenance manifest to: {manifest_out}")
     print(f"[OK] Exported Model SHA-256: {model_sha256}")
     print(f"[OK] Model Size: {model_size_bytes} bytes ({model_size_mb} MB)")
+    print(f"[OK] Training Completed at: {t_end_iso} (Duration: {duration_sec}s)")
     return 0
 
 if __name__ == "__main__":

@@ -118,7 +118,7 @@ KRISHI-DRISHTI/
 
 ## 📊 Genuine Empirical AI Metrics
 
-Trained on the **Dual-Domain Pure Solanaceae Corpus** (7,740 total training records: 6,600 clean PlantVillage samples [1,100/class] strictly filtered for zero exact and perceptual overlap, plus 1,140 clean outdoor PlantDoc representations; fully documented in `ai_engine/TRAINING_RUN_MANIFEST.json`), and benchmarked on independent real-world field photographs from **PlantDoc** and the 60-specimen botanical benchmark:
+Trained on the **Dual-Domain Pure Solanaceae Corpus** (7,710 total training records representing 6,965 unique image files: 6,600 clean PlantVillage samples [1,100/class] strictly filtered for zero exact and perceptual overlap, plus 1,110 clean outdoor PlantDoc representations [370 unique images replicated 3x]; fully documented in `ai_engine/TRAINING_RUN_MANIFEST.json`), and benchmarked on independent real-world field photographs from **PlantDoc** and the 60-specimen botanical benchmark:
 
 | Metric | Measured Value | Practical Significance |
 | :--- | :--- | :--- |
@@ -130,8 +130,8 @@ Trained on the **Dual-Domain Pure Solanaceae Corpus** (7,740 total training reco
 | **Tomato Healthy Tissue F1** | **0.9531** | Precision: 91.57%, Recall: 99.38% |
 | **Model Size (TFLite)** | **2.03 MB** | Float16 post-training weight optimization with Float32 I/O interfaces |
 | **Inference Latency** | **4.94 ms Mean (Host PC CPU Reference) / ~12–15 ms (Target Mobile Edge)** | Benchmark Mean: 3.94 ms on Host PC CPU reference interpreter (Intel Core i5 with XNNPACK, range: 4.43–5.33 ms across 60 specimens); Target Mobile Edge CPU: ~12–15 ms (Cortex-A55 engineering estimate, budget < 40 ms); Wand sync < 15 ms |
-| **60-Specimen Botanical Benchmark** | **90.0% Strict / 93.1% Accepted** | Strict 6-class exact match: 54/60 (90.00%); Accepted predictions: 54/58 (93.10%, 96.7% coverage, 2 gated UNCERTAIN; 55/60 91.7% pathogen match) |
-| **PlantDoc Outdoor Benchmark** | **35.48% Raw $\rightarrow$ 57.89% (Held-Out Test) / 67.47% (Full Adaptation)** | Evaluated across PlantDoc with hash-level 80/20 holdout manifest (PLANTDOC_HOLDOUT_MANIFEST.json). Genuinely unseen test partition (93 unique images, 100% excluded from training, 0 duplicate hashes): 35.48% raw accuracy (33/93), 57.89% diagnostic accuracy on accepted frames (33/57, 36 frames gated UNCERTAIN); Full domain adaptation corpus (487 images): 46.00% raw (224/487) / 67.47% accepted (224/332) |
+| **60-Specimen Botanical Benchmark** | **88.33% Strict / 92.98% Accepted** | Strict 6-class exact match: 53/60 (88.33%); Accepted predictions: 53/57 (92.98%, 95.0% coverage, 3 gated UNCERTAIN; 54/60 90.0% pathogen match) |
+| **PlantDoc Outdoor Benchmark** | **33.33% Raw $\rightarrow$ 55.36% (Held-Out Test) / 66.25% (Full Adaptation)** | Evaluated across PlantDoc with hash-level 80/20 holdout manifest (PLANTDOC_HOLDOUT_MANIFEST.json). Genuinely unseen test partition (93 unique images, 100% excluded from training, 0 duplicate hashes, 0 crop collisions): 33.33% raw accuracy (31/93), 55.36% diagnostic accuracy on accepted frames (31/56, 37 frames gated UNCERTAIN); Full domain adaptation corpus (487 images): 43.12% raw (210/487) / 66.25% accepted (210/317) |
 | **Entropy Rejection Threshold** | **$H > 1.45$ nats** | Rejects non-foliar objects, bare soil, and ambiguous leaves |
 
 ---

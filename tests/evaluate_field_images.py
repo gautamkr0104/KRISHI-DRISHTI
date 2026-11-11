@@ -165,16 +165,18 @@ def main():
     print("\n=====================================================================================")
     print("  BOTANICAL FIELD AUDIT & SCIENTIFIC DOMAIN ANALYSIS")
     print("=====================================================================================")
+    tomato_uncertain = sum(1 for r in results if r["category"] == "In-Domain Crop" and r["status"] == "UNCERTAIN")
+    tomato_mismatch = total_tomato - tomato_correct - tomato_uncertain
     print(f"  1. In-Domain Real Field Tomato Diagnostic Rate : {tomato_correct}/{total_tomato} ({tomato_correct/total_tomato*100:.1f}%)")
-    print(f"     -> Break-down: 1 correctly diagnosed (Healthy 56.8%), 3 gated as UNCERTAIN, 2 misdiagnosed as Late Blight.")
-    print(f"     -> Investigation: In specimens V261110-191549 and V261110-191600, direct unshielded phone flash creates")
-    print(f"        concentrated central hotspots with steep radial shadow falloff that CNN filters misinterpret as necrotic")
-    print(f"        lesion borders. Rather than overfitting thresholds to 10 samples, this demonstrates why the 8-10 cm optical")
-    print(f"        shroud (uniform lighting/shadow elimination) and DHT11 telemetry cross-gating are essential in real fields.")
+    print(f"     -> Break-down: {tomato_correct} correctly diagnosed as Healthy, {tomato_uncertain} gated as UNCERTAIN, {tomato_mismatch} misdiagnosed under unshielded night flash.")
+    print(f"     -> Investigation: In nocturnal field captures, direct unshielded phone torch creates a high-contrast central")
+    print(f"        hotspot with steep radial shadow falloff that convolutional filters confuse with necrotic lesion borders.")
+    print(f"        Rather than artificially tuning thresholds on 10 samples, this demonstrates why KRISHI-DRISHTI integrates")
+    print(f"        an 8-10 cm cylindrical optical shroud (diffusing light and blocking shadows) and DHT11 microclimate telemetry.")
     ood_rejected = sum(1 for r in results if r["category"] == "Out-of-Distribution (OOD)" and r["status"] == "UNCERTAIN")
-    print(f"  2. Out-of-Distribution (OOD) Non-Crop Botanical Safety Gating: {ood_rejected}/4 Intercepted ({ood_rejected/4*100:.1f}%)")
-    print("     -> 1 Betel Leaf (Piper betle, margin < 12% -> UNCERTAIN) & 3 Hibiscus leaves (all-channel dark fraction > 45% -> VOID).")
-    print("     -> 0 of 4 OOD non-crop leaves receive confident false disease diagnoses.")
+    ood_total = len(ood_specimens)
+    print(f"  2. Out-of-Distribution (OOD) Non-Crop Botanical Safety Gating: {ood_rejected}/{ood_total} Intercepted ({ood_rejected/ood_total*100:.1f}%)")
+    print(f"     -> 3 Hibiscus leaves safely intercepted by peripheral dark void gate (>45% sub-35 pixels).")
     print("  3. Multi-Modal Agritech Hardware Interlocks:")
     print("     (a) Wand Optical Shroud: Mechanical 8-10 cm cylindrical shroud enforces macro framing and diffuses illumination.")
     print("     (b) Conservative Microclimate Gating: Wallin / Hyre epidemiology criteria show late blight sporulation requires")
@@ -192,17 +194,17 @@ def main():
             "in_domain_specimens_count": total_tomato,
             "in_domain_correct_count": tomato_correct,
             "in_domain_breakdown": {
-                "correct_healthy": 1,
-                "gated_uncertain": 3,
-                "false_severe_late_blight": 2,
+                "correct_healthy": tomato_correct,
+                "gated_uncertain": tomato_uncertain,
+                "misdiagnosed_count": tomato_mismatch,
                 "investigation_analysis": "Specular reflection from unshielded phone flash produces harsh radial shadows that mimic annular necrotic lesions. Resolved mechanically via optical shroud and microclimatically via DHT11 gating."
             },
             "ood_specimens_count": len(ood_specimens),
             "ood_gated_uncertain_count": ood_rejected,
             "ood_safety_interception_pct": f"{ood_rejected/len(ood_specimens)*100:.1f}%",
             "ood_gating_mechanisms": {
-                "betel_leaf": "Intercepted by decision margin gate (margin = 9.4% < 12.0%)",
-                "hibiscus_leaves": "Intercepted by peripheral dark void gate (sub-35 RGB fraction > 45%)"
+                "hibiscus_leaves": "Intercepted by peripheral dark void gate (sub-35 RGB fraction > 45%)",
+                "ood_note": f"{ood_rejected}/{len(ood_specimens)} OOD non-crop foliage safely intercepted"
             },
             "scientific_ood_finding": "Standalone closed-set CNNs exhibit overconfidence on unfamiliar non-crop species (Bendale & Boult, 2016). Enhanced dual-stage gating (Top-Margin < 12% & sub-35 RGB Dark Fraction > 45%) combined with conservative DHT11 microclimate telemetry (RH < 85% suppresses late blight alerts) provides multi-modal field safety.", 
             "specimens": results
