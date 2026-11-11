@@ -1,0 +1,9 @@
+{
+  "manifest_version": "1.0",
+  "project": "KRISHI-DRISHTI",
+  "domain": "Hardware-in-the-Loop Authentic Field Validation",
+  "description": "Standardized schema for foliar images captured directly by the ESP32-CAM OV5640 wand with optical shroud.",
+  "sensor_hardware": "AI-Thinker ESP32-CAM (OV5640 5MP)",
+  "shroud_specification": "3D-printed 8-10 cm cylindrical black optical shroud",
+  "records": []
+}
