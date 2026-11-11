@@ -1,14 +1,16 @@
 {
-  "manifest_version": "2.0",
+  "manifest_version": "2.1",
   "training_run_metadata": {
-    "training_timestamp": "2026-11-10T21:08:00Z",
+    "training_start_time": "2026-11-11T05:45:08Z",
+    "training_completed_time": "2026-11-11T05:54:01Z",
+    "training_duration_seconds": 533.18,
     "random_seed": 42,
-    "status": "COMPLETED & VERIFIED",
-    "provenance_statement": "The model was trained from scratch using MobileNetV3-Small on 7,740 clean dual-domain records with exact blacklist exclusion and benchmark dHash near-duplicate filtering."
+    "status": "COMPLETED & VERIFIED (SUCCESSFUL ZERO-LEAKAGE RUN)",
+    "provenance_statement": "The model was successfully retrained from scratch using MobileNetV3-Small on 7710 clean dual-domain records representing 6965 unique image files. All exact master blacklist collisions, 14 benchmark dHash near-duplicates, and 10 PlantDoc crop/zoom test-matching source families were purged prior to training."
   },
   "exported_model_artifact": {
     "model_file": "ai_engine/krishi_drishti_model.tflite",
-    "model_sha256": "2573ca193904799dcdc6c0178618fc2625830d6566e063d6a1ff7dfcee70e8ab",
+    "model_sha256": "be71ededc29f19f69ab98b63bebf281c6a1d88f468b6dc1a2a2dac655f406aaa",
     "model_size_bytes": 2123856,
     "model_size_mb": 2.03,
     "quantization": "Float16 (FP16 Post-Training Optimization with Float32 input/output interfaces)",
@@ -25,9 +27,9 @@
     ]
   },
   "training_corpus_provenance": {
-    "total_training_records": 7740,
-    "asserted_record_count": 7740,
-    "unique_training_specimens_count": 6975,
+    "total_training_records": 7710,
+    "asserted_record_count": 7710,
+    "unique_training_specimens_count": 6965,
     "plantvillage_clean_subsampled_records": 6600,
     "plantvillage_per_class_counts": {
       "Tomato___Late_blight": 1100,
@@ -37,8 +39,9 @@
       "Potato___Early_blight": 1100,
       "Potato___healthy": 1100
     },
-    "plantdoc_clean_train_unique_images": 380,
-    "plantdoc_clean_train_replicated_records": 1140
+    "plantdoc_clean_train_unique_images": 370,
+    "plantdoc_clean_train_replicated_records": 1110,
+    "records_vs_unique_distinction": "The model was trained using 7710 training records representing 6965 unique image files (6,600 clean PlantVillage + 370 clean PlantDoc repeated 3x = 1,110)."
   },
   "cryptographic_and_perceptual_exclusion_audit": {
     "master_blacklist_unique_hashes_count": 171,
@@ -47,9 +50,8 @@
     "real_world_field_tests_exact_hashes_excluded": 10,
     "plantdoc_held_out_unseen_test_hashes_excluded": 93,
     "plantdoc_conflicting_label_hashes_excluded": 5,
-    "perceptual_dhash_near_duplicates_excluded_count": 14,
-    "perceptual_exclusion_scope": "Perceptual dHash near-duplicate exclusion (Hamming distance <= 2) is enforced against the 60-specimen botanical benchmark; exact SHA-256 exclusion is enforced against the complete 171-hash master blacklist across benchmark, canonical, field test, and PlantDoc held-out partitions.",
-    "perceptual_near_duplicates_details": [
+    "plantvillage_perceptual_dhash_near_duplicates_excluded": 14,
+    "plantvillage_near_duplicates_details": [
       {
         "class": "Potato___healthy",
         "file": "03da9931-e514-4cc7-b04a-8f474a133ce5___RS_HL 1830_newGGR.JPG",
@@ -149,7 +151,70 @@
         "hamming_distance": 2
       }
     ],
-    "training_leakage_assertion": "PASSED (0 exact collisions against master blacklist, 0 perceptual near-duplicates against 60-specimen benchmark)"
+    "plantdoc_crop_and_perceptual_near_duplicates_excluded": 10,
+    "plantdoc_near_duplicates_details": [
+      {
+        "class": "Potato___Early_blight",
+        "file": "train_45035_1.jpg",
+        "sha256": "adaee93874d17252870b7d4a49e8941af36309a0d1889afabd67aaf80fc0a261",
+        "reason": "Crop / zoom / identical source family match to held-out test specimen"
+      },
+      {
+        "class": "Potato___Late_blight",
+        "file": "train_late-blight-leaves.jpg",
+        "sha256": "3241207742dbfae7f7e2ef477193e61822b8908e8a40b01454f21ec8fb58fea4",
+        "reason": "Crop / zoom / identical source family match to held-out test specimen"
+      },
+      {
+        "class": "Tomato___Early_blight",
+        "file": "train_earlyblightpotato.jpg",
+        "sha256": "d0c8a4d48ed9a3f9435d1affb82ac10e9a06adb0f2615ff62e83e21bdfa281fc",
+        "reason": "Crop / zoom / identical source family match to held-out test specimen"
+      },
+      {
+        "class": "Tomato___Early_blight",
+        "file": "train_Early-blight.jpg",
+        "sha256": "55c2e84169c7e645d9c23583e6ad8eaf19e930ee99b33b38a8c4c60e639e0099",
+        "reason": "Crop / zoom / identical source family match to held-out test specimen"
+      },
+      {
+        "class": "Tomato___Late_blight",
+        "file": "train_tomato_late-blight_04_zoom.jpg",
+        "sha256": "114e5d0090cd63ad9e176375c2fde3a48f01d88af3bd1dd44909b2ecefa70a49",
+        "reason": "Crop / zoom / identical source family match to held-out test specimen"
+      },
+      {
+        "class": "Tomato___Late_blight",
+        "file": "train_LBleaf2INIA_0.jpg",
+        "sha256": "73c62c716108bb65142931eca09dbe47fee66d1b0366bae04ea455f6090df9b5",
+        "reason": "Crop / zoom / identical source family match to held-out test specimen"
+      },
+      {
+        "class": "Tomato___Late_blight",
+        "file": "train_IMG_5813.jpg",
+        "sha256": "1c2610d64ded9d26b2c5636d55d3acbf065e5ce346585bdacc81661e4e5484c9",
+        "reason": "Crop / zoom / identical source family match to held-out test specimen"
+      },
+      {
+        "class": "Tomato___Late_blight",
+        "file": "train_a7710b5901ba1f8e9759ef7576cd9f09.jpg",
+        "sha256": "5dcae1eb24088f5742e9ede12c476f59571827915f0424907c58b348ce26479f",
+        "reason": "Crop / zoom / identical source family match to held-out test specimen"
+      },
+      {
+        "class": "Tomato___Late_blight",
+        "file": "train_IMG_5360.jpg",
+        "sha256": "5118060f0790a20d309f5e181248777912a72453c63d18c2d5db05da9a723995",
+        "reason": "Crop / zoom / identical source family match to held-out test specimen"
+      },
+      {
+        "class": "Tomato___healthy",
+        "file": "train_tomato-leaf.jpg",
+        "sha256": "2395bf9a596792fab2c36473e68a899531bcaee99af03ffd5664db8b083338ba",
+        "reason": "Crop / zoom / identical source family match to held-out test specimen"
+      }
+    ],
+    "training_leakage_assertion": "PASSED (0 exact collisions against 171-hash master blacklist, 0 benchmark dHash near-duplicates, 0 PlantDoc test crop/dHash collisions)"
   },
   "training_hyperparameters": {
     "batch_size": 32,
@@ -613,7 +678,6 @@
     "1135eddfc6b1647da9ecaf40c39c88e860d2da73758ae2beb9bfa54b80b697f6",
     "1143b91dd64744950cda2f7d53ed69b5e17a04d87b59fd66204ea8f83bdcd0d2",
     "1146802ff74c97a511dedcb6bf204d3029e13734bb2d0fcc9a44bce50d2311f2",
-    "114e5d0090cd63ad9e176375c2fde3a48f01d88af3bd1dd44909b2ecefa70a49",
     "115011eb7b18fe407d19f3d18bc15ec7c6d6e031575ce91f2464743452889a88",
     "1171c1a1a164751f48fdd886ab4fb03070d29d6a7d277ab4f5ab5938c3786e2d",
     "11863dade0ea0cfb9a73527ce8ba571bdb3c5a08e10d07d1715764e018b775b5",
@@ -914,7 +978,6 @@
     "1c000d0bee708721e09d2483bd03e58e4109c896d641419250aac8df375caa69",
     "1c0fd46087200489a6c51df72d963e9855b4e6d7c0f29dbedb572ee06ab0720b",
     "1c242d3584ac53680388aab3314088b0cb880c54a511fe3d9a65a76ce47aee40",
-    "1c2610d64ded9d26b2c5636d55d3acbf065e5ce346585bdacc81661e4e5484c9",
     "1c2b27a7453bad57302bc1403667f7363890dd83e8f3c69db351fe6d0c0773c8",
     "1c2bb1601dc41bf2143cb9f6cf66ec32826032220fd95868a3f0d0c516f3d233",
     "1c391a8cfee8d7b1b30ca21e1ca794744397f1f3cd1d2d48bcbc4705f8cca6c8",
@@ -1109,7 +1172,6 @@
     "238abc720e35a7a9755bee1a3958ea9917b8ca95affd6e23758f6e6e5d9163e6",
     "238c64b66957a06bfe918c6ce36bedc462d608a9298429ba3a17a0659a3a3142",
     "238cf9ebfebe38ede1e2bd70c946fd1c216821458a2521f48a9da0b872fdae32",
-    "2395bf9a596792fab2c36473e68a899531bcaee99af03ffd5664db8b083338ba",
     "23a906eb7ce83ad36e7ce52a5521394435ad5e68543f643f24453c15288605cd",
     "23abbee630651fc0f9f86f134dc5fb5d41373c0fd12eb118f417a0e3205ab52c",
     "23c272f21cd901f274b28f435ad88f45df3086b5429b1540e91bff3d49045272",
@@ -1548,7 +1610,6 @@
     "323315c3d52c0dd5223cbc3d3b5c1966c00d627d07642afd08cdd0c9f0cbcebb",
     "32393be3da261fb417bc0a16ba9341c13d904eb7eab0cfbf47e9ccfceaa8dcba",
     "323de83d225439a5b506fcf597650ca03a9c7d3a30884008ba8581c11adac0f2",
-    "3241207742dbfae7f7e2ef477193e61822b8908e8a40b01454f21ec8fb58fea4",
     "324a3dce249e3c53115aa5fc321676cb2bb632163c90e10abbd0b9fc7a625409",
     "32522df0ecea9d18aa6fbc2fc983a7a076c8c640a24ed0d3f85094cc1124ad58",
     "32683050eca8c5d0e6121b42dbbe433ae83a0c675e78ed53b17820598eb20398",
@@ -2413,7 +2474,6 @@
     "50e62e2d7ea732cd8f45ac9ac3e6221a8cd352643b7fdf0d647aa89591d72eea",
     "50e8766f6ccf5d278b9d9955e6a0bfe458f12a893604992e2e7aedb0ae403127",
     "51066765ce05812147bda8c8cc07099f7b1eeef4988aeaaa8790e128b1f37439",
-    "5118060f0790a20d309f5e181248777912a72453c63d18c2d5db05da9a723995",
     "5118e035ac882c9acc9be17857f62a461c00018d02e6a0daf6d7f8284557f77e",
     "51263a53c212b5b891cb0b5bed2820685b80ba8aa4ebed664a2085fd8b871e63",
     "514eac03f52bbb7d84abec6082890d415689645c6c5775e95e016861cdeb238b",
@@ -2545,7 +2605,6 @@
     "55b20e1ea324ff352c98ecf1a8005c3f06ebdc6ba6426d85f4f4ab69d2022192",
     "55b98d846ea8f41e2b14724eb275fa0dd19d0556102b01ae4295b9346f2b229a",
     "55bcb1600d2263ec6fe733c6ed81d14777ee982a3fd8b814f6f060449a266a9e",
-    "55c2e84169c7e645d9c23583e6ad8eaf19e930ee99b33b38a8c4c60e639e0099",
     "55c80c02d4f956868f38bbc22d9afe5201c9ed4a642662119a60d4e038df9b76",
     "55ca616f0225a3e2bb7ab78300bcef8685ef8ac6e53e35b1c1a04a51ab3b1256",
     "55cab870a562967a6d67600702ded011d30cee843b5bc97c2632194302c9a43b",
@@ -2750,7 +2809,6 @@
     "5d9ab633c73d24cce1b5c8228d6f10838f4159e102d3565393001df3a5bba626",
     "5da15ea674ad084cef5725fb4990118dc792ab989a808078bd18fa4f3e692853",
     "5dc79e8f6e8cefd4fca90c638b518e34ef433103192747f5395033b2a7189027",
-    "5dcae1eb24088f5742e9ede12c476f59571827915f0424907c58b348ce26479f",
     "5dcb3ae4afd5457a169a5f42ec5e240830ccd69047b641cc9ff9b5c69a1686b3",
     "5dcd668d1a265c2111576bc5c1d98c21a06c79f468e1c753155f1abb952e88a6",
     "5decfb43abe7069178c2abec9494e76932b523d99aa4898ff39608b7f69f2471",
@@ -3320,7 +3378,6 @@
     "73542fbe93ab463c1ea9a4818aca0f29846ec034fcfdfc7e5c3cadd37ea10103",
     "736e93e08aefc633b80a73d9ddba15531f29c0a8f93cdf51feb5ca45589340c2",
     "73b0f5507a99edc9c1d7834447aa77436e77b4d14092e70be03b6d6e6221d3c3",
-    "73c62c716108bb65142931eca09dbe47fee66d1b0366bae04ea455f6090df9b5",
     "73d4cd417be25fa6ec0476c17494b22b9c1b74505144d1f9491ddb492397d14a",
     "73e099287a4c2be5c1709f165e60ba8e9da5b8568f881207330e2d15149edc6f",
     "73e6959efe47a06293a0a17c5942899c4cc4e5e7da00ca84cc6b5d3be9a4614a",
@@ -4896,7 +4953,6 @@
     "ad7b1533a06611223dcd6570de8e06ec3a6d2d1a9147bd68347298cb1951f19c",
     "ad7cf20e89fba8d44ea3e463d75751f3cc001edb54a4c78fa127105c6ce7751b",
     "ada63c98bb00fb4657782f0df913a3e2cdaf2b04e143ca93d7e2e79dd50dd589",
-    "adaee93874d17252870b7d4a49e8941af36309a0d1889afabd67aaf80fc0a261",
     "adb951078728739f757f314f8194f2bf13a0205965283165f3c0c47537284f37",
     "adbe3b17681e01eb526d319017d9c5df193bd74f0df055cb60c37569ded2f57e",
     "adc01a20b9d2b252c3dfb33b1e3e3b55490d82de57aab3420e1d5d61c01eedb4",
@@ -5819,7 +5875,6 @@
     "d0af501d2ebe54a68bdac5cb45f0b5cee2c24e76352dd611a8960fe6745b7953",
     "d0b2d03e6154e9337274e0db0873030aff087276f8bf3e26d407ef36597c6a39",
     "d0c20dcaf24f1421f5b564b5f692e8baaee50d5e7a4c0bf3c786fc3c0b899680",
-    "d0c8a4d48ed9a3f9435d1affb82ac10e9a06adb0f2615ff62e83e21bdfa281fc",
     "d0d9f8eb21884568fac2f03fc5bfafdec0dc4b3dba41142797f901e97c36e760",
     "d0ff7b6cb4b5928e193a078037ab05dd917d433309906220e2c46434b550f909",
     "d107a3af562c54f7773303b571cf2b72f84e35d0eeeb5cf3cb09d0e7b7ef1dcf",

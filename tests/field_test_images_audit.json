@@ -7,16 +7,16 @@
   "in_domain_correct_count": 1,
   "in_domain_breakdown": {
     "correct_healthy": 1,
-    "gated_uncertain": 3,
-    "false_severe_late_blight": 2,
+    "gated_uncertain": 1,
+    "misdiagnosed_count": 4,
     "investigation_analysis": "Specular reflection from unshielded phone flash produces harsh radial shadows that mimic annular necrotic lesions. Resolved mechanically via optical shroud and microclimatically via DHT11 gating."
   },
   "ood_specimens_count": 4,
-  "ood_gated_uncertain_count": 4,
-  "ood_safety_interception_pct": "100.0%",
+  "ood_gated_uncertain_count": 3,
+  "ood_safety_interception_pct": "75.0%",
   "ood_gating_mechanisms": {
-    "betel_leaf": "Intercepted by decision margin gate (margin = 9.4% < 12.0%)",
-    "hibiscus_leaves": "Intercepted by peripheral dark void gate (sub-35 RGB fraction > 45%)"
+    "hibiscus_leaves": "Intercepted by peripheral dark void gate (sub-35 RGB fraction > 45%)",
+    "ood_note": "3/4 OOD non-crop foliage safely intercepted"
   },
   "scientific_ood_finding": "Standalone closed-set CNNs exhibit overconfidence on unfamiliar non-crop species (Bendale & Boult, 2016). Enhanced dual-stage gating (Top-Margin < 12% & sub-35 RGB Dark Fraction > 45%) combined with conservative DHT11 microclimate telemetry (RH < 85% suppresses late blight alerts) provides multi-modal field safety.",
   "specimens": [
@@ -26,11 +26,11 @@
       "botanical_species": "Solanum lycopersicum (Tomato)",
       "ground_truth": "Tomato Healthy",
       "description": "Healthy green tomato leaflet under nocturnal LED torch",
-      "prediction": "Solanaceae Uncertain / Ambiguous",
-      "confidence": 46.2,
-      "status": "UNCERTAIN",
+      "prediction": "Tomato Late Blight",
+      "confidence": 79.7,
+      "status": "SEVERE",
       "in_domain_match": false,
-      "latency_ms": 22.71
+      "latency_ms": 24.96
     },
     {
       "filename": "V261110-191524-30fps-auto_exp-tmc_auto_0.jpg",
@@ -38,11 +38,11 @@
       "botanical_species": "Solanum lycopersicum (Tomato)",
       "ground_truth": "Tomato Healthy",
       "description": "Healthy green tomato leaflet under nocturnal LED torch",
-      "prediction": "Solanaceae Uncertain / Ambiguous",
-      "confidence": 48.7,
-      "status": "UNCERTAIN",
+      "prediction": "Tomato Late Blight",
+      "confidence": 71.4,
+      "status": "SEVERE",
       "in_domain_match": false,
-      "latency_ms": 22.47
+      "latency_ms": 16.34
     },
     {
       "filename": "V261110-191530-30fps-auto_exp-tmc_auto_0.jpg",
@@ -50,11 +50,11 @@
       "botanical_species": "Piper betle (Betel Leaf / Paan)",
       "ground_truth": "OOD Non-Crop (Paan)",
       "description": "Yellow heart-shaped betel leaf (Piperaceae family)",
-      "prediction": "Solanaceae Uncertain / Ambiguous",
-      "confidence": 47.9,
-      "status": "UNCERTAIN",
+      "prediction": "Tomato Late Blight",
+      "confidence": 75.1,
+      "status": "SEVERE",
       "in_domain_match": false,
-      "latency_ms": 19.92
+      "latency_ms": 21.41
     },
     {
       "filename": "V261110-191538-30fps-auto_exp-tmc_auto_0.jpg",
@@ -63,10 +63,10 @@
       "ground_truth": "Tomato Healthy",
       "description": "Healthy green tomato leaflet under nocturnal LED torch",
       "prediction": "Tomato Healthy",
-      "confidence": 55.9,
+      "confidence": 65.3,
       "status": "OPTIMAL",
       "in_domain_match": true,
-      "latency_ms": 23.29
+      "latency_ms": 25.79
     },
     {
       "filename": "V261110-191543-30fps-auto_exp-tmc_auto_0.jpg",
@@ -75,10 +75,10 @@
       "ground_truth": "Tomato Healthy",
       "description": "Healthy green tomato leaflet under nocturnal LED torch",
       "prediction": "Solanaceae Uncertain / Ambiguous",
-      "confidence": 34.1,
+      "confidence": 35.9,
       "status": "UNCERTAIN",
       "in_domain_match": false,
-      "latency_ms": 22.81
+      "latency_ms": 23.49
     },
     {
       "filename": "V261110-191549-30fps-auto_exp-tmc_auto_0.jpg",
@@ -87,10 +87,10 @@
       "ground_truth": "Tomato Healthy",
       "description": "Healthy green tomato leaflet under nocturnal LED torch",
       "prediction": "Tomato Late Blight",
-      "confidence": 51.0,
+      "confidence": 72.9,
       "status": "SEVERE",
       "in_domain_match": false,
-      "latency_ms": 23.15
+      "latency_ms": 18.64
     },
     {
       "filename": "V261110-191600-30fps-auto_exp-tmc_auto_0.jpg",
@@ -98,11 +98,11 @@
       "botanical_species": "Solanum lycopersicum (Tomato)",
       "ground_truth": "Tomato Healthy",
       "description": "Healthy green tomato leaflet under nocturnal LED torch",
-      "prediction": "Potato Late Blight",
-      "confidence": 54.7,
+      "prediction": "Tomato Late Blight",
+      "confidence": 51.2,
       "status": "SEVERE",
       "in_domain_match": false,
-      "latency_ms": 23.36
+      "latency_ms": 20.37
     },
     {
       "filename": "V261110-191626-30fps-auto_exp-tmc_auto_0.jpg",
@@ -114,7 +114,7 @@
       "confidence": 0.0,
       "status": "UNCERTAIN",
       "in_domain_match": false,
-      "latency_ms": 25.42
+      "latency_ms": 20.6
     },
     {
       "filename": "V261110-191628-30fps-auto_exp-tmc_auto_0.jpg",
@@ -126,7 +126,7 @@
       "confidence": 0.0,
       "status": "UNCERTAIN",
       "in_domain_match": false,
-      "latency_ms": 23.59
+      "latency_ms": 22.23
     },
     {
       "filename": "V261110-191634-30fps-auto_exp-tmc_auto_0.jpg",
@@ -138,7 +138,7 @@
       "confidence": 0.0,
       "status": "UNCERTAIN",
       "in_domain_match": false,
-      "latency_ms": 24.26
+      "latency_ms": 17.85
     }
   ]
 }

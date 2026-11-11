@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-10T21:08:00Z",
+  "timestamp": "2026-11-11T05:54:01Z",
   "architecture": "MobileNetV3-Small",
   "input_dimensions": [
     128,
@@ -16,7 +16,7 @@
     "Potato___healthy"
   ],
   "dataset_source": "Dual-Domain Pure Solanaceae Corpus (PlantVillage Clean Subsampled + PlantDoc Outdoor Train)",
-  "training_samples": 7740,
+  "training_samples": 7710,
   "validation_samples": 2850,
   "validation_accuracy": 0.8874,
   "validation_macro_f1": 0.8863,
@@ -112,35 +112,35 @@
     "held_out_unseen_outdoor_test": {
       "total_evaluated_unique_images": 93,
       "asserted_expected_count": 93,
-      "raw_correct": 28,
-      "raw_accuracy_pct": 30.11,
+      "raw_correct": 31,
+      "raw_accuracy_pct": 33.33,
       "dual_stage_gating": {
-        "total_gated_uncertain": 33,
-        "gated_pct": 35.48,
+        "total_gated_uncertain": 37,
+        "gated_pct": 39.78,
         "foliar_ratio_rejected": 0,
-        "entropy_confidence_rejected": 33
+        "entropy_confidence_rejected": 37
       },
       "accepted_frame_triage": {
-        "accepted_frames": 60,
-        "accepted_correct": 28,
-        "accepted_accuracy_pct": 46.67
+        "accepted_frames": 56,
+        "accepted_correct": 31,
+        "accepted_accuracy_pct": 55.36
       },
-      "independence_statement": "100% cryptographically excluded from training. Verified zero overlap via SHA-256 hash manifest. Each unique test specimen evaluated exactly once."
+      "independence_statement": "100% cryptographically and crop/zoom excluded from training. Verified zero overlap via SHA-256 and multi-scale crop dHash. Each unique test specimen evaluated exactly once."
     },
     "domain_adaptation_full_corpus": {
       "total_evaluated": 487,
-      "raw_correct": 200,
-      "raw_accuracy_pct": 41.07,
+      "raw_correct": 210,
+      "raw_accuracy_pct": 43.12,
       "dual_stage_gating": {
-        "total_gated_uncertain": 172,
-        "gated_pct": 35.32,
+        "total_gated_uncertain": 170,
+        "gated_pct": 34.91,
         "foliar_ratio_rejected": 1,
-        "entropy_confidence_rejected": 171
+        "entropy_confidence_rejected": 169
       },
       "accepted_frame_triage": {
-        "accepted_frames": 315,
-        "accepted_correct": 200,
-        "accepted_accuracy_pct": 63.49
+        "accepted_frames": 317,
+        "accepted_correct": 210,
+        "accepted_accuracy_pct": 66.25
       }
     },
     "notes": "Empirically evaluated across PlantDoc Solanaceae partition with strict 80/20 hash-level holdout partition documented in ai_engine/PLANTDOC_HOLDOUT_MANIFEST.json.",
@@ -156,33 +156,35 @@
     "interpreter_latency_ms": 4.94,
     "latency_benchmark": "4.94 ms Host PC CPU reference interpreter mean (Intel Core i5 with XNNPACK, range: 4.43-5.33 ms across classes); Target Mobile Edge: ~12-15 ms projected budget (Cortex-A55 engineering estimate, unprofiled on physical Galaxy A03 via ADB)",
     "benchmark_environment": "Host CPU Reference (Intel Core i5-4300U @ 1.9GHz with XNNPACK) - Target on-device mobile ~12-15 ms (Galaxy A03 Cortex-A55 estimate)",
-    "model_sha256": "2573ca193904799dcdc6c0178618fc2625830d6566e063d6a1ff7dfcee70e8ab"
+    "model_sha256": "be71ededc29f19f69ab98b63bebf281c6a1d88f468b6dc1a2a2dac655f406aaa"
   },
   "botanical_validation_60_specimens": {
     "total_tested": 60,
-    "strict_6class_exact_correct": 55,
-    "strict_6class_accuracy_pct": 91.67,
-    "accepted_predictions": 58,
-    "accepted_prediction_accuracy_pct": 94.83,
-    "gated_uncertain": 2,
-    "coverage_pct": 96.67,
-    "pathogen_family_late_blight_match": 56,
-    "pathogen_family_accuracy_pct": 93.33,
-    "cross_crop_pathogen_note": "1 Tomato Late Blight specimen (Tomato___Late_blight_01.jpg) was predicted as Potato Late Blight (56.7%). Both conditions are caused by Phytophthora infestans (identical pathogen and necrotic lesion phenotype). Under strict 6-class exact crop match, this specimen is scored as a non-match, yielding 91.67% strict accuracy (55/60).",
+    "strict_6class_exact_correct": 53,
+    "strict_6class_accuracy_pct": 88.33,
+    "accepted_predictions": 57,
+    "accepted_prediction_accuracy_pct": 92.98,
+    "gated_uncertain": 3,
+    "coverage_pct": 95.0,
+    "pathogen_family_late_blight_match": 54,
+    "pathogen_family_accuracy_pct": 90.0,
+    "cross_crop_pathogen_note": "1 Tomato Late Blight specimen was predicted as Potato Late Blight (cross-crop match, identical Phytophthora infestans pathogen). Under strict 6-class crop match, scored as non-match.",
     "per_class_accuracy": {
-      "Potato___Early_blight": "9/10 (90.0% strict)",
-      "Potato___Late_blight": "10/10 (100.0% strict)",
-      "Potato___healthy": "10/10 (100.0% strict)",
-      "Tomato___Early_blight": "8/10 (80.0% strict)",
-      "Tomato___Late_blight": "8/10 (80.0% strict exact, 1 cross-crop Potato LB at 56.7%)",
-      "Tomato___healthy": "10/10 (100.0% strict)"
+      "Potato___Early_blight": "9/10 (90.0%)",
+      "Potato___Late_blight": "10/10 (100.0%)",
+      "Potato___healthy": "10/10 (100.0%)",
+      "Tomato___Early_blight": "7/10 (70.0%)",
+      "Tomato___Late_blight": "7/10 (70.0%)",
+      "Tomato___healthy": "10/10 (100.0%)"
     },
     "benchmark_script": "tests/benchmark_60_specimens.py",
     "benchmark_report": "tests/benchmark_60_specimens_report.json",
     "provenance_manifest": "ai_engine/validation_60_specimens/PROVENANCE_MANIFEST.md"
   },
   "plantvillage_training_samples": 6600,
-  "plantdoc_training_samples": 1140,
+  "plantdoc_training_samples": 1110,
   "training_provenance_manifest": "ai_engine/TRAINING_RUN_MANIFEST.json",
-  "trained_model_sha256": "2573ca193904799dcdc6c0178618fc2625830d6566e063d6a1ff7dfcee70e8ab"
+  "trained_model_sha256": "be71ededc29f19f69ab98b63bebf281c6a1d88f468b6dc1a2a2dac655f406aaa",
+  "unique_training_specimens_count": 6965,
+  "records_vs_unique_distinction": "The model was trained using 7710 training records representing 6965 unique image files (6,600 clean PlantVillage + 370 clean PlantDoc repeated 3x = 1,110)."
 }
