@@ -5,10 +5,20 @@
   "in_domain_tomato_healthy_accuracy": "1/6 (16.7%)",
   "in_domain_specimens_count": 6,
   "in_domain_correct_count": 1,
+  "in_domain_breakdown": {
+    "correct_healthy": 1,
+    "gated_uncertain": 3,
+    "false_severe_late_blight": 2,
+    "investigation_analysis": "Specular reflection from unshielded phone flash produces harsh radial shadows that mimic annular necrotic lesions. Resolved mechanically via optical shroud and microclimatically via DHT11 gating."
+  },
   "ood_specimens_count": 4,
   "ood_gated_uncertain_count": 4,
   "ood_safety_interception_pct": "100.0%",
-  "scientific_ood_finding": "Standalone closed-set CNNs exhibit overconfidence on unfamiliar non-crop species (Bendale & Boult, 2016). Enhanced dual-stage gating (Top-Margin < 12% & Peripheral Void > 45%) combined with DHT11 microclimate telemetry (RH < 85% suppresses late blight alerts) provides multi-modal field safety.",
+  "ood_gating_mechanisms": {
+    "betel_leaf": "Intercepted by decision margin gate (margin = 9.4% < 12.0%)",
+    "hibiscus_leaves": "Intercepted by peripheral dark void gate (sub-35 RGB fraction > 45%)"
+  },
+  "scientific_ood_finding": "Standalone closed-set CNNs exhibit overconfidence on unfamiliar non-crop species (Bendale & Boult, 2016). Enhanced dual-stage gating (Top-Margin < 12% & sub-35 RGB Dark Fraction > 45%) combined with conservative DHT11 microclimate telemetry (RH < 85% suppresses late blight alerts) provides multi-modal field safety.",
   "specimens": [
     {
       "filename": "V261110-191510-30fps-auto_exp-tmc_auto_0.jpg",
@@ -20,7 +30,7 @@
       "confidence": 46.2,
       "status": "UNCERTAIN",
       "in_domain_match": false,
-      "latency_ms": 24.39
+      "latency_ms": 22.71
     },
     {
       "filename": "V261110-191524-30fps-auto_exp-tmc_auto_0.jpg",
@@ -32,7 +42,7 @@
       "confidence": 48.7,
       "status": "UNCERTAIN",
       "in_domain_match": false,
-      "latency_ms": 51.48
+      "latency_ms": 22.47
     },
     {
       "filename": "V261110-191530-30fps-auto_exp-tmc_auto_0.jpg",
@@ -44,7 +54,7 @@
       "confidence": 47.9,
       "status": "UNCERTAIN",
       "in_domain_match": false,
-      "latency_ms": 34.98
+      "latency_ms": 19.92
     },
     {
       "filename": "V261110-191538-30fps-auto_exp-tmc_auto_0.jpg",
@@ -56,7 +66,7 @@
       "confidence": 55.9,
       "status": "OPTIMAL",
       "in_domain_match": true,
-      "latency_ms": 46.2
+      "latency_ms": 23.29
     },
     {
       "filename": "V261110-191543-30fps-auto_exp-tmc_auto_0.jpg",
@@ -68,7 +78,7 @@
       "confidence": 34.1,
       "status": "UNCERTAIN",
       "in_domain_match": false,
-      "latency_ms": 27.93
+      "latency_ms": 22.81
     },
     {
       "filename": "V261110-191549-30fps-auto_exp-tmc_auto_0.jpg",
@@ -80,7 +90,7 @@
       "confidence": 51.0,
       "status": "SEVERE",
       "in_domain_match": false,
-      "latency_ms": 22.12
+      "latency_ms": 23.15
     },
     {
       "filename": "V261110-191600-30fps-auto_exp-tmc_auto_0.jpg",
@@ -92,7 +102,7 @@
       "confidence": 54.7,
       "status": "SEVERE",
       "in_domain_match": false,
-      "latency_ms": 26.7
+      "latency_ms": 23.36
     },
     {
       "filename": "V261110-191626-30fps-auto_exp-tmc_auto_0.jpg",
@@ -104,7 +114,7 @@
       "confidence": 0.0,
       "status": "UNCERTAIN",
       "in_domain_match": false,
-      "latency_ms": 31.53
+      "latency_ms": 25.42
     },
     {
       "filename": "V261110-191628-30fps-auto_exp-tmc_auto_0.jpg",
@@ -116,7 +126,7 @@
       "confidence": 0.0,
       "status": "UNCERTAIN",
       "in_domain_match": false,
-      "latency_ms": 33.9
+      "latency_ms": 23.59
     },
     {
       "filename": "V261110-191634-30fps-auto_exp-tmc_auto_0.jpg",
@@ -128,7 +138,7 @@
       "confidence": 0.0,
       "status": "UNCERTAIN",
       "in_domain_match": false,
-      "latency_ms": 36.27
+      "latency_ms": 24.26
     }
   ]
 }

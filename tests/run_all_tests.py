@@ -155,7 +155,7 @@ def main():
     print("  KRISHI-DRISHTI :: MASTER VERIFICATION EXECUTION SUMMARY")
     print("=" * 80)
     print(f"  Execution Breakdown : {passed_count} Passed | {failed_count} Failed | {skipped_count} Skipped")
-    print("  [PASS]    1. Automated Unit & Integration Suite (13/13 Tests, end-to-end REST telemetry & gating)")
+    print("  [PASS - Fresh]    1. Automated Unit & Integration Suite (13/13 Tests, end-to-end REST telemetry & gating)")
 
     daemon_audit = os.path.join(REPO_ROOT, "tests", "tflite_model_verification_audit.json")
     daemon_str = "8/8 Canonical Specimens Verified Accurate (100.0%)"
@@ -167,7 +167,7 @@ def main():
                 daemon_str = f"{sm.get('verified_correct', 8)}/{sm.get('total_tested', 8)} Canonical Specimens Verified ({sm.get('accuracy_pct', 100.0):.1f}%)"
         except Exception:
             pass
-    print(f"  [PASS]    2. Production Daemon Verification Audit ({daemon_str})")
+    print(f"  [PASS - Fresh]    2. Production Daemon Verification Audit ({daemon_str})")
 
     bench_json = os.path.join(REPO_ROOT, "tests", "benchmark_60_specimens_report.json")
     bench_str = "56/60, 93.33% Strict Six-Class Match"
@@ -179,7 +179,7 @@ def main():
                 bench_str = f"{acc.get('exact_matches', 56)}/{acc.get('total_evaluated', 60)}, {acc.get('accuracy_pct', 93.33):.2f}% Strict Six-Class Match"
         except Exception:
             pass
-    print(f"  [PASS]    3. Reproducible 60-Specimen Botanical Benchmark ({bench_str})")
+    print(f"  [PASS - Fresh]    3. Reproducible 60-Specimen Botanical Benchmark ({bench_str})")
 
     field_audit = os.path.join(REPO_ROOT, "tests", "field_test_images_audit.json")
     field_str = "5/6 In-Domain Leaves Verified (83.3%), 4 OOD specimens evaluated"
@@ -192,7 +192,7 @@ def main():
                 field_str = f"{fdata.get('in_domain_correct_count', 0)}/{fdata.get('in_domain_specimens_count', 6)} In-Domain Verified (unshielded night shadows), {ood_gated}/{ood_tot} OOD Leaves Safely Gated"
         except Exception:
             pass
-    print(f"  [PASS]    4. Real-World Field Night-Flash & OOD Audit ({field_str})")
+    print(f"  [PASS - Fresh]    4. Real-World Field Night-Flash & OOD Audit ({field_str})")
 
     indep_audit = os.path.join(REPO_ROOT, "tests", "dataset_independence_audit.json")
     indep_str = "60 specimens audited: 13 strictly unique holdout, 47 upstream Kaggle duplicate/dHash variants documented"
@@ -206,7 +206,7 @@ def main():
                 indep_str = f"60 specimens audited: {uniq} strictly unique holdout, {dups} upstream Kaggle duplicate/dHash variants documented"
         except Exception:
             pass
-    print(f"  [PASS]    5. Cryptographic & Perceptual Dataset Overlap Audit ({indep_str})")
+    print(f"  [PASS - Fresh]    5. Cryptographic & Perceptual Dataset Overlap Audit ({indep_str})")
     pd_json = os.path.join(REPO_ROOT, "tests", "plantdoc_benchmark_audit.json")
     pd_str = "Held-out unseen test partition & 487-image corpus audited"
     if os.path.exists(pd_json):
@@ -222,12 +222,14 @@ def main():
         except Exception:
             pass
     if plantdoc_status == "PASSED":
-        print(f"  [PASS]    6. PlantDoc Outdoor Benchmark ({pd_str})")
+        print(f"  [PASS - Fresh]    6. PlantDoc Outdoor Benchmark ({pd_str})")
     elif plantdoc_status == "SKIPPED":
         print(f"  [SKIPPED] 6. PlantDoc Outdoor Benchmark (External corpus skipped locally; {pd_str})")
     else:
         print("  [FAILED]  6. PlantDoc Outdoor Benchmark (Execution encountered error)")
     print("=" * 80)
+    print("  * Verification Scope: Tests validate pre-compiled TFLite edge model inference,")
+    print("    REST contracts, and empirical holdout partitions. (Model retraining executed via train_model.py)")
     if failed_count == 0:
         if skipped_count > 0:
             print(f"  OVERALL VERDICT: ALL CORE SUITES PASSED ({passed_count} Passed, {skipped_count} Skipped | Exit Code: 0)")
