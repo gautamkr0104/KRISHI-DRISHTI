@@ -1,0 +1,206 @@
+{
+  "timestamp": "2026-11-11T09:30:00Z",
+  "model_file": "ai_engine/krishi_drishti_model.tflite",
+  "model_sha256": "be71ededc29f19f69ab98b63bebf281c6a1d88f468b6dc1a2a2dac655f406aaa",
+  "total_images": 11,
+  "results": [
+    {
+      "filename": "internet_tomato_early_blight_01.jpg",
+      "sha256": "f356736fc8203ef031bf6ffea824e2c68b6d91edf6e385d92a99f5e7b3544db8",
+      "ground_truth": "Tomato Early Blight",
+      "category": "In-Domain Target",
+      "raw_full_frame": {
+        "prediction": "Solanaceae Uncertain / Ambiguous",
+        "confidence": 49.0,
+        "status": "UNCERTAIN",
+        "correct_or_safely_gated": false
+      },
+      "shroud_macro_crop": {
+        "prediction": "Tomato Early Blight",
+        "confidence": 56.8,
+        "status": "WARNING",
+        "correct_or_safely_gated": true
+      }
+    },
+    {
+      "filename": "internet_tomato_late_blight_02.jpg",
+      "sha256": "69e32bcf43990f38f4c0266758d08623a2288047b3974a09163d2a78b694bdad",
+      "ground_truth": "Tomato Late Blight",
+      "category": "In-Domain Target",
+      "raw_full_frame": {
+        "prediction": "Tomato Late Blight",
+        "confidence": 67.6,
+        "status": "SEVERE",
+        "correct_or_safely_gated": true
+      },
+      "shroud_macro_crop": {
+        "prediction": "Tomato Late Blight",
+        "confidence": 69.9,
+        "status": "SEVERE",
+        "correct_or_safely_gated": true
+      }
+    },
+    {
+      "filename": "internet_tomato_late_blight_03.jpg",
+      "sha256": "4210749bda8775a0a4cc1c69b0a8cb5c9297345a62421b29be22957b071ea945",
+      "ground_truth": "Tomato Late Blight",
+      "category": "In-Domain Target",
+      "raw_full_frame": {
+        "prediction": "Tomato Late Blight",
+        "confidence": 64.5,
+        "status": "SEVERE",
+        "correct_or_safely_gated": true
+      },
+      "shroud_macro_crop": {
+        "prediction": "Solanaceae Uncertain / Ambiguous",
+        "confidence": 49.8,
+        "status": "UNCERTAIN",
+        "correct_or_safely_gated": false
+      }
+    },
+    {
+      "filename": "internet_tomato_late_blight_04.jpg",
+      "sha256": "4a8e52b03396841063bec87824c43fa9aa310bf8c78cf37ef197087f7c6c6d0b",
+      "ground_truth": "Tomato Late Blight",
+      "category": "In-Domain Target",
+      "raw_full_frame": {
+        "prediction": "Tomato Late Blight",
+        "confidence": 73.1,
+        "status": "SEVERE",
+        "correct_or_safely_gated": true
+      },
+      "shroud_macro_crop": {
+        "prediction": "Tomato Late Blight",
+        "confidence": 66.2,
+        "status": "SEVERE",
+        "correct_or_safely_gated": true
+      }
+    },
+    {
+      "filename": "internet_potato_late_blight_01.jpg",
+      "sha256": "8f838fce7ea5b00f55a5ae2788e8e1c814ceba5624cd39692a79f98e40a4d560",
+      "ground_truth": "Potato Late Blight",
+      "category": "In-Domain Target",
+      "raw_full_frame": {
+        "prediction": "Solanaceae Uncertain / Ambiguous",
+        "confidence": 48.5,
+        "status": "UNCERTAIN",
+        "correct_or_safely_gated": false
+      },
+      "shroud_macro_crop": {
+        "prediction": "Potato Late Blight",
+        "confidence": 54.9,
+        "status": "SEVERE",
+        "correct_or_safely_gated": true
+      }
+    },
+    {
+      "filename": "internet_potato_late_blight_02.jpg",
+      "sha256": "710bc7c87efafd3697680e9b921a022ad56bd2ec65675b8e2ee9f6425e9d44e3",
+      "ground_truth": "Potato Late Blight",
+      "category": "In-Domain Target",
+      "raw_full_frame": {
+        "prediction": "Unknown Framing / Void Detected",
+        "confidence": 0.0,
+        "status": "UNCERTAIN",
+        "correct_or_safely_gated": false
+      },
+      "shroud_macro_crop": {
+        "prediction": "Unknown Framing / Void Detected",
+        "confidence": 0.0,
+        "status": "UNCERTAIN",
+        "correct_or_safely_gated": false
+      }
+    },
+    {
+      "filename": "internet_potato_late_blight_03.jpg",
+      "sha256": "8de8c6e1a9ffd25d8c6e610914533c39aeb0175f91fa403c0514df566eb5a1a4",
+      "ground_truth": "Potato Late Blight",
+      "category": "In-Domain Target",
+      "raw_full_frame": {
+        "prediction": "Unknown Framing / Void Detected",
+        "confidence": 0.0,
+        "status": "UNCERTAIN",
+        "correct_or_safely_gated": false
+      },
+      "shroud_macro_crop": {
+        "prediction": "Unknown Framing / Void Detected",
+        "confidence": 0.0,
+        "status": "UNCERTAIN",
+        "correct_or_safely_gated": false
+      }
+    },
+    {
+      "filename": "internet_early_blight_lesions_01.jpg",
+      "sha256": "db66ba3bb1b19b14f766d9d29ad46ee7cb3feccbb3eab02aff36de32e856251f",
+      "ground_truth": "Tomato Early Blight",
+      "category": "In-Domain Target",
+      "raw_full_frame": {
+        "prediction": "Tomato Early Blight",
+        "confidence": 72.6,
+        "status": "WARNING",
+        "correct_or_safely_gated": true
+      },
+      "shroud_macro_crop": {
+        "prediction": "Tomato Early Blight",
+        "confidence": 72.6,
+        "status": "WARNING",
+        "correct_or_safely_gated": true
+      }
+    },
+    {
+      "filename": "internet_potato_healthy_01.jpg",
+      "sha256": "d55834b1a1a4f01d7bb16e08f31c263fd6260ba3b96154f2745a234c137184da",
+      "ground_truth": "Potato Healthy",
+      "category": "In-Domain Target",
+      "raw_full_frame": {
+        "prediction": "Tomato Early Blight",
+        "confidence": 97.9,
+        "status": "WARNING",
+        "correct_or_safely_gated": false
+      },
+      "shroud_macro_crop": {
+        "prediction": "Tomato Early Blight",
+        "confidence": 94.7,
+        "status": "WARNING",
+        "correct_or_safely_gated": false
+      }
+    },
+    {
+      "filename": "internet_tea_leaf_ood_01.jpg",
+      "sha256": "56a16978dff4655c4754aa792696ab935b98c17113d738e48c897ce1d65282c8",
+      "ground_truth": "NON_FOLIAR_CONTROL",
+      "category": "OOD Non-Crop",
+      "raw_full_frame": {
+        "prediction": "Potato Late Blight",
+        "confidence": 62.2,
+        "status": "SEVERE",
+        "correct_or_safely_gated": false
+      },
+      "shroud_macro_crop": {
+        "prediction": "Potato Late Blight",
+        "confidence": 87.0,
+        "status": "SEVERE",
+        "correct_or_safely_gated": false
+      }
+    },
+    {
+      "filename": "internet_tea_leaf_ood_02.jpg",
+      "sha256": "747e717c9aea389c5f8a643d15f92e180f8038598f9b1ca025b3fd3ff538b170",
+      "ground_truth": "NON_FOLIAR_CONTROL",
+      "category": "OOD Non-Crop",
+      "raw_full_frame": {
+        "prediction": "Solanaceae Uncertain / Ambiguous",
+        "confidence": 45.7,
+        "status": "UNCERTAIN",
+        "correct_or_safely_gated": true
+      },
+      "shroud_macro_crop": {
+        "prediction": "Solanaceae Uncertain / Ambiguous",
+        "confidence": 34.0,
+        "status": "UNCERTAIN",
+        "correct_or_safely_gated": true
+      }
+    }
+  ]
+}

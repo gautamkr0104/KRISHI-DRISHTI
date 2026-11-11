@@ -41,7 +41,64 @@
     },
     "plantdoc_clean_train_unique_images": 370,
     "plantdoc_clean_train_replicated_records": 1110,
-    "records_vs_unique_distinction": "The model was trained using 7710 training records representing 6965 unique image files (6,600 clean PlantVillage + 370 clean PlantDoc repeated 3x = 1,110)."
+    "records_vs_unique_distinction": "The model was trained using 7710 training records representing 6965 unique image files (6,600 clean PlantVillage + 370 clean PlantDoc repeated 3x = 1,110).",
+    "unique_hash_reconciliation_audit": {
+      "expected_source_file_paths": 6970,
+      "unique_sha256_hashes": 6965,
+      "intra_class_duplicate_pairs_count": 5,
+      "cross_class_label_conflicts": 0,
+      "cross_dataset_duplicate_hashes": 0,
+      "plantvillage_unique_hashes": 6595,
+      "plantdoc_unique_hashes": 370,
+      "audit_explanation": "The 5 duplicate hashes are bitwise identical images duplicated within the upstream Kaggle PlantVillage mirror (vipoooool/new-plant-diseases-dataset) under different UUID-prefixed filenames. All 5 duplicate pairs belong to the exact same disease class (4 in Tomato Late Blight, 1 in Tomato Healthy), confirming zero label conflicts and exact arithmetic: 6595 unique PV hashes + 370 unique PD hashes = 6965 unique training hashes.",
+      "duplicate_hashes_details": [
+        {
+          "sha256": "90220c67ab2c3ed150e93f0c26691d463200e784c74152e62acedac8a4d2d525",
+          "class": "Tomato___Late_blight",
+          "is_intra_class": true,
+          "files": [
+            "c1775bad-7c02-41fb-bb7d-f8df91d60ac3___GHLB_PS Leaf 23.5 Day 13.jpg",
+            "98586693-fe1f-4ea0-8e27-4501b61cf09b___GHLB_PS Leaf 23.5 Day 13.jpg"
+          ]
+        },
+        {
+          "sha256": "1d202e8c6b21351c851a4220c6ac5be10c4bf7f659fa82f8cc54c512c4ee1bb9",
+          "class": "Tomato___Late_blight",
+          "is_intra_class": true,
+          "files": [
+            "5de6da85-f8c4-48c4-b463-3e6bd78884cc___GHLB_PS Leaf 24 Day 16_flipLR.jpg",
+            "3fae9c64-18f0-4a67-9f97-554248bb1bed___GHLB_PS Leaf 24 Day 16_flipLR.jpg"
+          ]
+        },
+        {
+          "sha256": "7ff8410db407008bb9aecf0cc5505f2b47ffd89e508413a30ea983b4bc169714",
+          "class": "Tomato___Late_blight",
+          "is_intra_class": true,
+          "files": [
+            "2c47b891-3c97-48f1-a2cc-5aa53d3a1148___GHLB2 Leaf 9011.JPG",
+            "1a69b38b-c4eb-42c4-9584-bcb14fb8db0c___GHLB2 Leaf 9011.JPG"
+          ]
+        },
+        {
+          "sha256": "6e1610d4e0f6f84108af112322d11779254b2b2d41958449c64b0bf938628444",
+          "class": "Tomato___Late_blight",
+          "is_intra_class": true,
+          "files": [
+            "e20107e7-137f-400e-817f-5dc4c58e5d70___GHLB2 Leaf 8677.JPG",
+            "5688ea99-c949-41d0-bbab-9cbf0ffb8bcd___GHLB2 Leaf 8677.JPG"
+          ]
+        },
+        {
+          "sha256": "32e9ffabaa054c19ae8df95e94fbd7a25105defdea1214eb5f8bd804ea9a7428",
+          "class": "Tomato___healthy",
+          "is_intra_class": true,
+          "files": [
+            "d2ce7896-6fa4-45e6-96c5-d162da0e3e1c___GH_HL Leaf 220.JPG",
+            "9662364c-aaba-45e3-b907-10792d60578c___GH_HL Leaf 220.JPG"
+          ]
+        }
+      ]
+    }
   },
   "cryptographic_and_perceptual_exclusion_audit": {
     "master_blacklist_unique_hashes_count": 171,
