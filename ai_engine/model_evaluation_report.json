@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-10T20:47:30Z",
+  "timestamp": "2026-11-10T21:08:00Z",
   "architecture": "MobileNetV3-Small",
   "input_dimensions": [
     128,
@@ -144,7 +144,7 @@
       }
     },
     "notes": "Empirically evaluated across PlantDoc Solanaceae partition with strict 80/20 hash-level holdout partition documented in ai_engine/PLANTDOC_HOLDOUT_MANIFEST.json.",
-    "botanical_domain_gap_analysis": "PlantDoc images capture whole plants from 1-2 meters away with soil, weeds, background branches, and severe shadowing. This natural domain gap demonstrates why standalone closed-set CNN vision alone is insufficient, and why KRISHI-DRISHTI multi-modal close-up optical shroud and DHT11 microclimate telemetry gating are essential field safety mechanisms."
+    "botanical_domain_gap_analysis": "PlantDoc outdoor images capture whole plants from 1-2 meters away with soil, weeds, background foliage, and severe shadowing. This natural domain gap demonstrates why standalone closed-set CNN vision alone is insufficient, and why KRISHI-DRISHTI multi-modal close-up optical shroud (eliminating background void and harsh flash shadows) and conservative DHT11 microclimate telemetry gating (suppressing late blight chemical spray recommendations when RH < 85%) serve as essential multi-modal safety interlocks."
   },
   "tflite_quantization": {
     "size_bytes": 2123856,
@@ -155,7 +155,8 @@
     "verification_accuracy": 90.0,
     "interpreter_latency_ms": 4.94,
     "latency_benchmark": "4.94 ms Host PC CPU reference interpreter mean (Intel Core i5 with XNNPACK, range: 4.43-5.33 ms across classes); Target Mobile Edge: ~12-15 ms projected budget (Cortex-A55 engineering estimate, unprofiled on physical Galaxy A03 via ADB)",
-    "benchmark_environment": "Host CPU Reference (Intel Core i5-4300U @ 1.9GHz with XNNPACK) - Target on-device mobile ~12-15 ms (Galaxy A03 Cortex-A55 estimate)"
+    "benchmark_environment": "Host CPU Reference (Intel Core i5-4300U @ 1.9GHz with XNNPACK) - Target on-device mobile ~12-15 ms (Galaxy A03 Cortex-A55 estimate)",
+    "model_sha256": "2573ca193904799dcdc6c0178618fc2625830d6566e063d6a1ff7dfcee70e8ab"
   },
   "botanical_validation_60_specimens": {
     "total_tested": 60,
@@ -182,5 +183,6 @@
   },
   "plantvillage_training_samples": 6600,
   "plantdoc_training_samples": 1140,
-  "training_provenance_manifest": "ai_engine/TRAINING_RUN_MANIFEST.json"
+  "training_provenance_manifest": "ai_engine/TRAINING_RUN_MANIFEST.json",
+  "trained_model_sha256": "2573ca193904799dcdc6c0178618fc2625830d6566e063d6a1ff7dfcee70e8ab"
 }

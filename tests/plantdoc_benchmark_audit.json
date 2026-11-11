@@ -1,6 +1,6 @@
 {
   "benchmark": "PlantDoc Outdoor Solanaceae Partition",
-  "timestamp": "2026-11-10T21:25:38Z",
+  "timestamp": "2026-11-11T05:28:28Z",
   "model_file": "krishi_drishti_model.tflite",
   "dataset_source": "https://github.com/pratikkayal/PlantDoc-Dataset",
   "provenance_manifest": "ai_engine/PLANTDOC_HOLDOUT_MANIFEST.json",
