@@ -27,5 +27,6 @@ Desktop.ini
 
 
 scratch/
+tests/internet_test_images/
 
 *.bak

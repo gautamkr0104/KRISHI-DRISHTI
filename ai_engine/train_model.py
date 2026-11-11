@@ -274,6 +274,19 @@ def main():
     assert len(all_labels) == 7710, f"[FAIL] Total assembled labels mismatch: {len(all_labels)} != 7710"
     print(f"[OK] HARD ASSERTIONS PASSED: Exactly 7,710 training records assembled (6,600 clean PV + 1,110 clean PlantDoc).")
 
+    # Hard Assertion on Label Consistency across unique training hashes
+    hash_to_class_map = {}
+    intra_class_duplicate_count = 0
+    for p, l, h in zip(all_paths, all_labels, all_record_hashes):
+        if h in hash_to_class_map:
+            assert hash_to_class_map[h] == l, f"[FAIL] Label conflict detected: Hash {h} maps to multiple labels ({hash_to_class_map[h]} vs {l})!"
+            intra_class_duplicate_count += 1
+        else:
+            hash_to_class_map[h] = l
+            
+    assert len(hash_to_class_map) == 6965, f"[FAIL] Unique training hashes count mismatch: {len(hash_to_class_map)} != 6965"
+    print(f"[OK] LABEL CONSISTENCY ASSERTION PASSED: All {len(hash_to_class_map)} unique training hashes map strictly to exactly 1 class label (0 label conflicts, {intra_class_duplicate_count} documented intra-class duplicate references).")
+
     # 3. Double-Pass Verification Against Master Blacklist & Perceptual Near-Duplicates
     print("\n[*] Auditing assembled 7,710 training paths against master blacklist & benchmark perceptual near-duplicates...")
     leak_count = 0
