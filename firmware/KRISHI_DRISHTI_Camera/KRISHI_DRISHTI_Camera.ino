@@ -1418,7 +1418,7 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
       }
 
       // Tier 1: High-Confidence Definitive Diagnosis
-      if (maxProb >= 0.50 && entropy <= 1.45 && margin >= 0.10) {
+      if (maxProb >= 0.50 && entropy <= 1.45 && margin >= 0.12) {
         return {
           crop: match.crop,
           disease: match.disease,
@@ -1849,7 +1849,7 @@ bool initialiseCamera() {
   config.jpeg_quality = 10;
   config.fb_count     = 1;
   config.grab_mode    = CAMERA_GRAB_WHEN_EMPTY;
-  config.fb_location  = CAMERA_FB_IN_PSRAM;
+  config.fb_location  = psramAvailable ? CAMERA_FB_IN_PSRAM : CAMERA_FB_IN_DRAM;
 
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
@@ -1933,13 +1933,9 @@ void handleGallery() {
 }
 
 void handleStatus() {
-  if (!sdReady) {
-    sdReady = initialiseSD();
-    if (sdReady) findNextScanNumber();
-  }
   uint64_t sizeMB = sdReady ? cachedSdCardSizeMB : 0;
   int clientCount = WiFi.softAPgetStationNum();
-  bool wandConnected = (clientCount >= 2) || (lastWandActivityMs > 0 && (millis() - lastWandActivityMs < 30000));
+  bool wandConnected = (clientCount >= 1) || (lastWandActivityMs > 0 && (millis() - lastWandActivityMs < 30000));
 
   String json = "{";
   json += "\"device\":\"KRISHI-DRISHTI-CAM\",";
@@ -2200,14 +2196,6 @@ void handleFlashToggle() {
 // STATIC FILE STREAMER (SERVES OFFLINE TFLITE & ASSETS FROM SDMMC)
 // --------------------------------------------------
 void handleStaticFile() {
-  if (!sdReady) {
-    sdReady = initialiseSD();
-    if (sdReady) findNextScanNumber();
-  }
-  if (!sdReady) {
-    server.send(503, "text/plain", "SD offline - Insert MicroSD card in ESP32-CAM slot");
-    return;
-  }
   String path = server.uri();
   if (path.endsWith("/")) path += "index.html";
 
@@ -2222,6 +2210,10 @@ void handleStaticFile() {
   else if (path.endsWith(".jpg") || path.endsWith(".jpeg")) contentType = "image/jpeg";
   else if (path.endsWith(".svg")) contentType = "image/svg+xml";
 
+  if (!sdReady) {
+    server.send(503, "text/plain", "SD offline - Insert MicroSD card in ESP32-CAM slot");
+    return;
+  }
   if (SD_MMC.exists(path.c_str())) {
     File f = SD_MMC.open(path.c_str(), FILE_READ);
     server.sendHeader("Access-Control-Allow-Origin", "*");

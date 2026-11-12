@@ -4,10 +4,10 @@
     "crop": "Tomato",
     "disease": "Late Blight",
     "pathogen": "Phytophthora infestans",
-    "severity": "SEVERE",
+    "severity": "INFECTED",
     "organic": "Neem Oil 5ml/L + Trichoderma viride drench. Prune infected leaves.",
     "chemical": "Mancozeb 75% WP @ 2.5g/L or Ridomil Gold @ 2.0g/L.",
-    "disease_triangle": "Triggered by relative humidity > 85% and temp 18-24 C."
+    "disease_triangle": "Triggered by relative humidity > 85% and temp 15-22 C."
   },
   {
     "id": 1,
@@ -24,7 +24,7 @@
     "crop": "Tomato",
     "disease": "Healthy",
     "pathogen": "None (Healthy Tissue)",
-    "severity": "OPTIMAL",
+    "severity": "HEALTHY",
     "organic": "Maintain balanced NPK fertilizer and drip irrigation schedule.",
     "chemical": "No chemical intervention needed.",
     "disease_triangle": "Canopy microclimate is balanced. Continue regular monitoring."
@@ -34,7 +34,7 @@
     "crop": "Potato",
     "disease": "Late Blight",
     "pathogen": "Phytophthora infestans",
-    "severity": "SEVERE",
+    "severity": "INFECTED",
     "organic": "Copper soap spray + destroy infected haulms 10 days before harvest.",
     "chemical": "Cymoxanil 8% + Mancozeb 64% WP @ 2.5g/L.",
     "disease_triangle": "Sustained cool fog/drizzle, relative humidity > 90%."
@@ -54,7 +54,7 @@
     "crop": "Potato",
     "disease": "Healthy",
     "pathogen": "None (Healthy Tissue)",
-    "severity": "OPTIMAL",
+    "severity": "HEALTHY",
     "organic": "Regular earthing-up and balanced potassium application.",
     "chemical": "No chemical intervention needed.",
     "disease_triangle": "Canopy microclimate is balanced. Continue regular monitoring."

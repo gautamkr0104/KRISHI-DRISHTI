@@ -22,6 +22,7 @@
 #include <DHT.h>
 #include "MicroclimateTracker.h"
 #include <ArduinoJson.h>
+#include <nvs_flash.h>
 #include "esp_private/brownout.h"
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
@@ -45,6 +46,12 @@
 const char* AP_SSID = "KRISHI-DRISHTI";
 const char* AP_PASS = "12345678";
 const char* CAMERA_HOST = "192.168.4.1";
+
+// Static IP Configuration (bypasses slow DHCP for instant 300ms connection)
+const IPAddress WAND_STATIC_IP(192, 168, 4, 2);
+const IPAddress WAND_GATEWAY(192, 168, 4, 1);
+const IPAddress WAND_SUBNET(255, 255, 255, 0);
+const IPAddress WAND_DNS(192, 168, 4, 1);
 
 const String URL_CAPTURE     = "http://192.168.4.1/api/capture";
 const String URL_DIAG_LATEST = "http://192.168.4.1/api/diagnosis/latest";
@@ -184,7 +191,7 @@ void renderPage0_ReadyToScan() {
 // SCREEN 1: CANOPY CLIMATE (DETAILED WEATHER & EPIDEMIOLOGY)
 // -----------------------------------------------------------------
 void renderPage1_Canopy() {
-  drawHeader("CANOPY CLIMATE", "1/4");
+  drawHeader("CANOPY CLIMATE", "1/5");
 
   if (dhtConnected) {
     display.setTextSize(1);
@@ -198,7 +205,7 @@ void renderPage1_Canopy() {
     display.print(microclimateTracker.getRiskStatusString());
 
     display.setCursor(0, 43);
-    if (currentHum >= 85.0f && currentTemp >= 15.0f && currentTemp <= 24.0f) {
+    if (currentHum >= 85.0f && currentTemp >= 15.0f && currentTemp <= 22.0f) {
       display.print("Warn: Blight incubation");
     } else if (currentHum < 60.0f) {
       display.print("Air: Dry, low spore risk");
@@ -222,7 +229,7 @@ void renderPage1_Canopy() {
 // SCREEN 2: AI DIAGNOSIS (LEAF HEALTH RESULT)
 // -----------------------------------------------------------------
 void renderPage2_Diagnosis() {
-  drawHeader("AI DIAGNOSIS", "2/4");
+  drawHeader("AI DIAGNOSIS", "2/5");
 
   if (hasDiagnosis) {
     display.setTextSize(1);
@@ -259,7 +266,7 @@ void renderPage2_Diagnosis() {
 // SCREEN 3: AGRONOMIC CURE & ACTION
 // -----------------------------------------------------------------
 void renderPage3_Cure() {
-  drawHeader("ORGANIC CURE", "3/4");
+  drawHeader("ORGANIC CURE", "3/5");
 
   if (hasDiagnosis && diagStatus != "UNCERTAIN") {
     display.setTextSize(1);
@@ -314,7 +321,7 @@ void renderPage3_Cure() {
 // SCREEN 4: WAND STATUS & CONNECTIVITY
 // -----------------------------------------------------------------
 void renderPage4_Status() {
-  drawHeader("WAND STATUS", "4/4");
+  drawHeader("WAND STATUS", "4/5");
 
   display.setTextSize(1);
   display.setCursor(0, 12);
@@ -352,8 +359,11 @@ void renderActivePage() {
 void readSensors() {
   if (millis() - lastDhtReadMs > DHT_INTERVAL_MS || lastDhtReadMs == 0) {
     lastDhtReadMs = millis();
+    yield();
     float h = dht.readHumidity();
+    yield();
     float t = dht.readTemperature();
+    yield();
     if (!isnan(h) && !isnan(t) && h > 0.0 && h <= 100.0) {
       currentHum = h;
       currentTemp = t;
@@ -370,15 +380,29 @@ void readSensors() {
 // -----------------------------------------------------------------
 void ensureWiFiConnected() {
   if (WiFi.status() == WL_CONNECTED) {
-    wifiConnected = true;
+    if (!wifiConnected) {
+      wifiConnected = true;
+      Serial.println("[WIFI] Connected to Camera SoftAP: KRISHI-DRISHTI!");
+      renderActivePage();
+    }
     return;
   }
 
-  wifiConnected = false;
-  if (millis() - lastWifiCheckMs > 6000 || lastWifiCheckMs == 0) {
+  if (wifiConnected) {
+    wifiConnected = false;
+    Serial.println("[WIFI] Disconnected from Camera SoftAP.");
+    renderActivePage();
+  }
+
+  // Re-apply static IP config before every reconnect attempt so the
+  // controller always uses 192.168.4.2 and can reach the camera at 192.168.4.1.
+  WiFi.config(WAND_STATIC_IP, WAND_GATEWAY, WAND_SUBNET, WAND_DNS);
+
+  // Check every 5 seconds without interrupting an ongoing handshake
+  if (lastWifiCheckMs == 0 || millis() - lastWifiCheckMs > 5000) {
     lastWifiCheckMs = millis();
-    Serial.println("[WIFI] Searching for camera SoftAP: KRISHI-DRISHTI...");
-    WiFi.begin(AP_SSID, AP_PASS);
+    Serial.println("[WIFI] Reconnecting to camera SoftAP: KRISHI-DRISHTI...");
+    WiFi.reconnect();
   }
 }
 
@@ -445,7 +469,7 @@ void pollAiDiagnosisNonBlocking() {
 
   if (diagCode == 200) {
     String diagPayload = httpDiag.getString();
-    StaticJsonDocument<512> diagDoc;
+    StaticJsonDocument<1024> diagDoc;
     DeserializationError dErr = deserializeJson(diagDoc, diagPayload);
 
     if (!dErr && diagDoc["ready"] == true) {
@@ -459,14 +483,11 @@ void pollAiDiagnosisNonBlocking() {
         String rawChem = diagDoc["chemical"].as<String>();
 
         // Scientific microclimate cross-gating
-        if (diagDisease.indexOf("Late Blight") >= 0 || diagDisease.indexOf("Blight") >= 0) {
-          if (dhtConnected && currentHum < 85.0f && microclimateTracker.getRiskLevel() == RISK_LEVEL_LOW) {
-            diagChemical = "ADVISORY: Low RH (" + String((int)currentHum) + "%). Unfavorable for sporulation.";
-            Serial.printf("[SAFETY GATE] Low RH (%.1f%%) issued advisory for %s!\n",
-                          currentHum, diagDisease.c_str());
-          } else {
-            diagChemical = rawChem;
-          }
+        if ((diagDisease.indexOf("Late Blight") >= 0 || diagDisease.indexOf("Blight") >= 0) &&
+            dhtConnected && currentHum < 85.0f && microclimateTracker.getRiskLevel() == RISK_LEVEL_LOW) {
+          diagChemical = "ADVISORY: Low RH (" + String((int)currentHum) + "%). Unfavorable for sporulation.";
+          Serial.printf("[SAFETY GATE] Low RH (%.1f%%) issued advisory for %s!\n",
+                        currentHum, diagDisease.c_str());
         } else {
           diagChemical = rawChem;
         }
@@ -611,57 +632,93 @@ void triggerRealScan() {
 // ARDUINO SETUP
 // -----------------------------------------------------------------
 void setup() {
-  esp_brownout_disable();
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
+  // 1. Lower CPU frequency to 80MHz to cut power draw in half and eliminate USB surge
+  setCpuFrequencyMhz(80);
 
   Serial.begin(115200);
-  delay(100);
+  delay(150);
 
   Serial.println("\n========================================");
   Serial.println("  KRISHI-DRISHTI :: Controller Wand v2.3");
   Serial.println("  Farmer-Friendly Edge Telemetry Core");
   Serial.println("========================================");
+  Serial.flush();
 
   pinMode(SCAN_BUTTON, INPUT_PULLUP);
   pinMode(NEXT_BUTTON, INPUT_PULLUP);
 
-  dht.begin();
+  // 2. Initialize OLED Display FIRST so user immediately sees live boot state
+  Serial.println("[INIT] Step 1: I2C & OLED..."); Serial.flush();
   Wire.begin(21, 22);
 
   if (display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDRESS)) {
-    Serial.println("[OLED] SSD1306 Initialized successfully.");
+    Serial.println("[OLED] SSD1306 Initialized successfully."); Serial.flush();
+    display.dim(false); // Consistent full brightness; avoids random dim/flicker
     display.clearDisplay();
     display.setTextColor(SSD1306_WHITE);
 
-    // Centered Title Bar (14 chars = 84 px -> X = 22)
+    // Centered Title Bar
     display.setTextSize(1);
     display.setCursor(22, 6);
     display.print("KRISHI-DRISHTI");
     display.drawLine(6, 17, 121, 17, SSD1306_WHITE);
 
-    // Subtitle (17 chars = 102 px -> X = 13)
     display.setCursor(13, 23);
     display.print("Plant Health Wand");
 
-    // Version (15 chars = 90 px -> X = 19)
     display.setCursor(19, 36);
     display.print("Smart Wand v2.3");
 
-    // Status (18 chars = 108 px -> X = 10)
     display.setCursor(10, 49);
-    display.print("Connecting WiFi...");
+    display.print("Linking to Cam...");
     display.display();
-    delay(1500);
   }
 
+  // 3. Initialize NVS and Wi-Fi with capped RF TX power (8.5dBm)
+  Serial.println("[INIT] Step 2: NVS & Radio Bringup..."); Serial.flush();
+  esp_err_t nvsRet = nvs_flash_init();
+  if (nvsRet == ESP_ERR_NVS_NO_FREE_PAGES || nvsRet == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+    nvs_flash_erase();
+    nvs_flash_init();
+  }
+
+  // Suppress hardware brownout trigger during Wi-Fi PLL lock
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
+
+  WiFi.persistent(false);
   WiFi.mode(WIFI_STA);
+  WiFi.config(WAND_STATIC_IP, WAND_GATEWAY, WAND_SUBNET, WAND_DNS);
+  WiFi.setTxPower(WIFI_POWER_8_5dBm); // 8.5 dBm (~70mW) prevents USB brownout
   WiFi.begin(AP_SSID, AP_PASS);
 
-  readSensors();
+  // 4. Non-blocking link check for up to 8s (Wi-Fi association can take several seconds)
+  Serial.println("[INIT] Step 3: Wi-Fi link check..."); Serial.flush();
+  unsigned long startLinkMs = millis();
+  while (WiFi.status() != WL_CONNECTED && (millis() - startLinkMs < 8000)) {
+    delay(100);
+    yield();
+  }
+
+  if (WiFi.status() == WL_CONNECTED) {
+    wifiConnected = true;
+    Serial.println("[WIFI] Cam Linked! IP: " + WiFi.localIP().toString()); Serial.flush();
+    display.fillRect(0, 48, 128, 16, SSD1306_BLACK);
+    display.setCursor(16, 49);
+    display.print("CAM LINKED! [OK]");
+    display.display();
+    delay(600);
+  } else {
+    Serial.println("[WIFI] Camera not in range (Standby Mode)."); Serial.flush();
+  }
+
+  Serial.println("[INIT] Step 4: DHT11 Sensor..."); Serial.flush();
+  dht.begin();
 
   // Boot directly to the friendly READY TO SCAN home screen!
   activePage = 0;
   renderActivePage();
+  lastWifiCheckMs = millis();
+  Serial.println("[SYSTEM] Setup completed successfully. Wand is live."); Serial.flush();
 }
 
 // -----------------------------------------------------------------
