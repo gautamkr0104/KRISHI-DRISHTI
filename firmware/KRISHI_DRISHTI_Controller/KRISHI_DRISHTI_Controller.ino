@@ -22,6 +22,10 @@
 #include <DHT.h>
 #include "MicroclimateTracker.h"
 #include <ArduinoJson.h>
+#include <nvs_flash.h>
+#include "esp_private/brownout.h"
+#include "soc/soc.h"
+#include "soc/rtc_cntl_reg.h"
 
 // -----------------------------------------------------------------
 // HARDWARE DEFINITIONS
@@ -390,18 +394,14 @@ void ensureWiFiConnected() {
     renderActivePage();
   }
 
-  // Non-blocking reconnect: check every 5s without thrashing the Wi-Fi driver
-  static uint8_t reconnectAttempts = 0;
-  if (lastWifiCheckMs == 0 || millis() - lastWifiCheckMs > 5000) {
+  // Non-blocking reconnect: check every 7s without thrashing the Wi-Fi driver
+  if (lastWifiCheckMs == 0 || millis() - lastWifiCheckMs > 7000) {
     lastWifiCheckMs = millis();
-    reconnectAttempts++;
-    if (reconnectAttempts % 4 == 0) {
-      Serial.println("[WIFI] Refreshing connection parameters for KRISHI-DRISHTI...");
-      WiFi.begin(AP_SSID, AP_PASS);
-    } else {
-      Serial.println("[WIFI] Retrying link to Camera SoftAP: KRISHI-DRISHTI...");
-      WiFi.reconnect();
-    }
+    WiFi.setTxPower(WIFI_POWER_8_5dBm);
+    Serial.println("[WIFI] Seeking Camera SoftAP: KRISHI-DRISHTI...");
+    WiFi.disconnect(false);
+    delay(20);
+    WiFi.begin(AP_SSID, AP_PASS);
   }
 }
 
@@ -636,6 +636,9 @@ void triggerRealScan() {
 // ARDUINO SETUP
 // -----------------------------------------------------------------
 void setup() {
+  // 1. Lower CPU frequency to 80MHz to cut power draw in half and eliminate USB surge
+  setCpuFrequencyMhz(80);
+
   Serial.begin(115200);
   delay(150);
 
@@ -654,7 +657,7 @@ void setup() {
 
   if (display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDRESS)) {
     Serial.println("[OLED] SSD1306 Initialized successfully."); Serial.flush();
-    display.dim(false); // Consistent full brightness; avoids random dim/flicker
+    display.dim(true); // Energy-efficient low-current drive (<15mA)
     display.clearDisplay();
     display.setTextColor(SSD1306_WHITE);
 
@@ -675,12 +678,21 @@ void setup() {
     display.display();
   }
 
-  // 2. Wi-Fi Station Bringup (Standard, rock-solid Arduino stack)
+  // 2. Suppress hardware brownout trigger & init NVS
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
+  esp_err_t nvsRet = nvs_flash_init();
+  if (nvsRet == ESP_ERR_NVS_NO_FREE_PAGES || nvsRet == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+    nvs_flash_erase();
+    nvs_flash_init();
+  }
+
+  // 3. Wi-Fi Station Bringup with capped TX power (8.5 dBm)
   Serial.println("[INIT] Step 2: Wi-Fi Radio Bringup..."); Serial.flush();
   WiFi.persistent(false);
   WiFi.disconnect(true);
-  delay(100);
+  delay(50);
   WiFi.mode(WIFI_STA);
+  WiFi.setTxPower(WIFI_POWER_8_5dBm); // 8.5 dBm prevents USB brownout sag
 
   // Static IP for instant routing (192.168.4.2 -> Gateway 192.168.4.1)
   WiFi.config(WAND_STATIC_IP, WAND_GATEWAY, WAND_SUBNET, WAND_DNS);
