@@ -521,7 +521,7 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
     </div>
   </div>
 
-  <!-- Telemetry Metrics Bar (5 Core Parameters) -->
+  <!-- Telemetry Metrics Bar (6 Core Parameters) -->
   <div class="metrics-grid">
     <div class="metric-card">
       <div class="metric-label">Cam Gateway</div>
@@ -538,6 +538,10 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
     <div class="metric-card">
       <div class="metric-label">TFLite Engine</div>
       <div class="metric-value" id="valEngine" style="color: var(--accent-amber)">LOADING...</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Inference</div>
+      <div class="metric-value" id="valLatency">-- ms</div>
     </div>
     <div class="metric-card">
       <div class="metric-label">Scans Synced</div>
@@ -1187,29 +1191,41 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
       };
     }
 
+    function safeSetText(id, text) {
+      const el = document.getElementById(id);
+      if (el) el.innerText = text;
+    }
+
+    function safeSetHTML(id, html) {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = html;
+    }
+
     function updateMetricsAndUI(diag, latency, scanId) {
       totalScansProcessed++;
-      document.getElementById("valScanCount").innerText = totalScansProcessed;
-      document.getElementById("valLatency").innerText = `${latency} ms`;
-      document.getElementById("scanTimestamp").innerHTML = `SCAN #${scanId} &bull; ${new Date().toLocaleTimeString()}`;
+      safeSetText("valScanCount", totalScansProcessed);
+      safeSetText("valLatency", `${latency} ms`);
+      safeSetHTML("scanTimestamp", `SCAN #${scanId} &bull; ${new Date().toLocaleTimeString()} (${latency}ms)`);
 
-      document.getElementById("diagPrimary").innerText = `${diag.crop}: ${diag.disease}`;
-      document.getElementById("diagPathogen").innerText = `Pathogen: ${diag.pathogen}`;
+      safeSetText("diagPrimary", `${diag.crop}: ${diag.disease}`);
+      safeSetText("diagPathogen", `Pathogen: ${diag.pathogen}`);
       
       const confEl = document.getElementById("diagConfidence");
-      confEl.innerText = `Confidence: ${diag.confidence}% | Entropy: ${diag.entropy} | Status: ${diag.status}`;
-      if (diag.status === "INFECTED") {
-        confEl.style.color = "var(--accent-red)";
-      } else if (diag.status === "WARNING") {
-        confEl.style.color = "var(--accent-amber)";
-      } else if (diag.status === "UNCERTAIN") {
-        confEl.style.color = "var(--accent-cyan)";
-      } else {
-        confEl.style.color = "var(--accent-green)";
+      if (confEl) {
+        confEl.innerText = `Confidence: ${diag.confidence}% | Entropy: ${diag.entropy} | Latency: ${latency}ms | Status: ${diag.status}`;
+        if (diag.status === "INFECTED") {
+          confEl.style.color = "var(--accent-red)";
+        } else if (diag.status === "WARNING") {
+          confEl.style.color = "var(--accent-amber)";
+        } else if (diag.status === "UNCERTAIN") {
+          confEl.style.color = "var(--accent-cyan)";
+        } else {
+          confEl.style.color = "var(--accent-green)";
+        }
       }
 
-      document.getElementById("rxBio").innerText = diag.organic;
-      document.getElementById("rxChem").innerText = `Chemical: ${diag.chemical}`;
+      safeSetText("rxBio", diag.organic);
+      safeSetText("rxChem", `Chemical: ${diag.chemical}`);
     }
 
     async function simulateFieldScan() {
@@ -1235,9 +1251,13 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
 
         const leafImg = document.getElementById("leafImg");
         const placeholder = document.getElementById("thumbPlaceholder");
-        leafImg.src = img.src;
-        leafImg.style.display = "block";
-        placeholder.style.display = "none";
+        if (leafImg) {
+          leafImg.src = img.src;
+          leafImg.style.display = "block";
+        }
+        if (placeholder) {
+          placeholder.style.display = "none";
+        }
 
         const t0 = performance.now();
         const diag = await runEdgeInference(img);
@@ -1268,9 +1288,13 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
           img.onload = async () => {
             const leafImg = document.getElementById("leafImg");
             const placeholder = document.getElementById("thumbPlaceholder");
-            leafImg.src = img.src;
-            leafImg.style.display = "block";
-            placeholder.style.display = "none";
+            if (leafImg) {
+              leafImg.src = img.src;
+              leafImg.style.display = "block";
+            }
+            if (placeholder) {
+              placeholder.style.display = "none";
+            }
 
             const t0 = performance.now();
             const diag = await runEdgeInference(img);
