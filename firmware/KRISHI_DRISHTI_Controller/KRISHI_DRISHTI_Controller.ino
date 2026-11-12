@@ -113,6 +113,7 @@ MicroclimateTracker microclimateTracker(6.0f);
 // Wi-Fi Status Tracking
 bool wifiConnected = false;
 unsigned long lastWifiCheckMs = 0;
+bool wifiStaticTried = false;  // static IP already attempted this association cycle
 
 // Button Debounce & Hold Detection
 bool prevScan = HIGH;
@@ -382,6 +383,7 @@ void ensureWiFiConnected() {
   if (WiFi.status() == WL_CONNECTED) {
     if (!wifiConnected) {
       wifiConnected = true;
+      wifiStaticTried = false;
       Serial.println("[WIFI] Connected to Camera SoftAP: KRISHI-DRISHTI!");
       renderActivePage();
     }
@@ -390,6 +392,7 @@ void ensureWiFiConnected() {
 
   if (wifiConnected) {
     wifiConnected = false;
+    wifiStaticTried = false;
     Serial.println("[WIFI] Disconnected from Camera SoftAP.");
     renderActivePage();
   }
@@ -397,33 +400,26 @@ void ensureWiFiConnected() {
   // Re-apply static IP config before every reconnect attempt so the
   // controller always uses 192.168.4.2 and can reach the camera at 192.168.4.1.
   WiFi.setTxPower(WIFI_POWER_19_5dBm); // max range for wand-to-camera link
-  WiFi.config(WAND_STATIC_IP, WAND_GATEWAY, WAND_SUBNET, WAND_DNS);
 
-  // Check every 5 seconds without interrupting an ongoing handshake.
-  // Use WiFi.begin() instead of WiFi.reconnect() because reconnect() does
-  // not reliably re-associate with a static IP config on ESP32.
+  // Non-blocking: call WiFi.begin() every 5s and let ESP32 Wi-Fi driver
+  // handle association in the background. Never block the main loop.
   if (lastWifiCheckMs == 0 || millis() - lastWifiCheckMs > 5000) {
     lastWifiCheckMs = millis();
-    Serial.println("[WIFI] Reconnecting to camera SoftAP: KRISHI-DRISHTI...");
-    WiFi.begin(AP_SSID, AP_PASS);
 
-    // Brief wait for association; if static IP fails, fall back to DHCP.
-    unsigned long startLinkMs = millis();
-    while (WiFi.status() != WL_CONNECTED && (millis() - startLinkMs < 5000)) {
-      delay(100);
-      yield();
-    }
-    if (WiFi.status() != WL_CONNECTED) {
-      Serial.println("[WIFI] Static IP failed, retrying with DHCP..."); Serial.flush();
+    if (!wifiStaticTried) {
+      // First attempt: static IP (192.168.4.2)
+      WiFi.config(WAND_STATIC_IP, WAND_GATEWAY, WAND_SUBNET, WAND_DNS);
+      Serial.println("[WIFI] Associating to camera SoftAP: KRISHI-DRISHTI (static IP)...");
+      WiFi.begin(AP_SSID, AP_PASS);
+      wifiStaticTried = true;
+    } else {
+      // Fallback: DHCP (static IP assignment can fail on ESP32 SoftAP links)
+      Serial.println("[WIFI] Static IP failed, retrying with DHCP...");
       WiFi.disconnect(true);
-      delay(300);
+      delay(50);
       WiFi.config(0, 0, 0, 0);
       WiFi.begin(AP_SSID, AP_PASS);
-      startLinkMs = millis();
-      while (WiFi.status() != WL_CONNECTED && (millis() - startLinkMs < 5000)) {
-        delay(100);
-        yield();
-      }
+      wifiStaticTried = false; // reset so static IP is tried again next cycle
     }
   }
 }
@@ -696,7 +692,7 @@ void setup() {
     display.display();
   }
 
-  // 3. Initialize NVS and Wi-Fi with capped RF TX power (8.5dBm)
+  // 3. Initialize NVS and Wi-Fi with max RF TX power (19.5dBm)
   Serial.println("[INIT] Step 2: NVS & Radio Bringup..."); Serial.flush();
   esp_err_t nvsRet = nvs_flash_init();
   if (nvsRet == ESP_ERR_NVS_NO_FREE_PAGES || nvsRet == ESP_ERR_NVS_NEW_VERSION_FOUND) {
@@ -713,17 +709,12 @@ void setup() {
   WiFi.config(WAND_STATIC_IP, WAND_GATEWAY, WAND_SUBNET, WAND_DNS);
   WiFi.begin(AP_SSID, AP_PASS);
 
-  // 4. Non-blocking link check for up to 15s (Wi-Fi association can take several seconds)
-  Serial.println("[INIT] Step 3: Wi-Fi link check..."); Serial.flush();
-  unsigned long startLinkMs = millis();
-  bool linked = false;
-  while (WiFi.status() != WL_CONNECTED && (millis() - startLinkMs < 15000)) {
-    delay(100);
-    yield();
-  }
+  // 4. Start Wi-Fi association (non-blocking). ensureWiFiConnected() in loop()
+  //    retries every 5s with static IP then DHCP fallback until linked.
+  Serial.println("[INIT] Step 3: Wi-Fi association started (non-blocking)..."); Serial.flush();
+  lastWifiCheckMs = 0; // force immediate retry in ensureWiFiConnected()
 
   if (WiFi.status() == WL_CONNECTED) {
-    linked = true;
     wifiConnected = true;
     Serial.println("[WIFI] Cam Linked! IP: " + WiFi.localIP().toString()); Serial.flush();
     display.fillRect(0, 48, 128, 16, SSD1306_BLACK);
@@ -731,35 +722,8 @@ void setup() {
     display.print("CAM LINKED! [OK]");
     display.display();
     delay(600);
-  }
-
-  // DHCP fallback: static IP assignment can fail on ESP32 SoftAP links.
-  // Retry without static config if the first attempt did not associate.
-  if (!linked) {
-    Serial.println("[WIFI] Static IP link failed, retrying with DHCP..."); Serial.flush();
-    WiFi.disconnect(true);
-    delay(500);
-    WiFi.config(0, 0, 0, 0); // clear static IP, use DHCP
-    WiFi.begin(AP_SSID, AP_PASS);
-    startLinkMs = millis();
-    while (WiFi.status() != WL_CONNECTED && (millis() - startLinkMs < 10000)) {
-      delay(100);
-      yield();
-    }
-    if (WiFi.status() == WL_CONNECTED) {
-      linked = true;
-      wifiConnected = true;
-      Serial.println("[WIFI] Cam Linked via DHCP! IP: " + WiFi.localIP().toString()); Serial.flush();
-      display.fillRect(0, 48, 128, 16, SSD1306_BLACK);
-      display.setCursor(10, 49);
-      display.print("CAM LINKED! [DHCP]");
-      display.display();
-      delay(600);
-    }
-  }
-
-  if (!linked) {
-    Serial.println("[WIFI] Camera not in range (Standby Mode)."); Serial.flush();
+  } else {
+    Serial.println("[WIFI] Associating in background... (NEXT button will work while linking)");
   }
 
   Serial.println("[INIT] Step 4: DHT11 Sensor..."); Serial.flush();
