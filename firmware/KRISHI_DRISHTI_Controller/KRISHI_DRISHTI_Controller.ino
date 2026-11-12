@@ -417,7 +417,7 @@ void ensureWiFiConnected() {
       Serial.println("[WIFI] Static IP failed, retrying with DHCP...");
       WiFi.disconnect(true);
       delay(50);
-      WiFi.config(0, 0, 0, 0);
+      WiFi.config(IPAddress(0, 0, 0, 0), IPAddress(0, 0, 0, 0), IPAddress(0, 0, 0, 0), IPAddress(0, 0, 0, 0));
       WiFi.begin(AP_SSID, AP_PASS);
       wifiStaticTried = false; // reset so static IP is tried again next cycle
     }
