@@ -22,10 +22,6 @@
 #include <DHT.h>
 #include "MicroclimateTracker.h"
 #include <ArduinoJson.h>
-#include <nvs_flash.h>
-#include "esp_private/brownout.h"
-#include "soc/soc.h"
-#include "soc/rtc_cntl_reg.h"
 
 // -----------------------------------------------------------------
 // HARDWARE DEFINITIONS
@@ -394,14 +390,11 @@ void ensureWiFiConnected() {
     renderActivePage();
   }
 
-  // Non-blocking reconnect: check every 7s without thrashing the Wi-Fi driver
-  if (lastWifiCheckMs == 0 || millis() - lastWifiCheckMs > 7000) {
+  // Non-blocking reconnect: check every 5s without thrashing the Wi-Fi driver
+  if (lastWifiCheckMs == 0 || millis() - lastWifiCheckMs > 5000) {
     lastWifiCheckMs = millis();
-    WiFi.setTxPower(WIFI_POWER_8_5dBm);
     Serial.println("[WIFI] Seeking Camera SoftAP: KRISHI-DRISHTI...");
-    WiFi.disconnect(false);
-    delay(20);
-    WiFi.begin(AP_SSID, AP_PASS);
+    WiFi.reconnect();
   }
 }
 
@@ -573,9 +566,24 @@ void triggerRealScan() {
   if (dhtConnected && currentHum > 0.0) {
     captureUrl += "?temp=" + String(currentTemp, 1) + "&hum=" + String(currentHum, 1);
   }
-  http.begin(captureUrl);
-  http.setTimeout(4000);
-  int httpCode = http.GET();
+
+  // Retry capture up to 3 times on 503 (SD not ready yet) or other transient errors
+  int httpCode = 0;
+  String payload;
+  for (int retry = 0; retry < 3; retry++) {
+    http.begin(captureUrl);
+    http.setTimeout(4000);
+    httpCode = http.GET();
+    if (httpCode == 200) {
+      payload = http.getString();
+      http.end();
+      break;
+    }
+    payload = http.getString();
+    http.end();
+    Serial.printf("[SCAN] Attempt %d/3 returned HTTP %d\n", retry + 1, httpCode);
+    if (retry < 2) delay(1000); // wait 1s before retry
+  }
 
   if (httpCode != 200) {
     Serial.printf("[SCAN] Camera capture failed! HTTP code: %d\n", httpCode);
@@ -636,9 +644,6 @@ void triggerRealScan() {
 // ARDUINO SETUP
 // -----------------------------------------------------------------
 void setup() {
-  // 1. Lower CPU frequency to 80MHz to cut power draw in half and eliminate USB surge
-  setCpuFrequencyMhz(80);
-
   Serial.begin(115200);
   delay(150);
 
@@ -657,7 +662,7 @@ void setup() {
 
   if (display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDRESS)) {
     Serial.println("[OLED] SSD1306 Initialized successfully."); Serial.flush();
-    display.dim(true); // Energy-efficient low-current drive (<15mA)
+    display.dim(false); // Full brightness (contrast 0xCF) - ensures crisp, bright OLED visibility
     display.clearDisplay();
     display.setTextColor(SSD1306_WHITE);
 
@@ -678,21 +683,12 @@ void setup() {
     display.display();
   }
 
-  // 2. Suppress hardware brownout trigger & init NVS
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
-  esp_err_t nvsRet = nvs_flash_init();
-  if (nvsRet == ESP_ERR_NVS_NO_FREE_PAGES || nvsRet == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-    nvs_flash_erase();
-    nvs_flash_init();
-  }
-
-  // 3. Wi-Fi Station Bringup with capped TX power (8.5 dBm)
+  // 2. Wi-Fi Station Bringup
   Serial.println("[INIT] Step 2: Wi-Fi Radio Bringup..."); Serial.flush();
-  WiFi.persistent(false);
-  WiFi.disconnect(true);
-  delay(50);
   WiFi.mode(WIFI_STA);
-  WiFi.setTxPower(WIFI_POWER_8_5dBm); // 8.5 dBm prevents USB brownout sag
+  WiFi.persistent(false);
+  WiFi.setAutoReconnect(true);
+  WiFi.setTxPower(WIFI_POWER_13dBm); // 13 dBm ensures stable RF transmission without USB voltage droop
 
   // Static IP for instant routing (192.168.4.2 -> Gateway 192.168.4.1)
   WiFi.config(WAND_STATIC_IP, WAND_GATEWAY, WAND_SUBNET, WAND_DNS);
@@ -704,10 +700,10 @@ void setup() {
   Serial.println("[INIT] Step 3: DHT11 Sensor..."); Serial.flush();
   dht.begin();
 
-  // 4. Quick 2-second link check for display banner
+  // 4. Quick non-blocking link check for OLED status banner
   unsigned long startLinkMs = millis();
-  while (WiFi.status() != WL_CONNECTED && (millis() - startLinkMs < 2000)) {
-    delay(100);
+  while (WiFi.status() != WL_CONNECTED && (millis() - startLinkMs < 1500)) {
+    delay(50);
     yield();
   }
 
