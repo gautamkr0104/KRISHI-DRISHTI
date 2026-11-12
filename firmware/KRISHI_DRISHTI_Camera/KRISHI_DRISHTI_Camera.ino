@@ -1333,8 +1333,9 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
         const r = data[i];
         const g = data[i + 1];
         const b = data[i + 2];
-        const isFoliarGreen = (g > 35) && (g >= r * 0.88) && (g >= b * 0.95);
-        const isNecroticBlightLesion = (r > 30) && (g > 20) && (b < 140) && (Math.abs(r - g) < 45) && ((r + g) > (2 * b));
+        // Stricter foliar green: must be genuinely green-dominant, not just non-black
+        const isFoliarGreen = (g > 60) && (g > r * 1.1) && (g > b * 1.1) && (r > 20) && (b < 200);
+        const isNecroticBlightLesion = (r > 80) && (g > 40) && (b < 120) && (Math.abs(r - g) < 50) && ((r + g) > (2 * b));
         
         if (isFoliarGreen || isNecroticBlightLesion) {
           leafMaskPixels++;
@@ -1345,12 +1346,12 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
 
       const foliarRatio = leafMaskPixels / totalPixels;
 
-      // Reject non-leaf images with 0 foliar tissue
-      if (foliarRatio < 0.08) {
+      // Reject non-leaf images with insufficient foliar tissue (raised from 0.08 to 0.12)
+      if (foliarRatio < 0.12) {
         return {
           crop: "Invalid",
           disease: "No Leaf Detected",
-          pathogen: "Frame does not contain plant canopy or foliar tissue",
+          pathogen: "Frame does not contain sufficient plant canopy or foliar tissue",
           confidence: "0.0",
           status: "UNCERTAIN",
           organic: "Target camera directly at symptomatic Solanaceae foliage.",
