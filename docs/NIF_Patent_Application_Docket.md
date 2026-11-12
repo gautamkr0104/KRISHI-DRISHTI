@@ -59,7 +59,7 @@ The system operates as an integrated **Hardware-Software Triad** communicating o
 |         ^                                             || (Local Wi-Fi)   |
 |         ||                                            \/                 |
 |         +=========== Diagnosis Payload ========= [ Pocket AI Engine ]   |
-|                      synced in < 15 ms           Samsung Galaxy A03      |
+|                      synced in < 15 ms           Any Phone (Android/iOS) |
 |                                                  MobileNetV3 Edge Model  |
 |                                                  100% Offline (No Data)  |
 +--------------------------------------------------------------------------+
@@ -77,10 +77,11 @@ The system operates as an integrated **Hardware-Software Triad** communicating o
    * Digital microclimate sensor (DHT11 on GPIO 18).
    * FreeRTOS non-blocking polling state machine with stale scan rejection (`retScanId == activeScanId`).
 3. **The Offline Pocket AI Co-Processor (Edge Engine):**
-   * Standard budget Android smartphone (e.g., Samsung Galaxy A03) placed in the farmer's pocket.
+   * Universal Phone-Independent Edge Architecture: Any standard smartphone (Android, iOS/Apple iPhone, or tablet) placed in the farmer's pocket.
+   * Zero app installation required (runs directly in standard mobile browser via offline WebAssembly).
    * Operates completely offline with mobile data turned OFF.
    * Runs an optimized MobileNetV3 Float16 neural model locally in RAM.
-   * Latency: **10.54 milliseconds** per leaf.
+   * Latency: **~12–15 milliseconds** per leaf on mobile edge CPU.
 
 ---
 

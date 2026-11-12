@@ -490,7 +490,7 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
       <div class="diag-details">
         <div class="diag-primary" id="diagPrimary">Waiting for Wand [SCAN]</div>
         <div class="diag-pathogen" id="diagPathogen">Mesh SoftAP: KRISHI-DRISHTI (192.168.4.1)</div>
-        <div class="diag-confidence" id="diagConfidence">MobileNetV3 Edge Core: 1.26 MB TFLite</div>
+        <div class="diag-confidence" id="diagConfidence">MobileNetV3 Edge Core: 2.01 MB TFLite</div>
       </div>
     </div>
 
@@ -542,10 +542,12 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
     let pollInterval = null;
     let lastProcessedScanId = 0;
     let wakeLock = null;
+    let keepAliveAudio = null;
     let totalScansProcessed = 0;
 
     let tfliteModel = null;
     let modelReady = false;
+    let currentTelemetry = null;
 
     const CAMERA_STATUS_URL   = "http://192.168.4.1/api/status";
     const CAMERA_IMAGE_URL    = "http://192.168.4.1/image?id=";
@@ -645,19 +647,26 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
     }
 
     // INITIALIZE OFFLINE TFLITE WASM RUNTIME
-    async function initTFLite() {
+    async function initTFLite(retryCount = 0) {
       try {
-        log("Booting bundled WASM TFLite co-processor engine...", "ai");
-        if (typeof tflite !== 'undefined') {
-          tflite.setWasmPath('vendor/wasm/');
-          tfliteModel = await tflite.loadTFLiteModel('krishi_drishti_model.tflite');
-          modelReady = true;
-          document.getElementById("valEngine").innerText = "TFLITE ACTIVE";
-          document.getElementById("valEngine").style.color = "var(--accent-green)";
-          log("MobileNetV3 Edge TFLite core loaded 100% offline.", "ok");
-        } else {
+        if (typeof tflite === 'undefined') {
+          if (retryCount < 20) {
+            document.getElementById("valEngine").innerText = "INITIALIZING...";
+            document.getElementById("valEngine").style.color = "var(--accent-amber)";
+            setTimeout(() => initTFLite(retryCount + 1), 300);
+            return;
+          }
           throw new Error("tflite WASM backend not found in vendor/");
         }
+        document.getElementById("valEngine").innerText = "LOADING MODEL...";
+        document.getElementById("valEngine").style.color = "var(--accent-amber)";
+        log("Booting bundled WASM TFLite co-processor engine...", "ai");
+        tflite.setWasmPath('vendor/wasm/');
+        tfliteModel = await tflite.loadTFLiteModel('krishi_drishti_model.tflite');
+        modelReady = true;
+        document.getElementById("valEngine").innerText = "TFLITE ACTIVE";
+        document.getElementById("valEngine").style.color = "var(--accent-green)";
+        log("MobileNetV3 Edge TFLite core loaded 100% offline.", "ok");
       } catch (err) {
         modelReady = false;
         document.getElementById("valEngine").innerText = "AI OFFLINE";
@@ -670,9 +679,53 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
       try {
         if ('wakeLock' in navigator) {
           wakeLock = await navigator.wakeLock.request('screen');
+          wakeLock.addEventListener('release', () => {
+            log("Screen WakeLock released by OS power management.", "ai");
+            wakeLock = null;
+          });
+          log("Hardware Screen WakeLock active across mobile browser.", "ok");
         }
-      } catch (err) {}
+      } catch (err) {
+        log(`WakeLock notice (${err.name || 'unsupported'}): using audio-thread keep-alive.`, "warn");
+      }
+      startKeepAliveAudio();
     }
+
+    function startKeepAliveAudio() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) {
+          if (!keepAliveAudio) {
+            keepAliveAudio = new AudioCtx();
+            const osc = keepAliveAudio.createOscillator();
+            const gain = keepAliveAudio.createGain();
+            gain.gain.value = 0.00001; // Inaudible buffer keeps mobile event loop unthrottled in pocket
+            osc.connect(gain);
+            gain.connect(keepAliveAudio.destination);
+            osc.start();
+          } else if (keepAliveAudio.state === 'suspended') {
+            keepAliveAudio.resume();
+          }
+        }
+      } catch (e) {}
+    }
+
+    function stopKeepAliveAudio() {
+      try {
+        if (keepAliveAudio) {
+          keepAliveAudio.close();
+          keepAliveAudio = null;
+        }
+      } catch (e) {}
+    }
+
+    // Auto re-acquire WakeLock whenever phone is unlocked or screen wakes
+    document.addEventListener("visibilitychange", async () => {
+      if (document.visibilityState === "visible" && isRunning) {
+        log("Screen restored to foreground — re-asserting WakeLock...", "ai");
+        await requestWakeLock();
+      }
+    });
 
     function toggleServer() {
       if (!isRunning) startServer();
@@ -702,9 +755,10 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
         pollInterval = null;
       }
       if (wakeLock) {
-        wakeLock.release();
+        try { wakeLock.release(); } catch(e) {}
         wakeLock = null;
       }
+      stopKeepAliveAudio();
 
       const pill = document.getElementById("statusPill");
       pill.className = "status-pill pill-stopped";
@@ -730,6 +784,15 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
         if (!res.ok) return;
         const status = await res.json();
 
+        if (status.telemetry_available && status.humidity > 0) {
+          currentTelemetry = {
+            humidity: status.humidity,
+            temperature: status.temperature
+          };
+        } else {
+          currentTelemetry = null;
+        }
+
         document.getElementById("valWandLink").innerText = "CONNECTED";
         document.getElementById("valWandLink").style.color = "var(--accent-green)";
 
@@ -752,12 +815,11 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
       try {
         const img = new Image();
         img.crossOrigin = "anonymous";
-        img.src = `${CAMERA_IMAGE_URL}${scanId}&t=${Date.now()}`;
-
         await new Promise((resolve, reject) => {
           img.onload = resolve;
           img.onerror = reject;
           setTimeout(reject, 4000);
+          img.src = `${CAMERA_IMAGE_URL}${scanId}&t=${Date.now()}`;
         });
 
         const leafImg = document.getElementById("leafImg");
@@ -830,7 +892,28 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
 
       const foliarRatio = foliarCount / total;
 
-      // 1. Plausibility check: Reject lens cap, blank white surface, non-leaf background
+      // 1. Peripheral dark void check: Reject unshielded night flash / off-center leaf
+      let darkCount = 0;
+      for (let i = 0; i < total; i++) {
+        const r = data[i * 4];
+        const g = data[i * 4 + 1];
+        const b = data[i * 4 + 2];
+        if (r < 35 && g < 35 && b < 35) darkCount++;
+      }
+      if (darkCount / total > 0.45) {
+        return {
+          crop: "Uncertain",
+          disease: "Framing / Void Detected",
+          pathogen: `Excessive peripheral dark void (${((darkCount/total)*100).toFixed(1)}%). Leaf must be centered in optical shroud.`,
+          confidence: "0.0",
+          status: "UNCERTAIN",
+          organic: "Center camera wand shroud directly over leaf surface.",
+          chemical: "Ensure optical shroud blocks peripheral night darkness.",
+          entropy: "0.00"
+        };
+      }
+
+      // Plausibility check: Reject lens cap, blank white surface, non-leaf background
       if (foliarRatio < 0.12) {
         return {
           crop: "Invalid",
@@ -887,8 +970,12 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
       }
       const confPercent = (maxProb * 100).toFixed(1);
 
-      // 5. Scientific Uncertainty Gating: Rejection of ambiguous samples
-      if (maxProb < 0.50 || entropy > 1.45) {
+      // Decision margin calculation (top1 - top2)
+      const sortedProbs = probs.slice().sort((a, b) => b - a);
+      const margin = sortedProbs[0] - (sortedProbs.length > 1 ? sortedProbs[1] : 0.0);
+
+      // 5. Scientific Uncertainty Gating: Rejection of ambiguous samples and OOD species
+      if (maxProb < 0.50 || entropy > 1.45 || margin < 0.12) {
         return {
           crop: "Uncertain",
           disease: "Low Confidence / Ambiguous",
@@ -902,6 +989,11 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
       }
 
       const match = KB_CLASSES[maxIdx];
+      let chemRec = match.chemical;
+      // Microclimate-to-Diagnosis Cross-Gating
+      if (match.disease.includes("Late Blight") && currentTelemetry && currentTelemetry.humidity > 0 && currentTelemetry.humidity < 85.0) {
+        chemRec = `WITHHELD: Low RH (${Math.round(currentTelemetry.humidity)}%). Spores dormant under dry canopy (requires RH >= 85%). Suppressing fungicide; inspect for abiotic chlorosis.`;
+      }
       return {
         crop: match.crop,
         disease: match.disease,
@@ -909,7 +1001,7 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
         confidence: confPercent,
         status: match.status,
         organic: match.organic,
-        chemical: match.chemical,
+        chemical: chemRec,
         entropy: entropy.toFixed(2)
       };
     }
@@ -951,10 +1043,15 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
       lastProcessedScanId = demoScanId;
       log(`[EXHIBITION] Loading real leaf image: ${labelName}...`, "ai");
 
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.src = `${url}?t=${Date.now()}`;
-      img.onload = async () => {
+      try {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = (e) => reject(new Error("Could not load " + url));
+          img.src = `${url}?t=${Date.now()}`;
+        });
+
         const leafImg = document.getElementById("leafImg");
         const placeholder = document.getElementById("thumbPlaceholder");
         leafImg.src = img.src;
@@ -962,16 +1059,17 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
         placeholder.style.display = "none";
 
         const t0 = performance.now();
-        const diag = await runEdgeInference(leafImg);
+        const diag = await runEdgeInference(img);
         const latency = Math.round(performance.now() - t0);
 
         updateMetricsAndUI(diag, latency, demoScanId);
         playAudioChime();
         log(`[NEURAL VERIFIED] ${diag.crop}: ${diag.disease} (${diag.confidence}%, H=${diag.entropy}) in ${latency}ms`, "ok");
-      };
-      img.onerror = () => {
-        log(`Could not load sample image from ${url}`, "err");
-      };
+        return diag;
+      } catch (err) {
+        log(`Could not load sample image from ${url}: ${err.message}`, "err");
+        return null;
+      }
     }
 
     function handleLeafUpload(event) {
@@ -994,7 +1092,7 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
           placeholder.style.display = "none";
 
           const t0 = performance.now();
-          const diag = await runEdgeInference(leafImg);
+          const diag = await runEdgeInference(img);
           const latency = Math.round(performance.now() - t0);
 
           updateMetricsAndUI(diag, latency, demoScanId);
@@ -1022,7 +1120,14 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
     }
 
     // Auto-initialize TFLite on page load
-    window.addEventListener("DOMContentLoaded", initTFLite);
+    if (document.readyState === 'loading') {
+      window.addEventListener("DOMContentLoaded", () => initTFLite(0));
+    } else {
+      initTFLite(0);
+    }
+    window.addEventListener("load", () => {
+      if (!modelReady && typeof tflite !== 'undefined') initTFLite(0);
+    });
   </script>
 </body>
 </html>
@@ -1286,6 +1391,20 @@ bool initialiseSD() {
 // --------------------------------------------------
 void handleRoot() {
   server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+  if (sdReady && SD_MMC.exists("/index.html")) {
+    File f = SD_MMC.open("/index.html", FILE_READ);
+    server.sendHeader("Access-Control-Allow-Origin", "*");
+    server.streamFile(f, "text/html");
+    f.close();
+    return;
+  }
+  if (sdReady && SD_MMC.exists("/krishi_ai_server.html")) {
+    File f = SD_MMC.open("/krishi_ai_server.html", FILE_READ);
+    server.sendHeader("Access-Control-Allow-Origin", "*");
+    server.streamFile(f, "text/html");
+    f.close();
+    return;
+  }
   server.send_P(200, "text/html", AI_SERVER_HTML);
 }
 

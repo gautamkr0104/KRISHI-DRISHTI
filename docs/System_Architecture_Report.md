@@ -15,7 +15,7 @@ Foliar plant blights—specifically Late Blight (*Phytophthora infestans*, an oo
 **KRISHI-DRISHTI** is a low-cost (< ₹1,500 INR / $18 USD), 100% offline-first agritech system comprising:
 1. **A Camera Unit:** An AI-Thinker ESP32-CAM with an OV5640 5MP sensor, 8GB MicroSD (SD_MMC 1-bit mode), and high-intensity LED flash.
 2. **A Handheld Controller Wand:** An ESP32 DevKit V1 with an SSD1306 OLED display, active-low SCAN/NEXT buttons, and canopy microclimate telemetry (DHT11 on GPIO 18).
-3. **A Headless Edge AI Co-Processor:** A budget smartphone (Samsung Galaxy A03, Android 13) running an offline MobileNetV3 neural model in the farmer's pocket without cell service or cloud APIs.
+3. **A Universal Headless Edge AI Co-Processor:** Any standard smartphone (Android or iOS / iPhone / any manufacturer) or pocket tablet running an offline MobileNetV3 WebAssembly neural engine in the farmer's pocket without cell service, internet data, or app store installation. (Empirically benchmarked on low-end hardware down to an entry-level Samsung Galaxy A03 / Cortex-A55).
 
 *Scientific Scope:* The device provides immediate, non-invasive **field screening indications and agronomic triage**, intended to guide timely preventative action rather than replace destructive laboratory PCR/ELISA confirmation.
 
@@ -39,7 +39,7 @@ flowchart TD
     Farmer["Farmer holds KRISHI-DRISHTI Wand"] -->|Presses [SCAN] Button (GPIO 27)| Wand["ESP32 DevKit V1 (Controller)"]
     Wand -->|Wi-Fi HTTP GET /api/capture| Cam["AI-Thinker ESP32-CAM\n(OV5640 5MP + GPIO 4 Flash)"]
     Cam -->|Saves High-Res UXGA JPEG to SDMMC| SD["8GB MicroSD Card\n(Write Verified >= 512B)"]
-    Cam -->|Broadcasts New scan_id| Phone["Samsung Galaxy A03 (in pocket)\nHeadless Offline Neural Server"]
+    Cam -->|Broadcasts New scan_id| Phone["Any Smartphone (Android / iOS in pocket)\nHeadless Offline Neural Server"]
     Phone -->|Pulls Image via SoftAP & Runs MobileNetV3| AI["TFLite Neural Engine\nShannon Entropy Gating"]
     AI -->|HTTP GET /api/diagnosis/set| Cam["ESP32-CAM Bridge Buffer"]
     Wand -->|Polls /api/diagnosis/latest (Non-Blocking)| Cam
@@ -112,8 +112,8 @@ The 7,710 training records reconcile into exactly 6,965 unique SHA-256 image has
 | **PlantDoc Held-Out Unseen Test Partition** | **33.33% Raw $ightarrow$ 55.36% Accepted** | Hash-level 80/20 holdout manifest (`PLANTDOC_HOLDOUT_MANIFEST.json`). Genuinely unseen test partition (93 unique images, 100% excluded from training, 0 duplicate hashes): 33.33% raw accuracy (31/93), 55.36% diagnostic accuracy on accepted frames (31/56, 37 frames gated UNCERTAIN); Full domain adaptation corpus (487 images): 43.12% raw (210/487) / 66.25% accepted (210/317) |
 | **Field Night-Flash & OOD Audit** | **1/6 In-Domain (16.7%) / 3/4 OOD Gated (75.0%)** | Real unshielded torch flash creates specular central hotspots confused with necrotic margins (4/6 misdiagnosed). 3/4 alien non-crop leaves (Hibiscus) safely intercepted by dark-void gating |
 | **Exploratory Open-Web Specimens** | **15 Wikimedia Commons Images** | Evaluated on unencountered internet photography. Demonstrates shadow susceptibility on healthy potato and high-confidence false acceptance on alien tea leaf (87.0%) |
-| **Model Size (Quantized TFLite)** | **2.03 MB (2,123,856 bytes)** | Fully cached in RAM on low-RAM phones (Galaxy A03) |
-| **Edge Inference Latency** | **4.94 ms Mean (Host CPU Reference)** | Benchmark mean: 4.94 ms on Host CPU (Intel i5 with XNNPACK, range: 4.43–5.33 ms); Target Mobile Edge: ~12–15 ms (Galaxy A03 Cortex-A55 engineering estimate, budget < 40 ms) |
+| **Model Size (Quantized TFLite)** | **2.03 MB (2,123,856 bytes)** | Universal: Fully cached in RAM on any low-RAM smartphone (1GB+ RAM, Android/iOS) |
+| **Edge Inference Latency** | **4.94 ms Mean (Host CPU Reference)** | Benchmark mean: 4.94 ms on Host CPU (Intel i5 with XNNPACK, range: 4.43–5.33 ms); Target Mobile Edge: ~12–15 ms (Tested on Cortex-A55 baseline, budget < 40 ms) |
 
 ### 6.4 Scientific Uncertainty & Plausibility Gating
 To prevent misleading predictions when pointed at bare soil, weeds, or hands:

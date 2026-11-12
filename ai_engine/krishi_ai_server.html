@@ -466,10 +466,12 @@
     let pollInterval = null;
     let lastProcessedScanId = 0;
     let wakeLock = null;
+    let keepAliveAudio = null;
     let totalScansProcessed = 0;
 
     let tfliteModel = null;
     let modelReady = false;
+    let currentTelemetry = null;
 
     const CAMERA_STATUS_URL   = "http://192.168.4.1/api/status";
     const CAMERA_IMAGE_URL    = "http://192.168.4.1/image?id=";
@@ -569,19 +571,26 @@
     }
 
     // INITIALIZE OFFLINE TFLITE WASM RUNTIME
-    async function initTFLite() {
+    async function initTFLite(retryCount = 0) {
       try {
-        log("Booting bundled WASM TFLite co-processor engine...", "ai");
-        if (typeof tflite !== 'undefined') {
-          tflite.setWasmPath('vendor/wasm/');
-          tfliteModel = await tflite.loadTFLiteModel('krishi_drishti_model.tflite');
-          modelReady = true;
-          document.getElementById("valEngine").innerText = "TFLITE ACTIVE";
-          document.getElementById("valEngine").style.color = "var(--accent-green)";
-          log("MobileNetV3 Edge TFLite core loaded 100% offline.", "ok");
-        } else {
+        if (typeof tflite === 'undefined') {
+          if (retryCount < 20) {
+            document.getElementById("valEngine").innerText = "INITIALIZING...";
+            document.getElementById("valEngine").style.color = "var(--accent-amber)";
+            setTimeout(() => initTFLite(retryCount + 1), 300);
+            return;
+          }
           throw new Error("tflite WASM backend not found in vendor/");
         }
+        document.getElementById("valEngine").innerText = "LOADING MODEL...";
+        document.getElementById("valEngine").style.color = "var(--accent-amber)";
+        log("Booting bundled WASM TFLite co-processor engine...", "ai");
+        tflite.setWasmPath('vendor/wasm/');
+        tfliteModel = await tflite.loadTFLiteModel('krishi_drishti_model.tflite');
+        modelReady = true;
+        document.getElementById("valEngine").innerText = "TFLITE ACTIVE";
+        document.getElementById("valEngine").style.color = "var(--accent-green)";
+        log("MobileNetV3 Edge TFLite core loaded 100% offline.", "ok");
       } catch (err) {
         modelReady = false;
         document.getElementById("valEngine").innerText = "AI OFFLINE";
@@ -594,9 +603,53 @@
       try {
         if ('wakeLock' in navigator) {
           wakeLock = await navigator.wakeLock.request('screen');
+          wakeLock.addEventListener('release', () => {
+            log("Screen WakeLock released by OS power management.", "ai");
+            wakeLock = null;
+          });
+          log("Hardware Screen WakeLock active across mobile browser.", "ok");
         }
-      } catch (err) {}
+      } catch (err) {
+        log(`WakeLock notice (${err.name || 'unsupported'}): using audio-thread keep-alive.`, "warn");
+      }
+      startKeepAliveAudio();
     }
+
+    function startKeepAliveAudio() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) {
+          if (!keepAliveAudio) {
+            keepAliveAudio = new AudioCtx();
+            const osc = keepAliveAudio.createOscillator();
+            const gain = keepAliveAudio.createGain();
+            gain.gain.value = 0.00001; // Inaudible buffer keeps mobile event loop unthrottled in pocket
+            osc.connect(gain);
+            gain.connect(keepAliveAudio.destination);
+            osc.start();
+          } else if (keepAliveAudio.state === 'suspended') {
+            keepAliveAudio.resume();
+          }
+        }
+      } catch (e) {}
+    }
+
+    function stopKeepAliveAudio() {
+      try {
+        if (keepAliveAudio) {
+          keepAliveAudio.close();
+          keepAliveAudio = null;
+        }
+      } catch (e) {}
+    }
+
+    // Auto re-acquire WakeLock whenever phone is unlocked or screen wakes
+    document.addEventListener("visibilitychange", async () => {
+      if (document.visibilityState === "visible" && isRunning) {
+        log("Screen restored to foreground — re-asserting WakeLock...", "ai");
+        await requestWakeLock();
+      }
+    });
 
     function toggleServer() {
       if (!isRunning) startServer();
@@ -626,9 +679,10 @@
         pollInterval = null;
       }
       if (wakeLock) {
-        wakeLock.release();
+        try { wakeLock.release(); } catch(e) {}
         wakeLock = null;
       }
+      stopKeepAliveAudio();
 
       const pill = document.getElementById("statusPill");
       pill.className = "status-pill pill-stopped";
@@ -654,6 +708,15 @@
         if (!res.ok) return;
         const status = await res.json();
 
+        if (status.telemetry_available && status.humidity > 0) {
+          currentTelemetry = {
+            humidity: status.humidity,
+            temperature: status.temperature
+          };
+        } else {
+          currentTelemetry = null;
+        }
+
         document.getElementById("valWandLink").innerText = "CONNECTED";
         document.getElementById("valWandLink").style.color = "var(--accent-green)";
 
@@ -676,12 +739,11 @@
       try {
         const img = new Image();
         img.crossOrigin = "anonymous";
-        img.src = `${CAMERA_IMAGE_URL}${scanId}&t=${Date.now()}`;
-
         await new Promise((resolve, reject) => {
           img.onload = resolve;
           img.onerror = reject;
           setTimeout(reject, 4000);
+          img.src = `${CAMERA_IMAGE_URL}${scanId}&t=${Date.now()}`;
         });
 
         const leafImg = document.getElementById("leafImg");
@@ -905,10 +967,15 @@
       lastProcessedScanId = demoScanId;
       log(`[EXHIBITION] Loading real leaf image: ${labelName}...`, "ai");
 
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.src = `${url}?t=${Date.now()}`;
-      img.onload = async () => {
+      try {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = (e) => reject(new Error("Could not load " + url));
+          img.src = `${url}?t=${Date.now()}`;
+        });
+
         const leafImg = document.getElementById("leafImg");
         const placeholder = document.getElementById("thumbPlaceholder");
         leafImg.src = img.src;
@@ -916,16 +983,17 @@
         placeholder.style.display = "none";
 
         const t0 = performance.now();
-        const diag = await runEdgeInference(leafImg);
+        const diag = await runEdgeInference(img);
         const latency = Math.round(performance.now() - t0);
 
         updateMetricsAndUI(diag, latency, demoScanId);
         playAudioChime();
         log(`[NEURAL VERIFIED] ${diag.crop}: ${diag.disease} (${diag.confidence}%, H=${diag.entropy}) in ${latency}ms`, "ok");
-      };
-      img.onerror = () => {
-        log(`Could not load sample image from ${url}`, "err");
-      };
+        return diag;
+      } catch (err) {
+        log(`Could not load sample image from ${url}: ${err.message}`, "err");
+        return null;
+      }
     }
 
     function handleLeafUpload(event) {
@@ -948,7 +1016,7 @@
           placeholder.style.display = "none";
 
           const t0 = performance.now();
-          const diag = await runEdgeInference(leafImg);
+          const diag = await runEdgeInference(img);
           const latency = Math.round(performance.now() - t0);
 
           updateMetricsAndUI(diag, latency, demoScanId);
@@ -976,7 +1044,14 @@
     }
 
     // Auto-initialize TFLite on page load
-    window.addEventListener("DOMContentLoaded", initTFLite);
+    if (document.readyState === 'loading') {
+      window.addEventListener("DOMContentLoaded", () => initTFLite(0));
+    } else {
+      initTFLite(0);
+    }
+    window.addEventListener("load", () => {
+      if (!modelReady && typeof tflite !== 'undefined') initTFLite(0);
+    });
   </script>
 </body>
 </html>
