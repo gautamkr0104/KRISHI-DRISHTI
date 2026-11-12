@@ -8,7 +8,10 @@ echo ======================================================================
 echo.
 
 set PYTHON_CMD=
-if exist "D:\tools\krishi_ai_env\Scripts\python.exe" (
+if exist "C:\Users\DELL\krishi_pdf_env\Scripts\python.exe" (
+    set PYTHON_CMD="C:\Users\DELL\krishi_pdf_env\Scripts\python.exe"
+    echo [*] Using verified environment: C:\Users\DELL\krishi_pdf_env
+) else if exist "D:\tools\krishi_ai_env\Scripts\python.exe" (
     set PYTHON_CMD="D:\tools\krishi_ai_env\Scripts\python.exe"
     echo [*] Using verified environment: D:\tools\krishi_ai_env
 ) else (

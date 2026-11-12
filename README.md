@@ -16,7 +16,7 @@
 
 Over **35% of potato and tomato crops across India are destroyed annually by foliar blights** like Late Blight (*Phytophthora infestans*, an oomycete water mold) and Early Blight (*Alternaria solani*, an ascomycete fungus). Smallholder and marginal farmers often lack access to expensive laboratory diagnostic equipment (₹25,000+) or reliable cloud connectivity in rural fields with poor cellular reception.
 
-**KRISHI-DRISHTI** is an ultra-low-cost (~₹1,514 INR / $18 USD total), **100% offline-first agritech screening system** designed for rural field environments.
+**KRISHI-DRISHTI** is an ultra-low-cost (₹1,480 INR / $18 USD total), **100% offline-first agritech screening system** designed for rural field environments.
 
 Instead of relying on cloud APIs or expensive 5G connectivity, KRISHI-DRISHTI uses a **handheld wireless telemetry wand**, an **ESP32-CAM optical capture unit**, and **any standard smartphone (Android or iOS / iPhone / any brand)** acting as a universal, **invisible, headless edge AI co-processor** operating over a dedicated local Wi-Fi mesh. Zero apps or APKs to install — it runs entirely in the browser via offline WebAssembly.
 
@@ -101,18 +101,18 @@ KRISHI-DRISHTI/
 
 ---
 
-## 💰 Bill of Materials (BOM) — Field Prototype (~₹1,514 Total)
+## 💰 Bill of Materials (BOM) — Field Prototype (₹1,480 Total)
 
 | Component | Purpose | Unit Cost (INR) | Sourcing |
 | :--- | :--- | :--- | :--- |
-| **ESP32-S CAM Board** | 5MP camera + 4MB PSRAM | ₹675.00 | Standard Electronics Distributor |
+| **ESP32-S CAM Board** | 5MP camera + 4MB PSRAM | ₹646.00 | Standard Electronics Distributor |
 | **ESP32-CAM-MB Programmer** | USB programming shield (No jumper wires) | ₹92.00 | Standard Electronics Distributor |
 | **ESP32 DevKit V1** | Handheld wand controller core | ~₹350.00 | Standard Electronics Distributor |
 | **SSD1306 0.96" OLED** | 128×64 I2C diagnostic display | ~₹150.00 | Local Electronics |
 | **DHT11 Sensor Module** | Canopy temperature & relative humidity (GPIO 18) | ₹57.00 | Standard Electronics Distributor |
-| **MicroSD Card (8GB)** | Local storage for UXGA leaf scans | ~₹180.00 | Standard Class 10 card |
+| **MicroSD Card (8GB)** | Local storage for UXGA leaf scans | ~₹175.00 | Standard Class 10 card |
 | **Pushbuttons (x2)** | `[SCAN]` (GPIO 27) and `[NEXT]` (GPIO 26) | ~₹10.00 | Local Electronics |
-| **Total Hardware Cost** | **Complete System Triad** | **~₹1,514 INR ($18 USD)** | **Ultra-Low Cost Compliant** |
+| **Total Hardware Cost** | **Complete System Triad** | **₹1,480 INR ($18 USD)** | **Ultra-Low Cost Compliant** |
 
 ---
 
@@ -211,7 +211,28 @@ g++ -Wall -Wextra -Werror -std=c++11 tests/test_microclimate_tracker.cpp firmwar
 
 ---
 
-## 📜 License & Intellectual Property
+## 🛠 Troubleshooting
+
+### Controller Wand Not Connecting to Camera SoftAP
+If the controller boots but shows "Searching CAM" or "ESP32-CAM Not Linked":
+
+1. **Verify the camera SoftAP is broadcasting** — The ESP32-CAM must be powered on and broadcasting `KRISHI-DRISHTI` Wi-Fi before the controller boots.
+2. **Controller port** — Flash the controller to your actual port (e.g. `COM5`):
+   ```
+   .\Flash_ESP32_Controller.bat COM5
+   ```
+3. **Static IP** — The controller is hardcoded to `192.168.4.2` and the camera gateway is `192.168.4.1`. `WiFi.config()` is applied in `setup()` and on every reconnect attempt (`ensureWiFiConnected()`).
+4. **Signal range** — Keep the controller within ~5 meters of the camera wand. ESP32 TX power is capped at 8.5 dBm to prevent USB brownout.
+
+### OLED Display Dimming / Flickering Randomly
+The controller previously called `display.dim(true)` which set the SSD1306 to low-contrast mode. This has been changed to `display.dim(false)` for consistent full brightness. If you still see flicker:
+
+1. **Check power supply** — USB power dips during Wi-Fi radio activity can cause the OLED to appear to dim. Use a quality USB cable and power source.
+2. **Brownout disabled** — `WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0)` is set in `setup()` to prevent brownout resets during Wi-Fi PLL lock.
+
+### Flashing
+- Camera Wand (AI-Thinker ESP32-CAM): `.\Flash_ESP32_CAM.bat COM7`
+- Controller Wand (ESP32 DevKit V1): `.\Flash_ESP32_Controller.bat COM5` (or your actual port)
 
 This project is licensed under the **Source-Available Non-Commercial License**. See [`LICENSE`](LICENSE) for terms.  
 Source code, schematics, and model weights are made available solely for personal inspection, educational evaluation, and non-commercial research. Commercial manufacturing, sublicensing, redistribution, and third-party patent filing without explicit written authorization are strictly prohibited.
