@@ -576,6 +576,7 @@ void triggerRealScan() {
     httpCode = http.GET();
     if (httpCode == 200) {
       payload = http.getString();
+      Serial.printf("[SCAN] Camera response: %s\n", payload.c_str());
       http.end();
       break;
     }
@@ -604,10 +605,6 @@ void triggerRealScan() {
     renderActivePage();
     return;
   }
-
-  String payload = http.getString();
-  http.end();
-  Serial.printf("[SCAN] Camera response: %s\n", payload.c_str());
 
   StaticJsonDocument<256> doc;
   DeserializationError err = deserializeJson(doc, payload);
