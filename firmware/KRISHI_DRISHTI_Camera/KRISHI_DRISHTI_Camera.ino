@@ -83,8 +83,8 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
   <title>KRISHI-DRISHTI :: Edge AI Co-Processor Daemon</title>
   
   <!-- Bundled Offline TensorFlow.js & TFLite WASM Runtimes -->
-  <script src="vendor/tf.min.js"></script>
-  <script src="vendor/tf-tflite.min.js"></script>
+  <script src="/vendor/tf.min.js"></script>
+  <script src="/vendor/tf-tflite.min.js"></script>
 
   <style>
     :root {
@@ -604,10 +604,10 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
 
   <!-- Real Leaf Exhibition Test Palette -->
   <div class="sample-btn-row">
-    <button class="btn-sample btn-sample-blight" onclick="testRealLeaf('sample_leaves/late_blight_512.jpg', 'Real Tomato Late Blight')">
+    <button class="btn-sample btn-sample-blight" onclick="testRealLeaf('/sample_leaves/late_blight_512.jpg', 'Real Tomato Late Blight')">
       🍂 Real Blight
     </button>
-    <button class="btn-sample btn-sample-healthy" onclick="testRealLeaf('sample_leaves/healthy_512.jpg', 'Real Tomato Healthy')">
+    <button class="btn-sample btn-sample-healthy" onclick="testRealLeaf('/sample_leaves/healthy_512.jpg', 'Real Tomato Healthy')">
       🌿 Real Healthy
     </button>
     <label class="btn-sample btn-sample-upload">
@@ -752,8 +752,8 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
         document.getElementById("valEngine").innerText = "LOADING MODEL...";
         document.getElementById("valEngine").style.color = "var(--accent-amber)";
         log("Booting bundled WASM TFLite co-processor engine...", "ai");
-        tflite.setWasmPath('vendor/wasm/');
-        tfliteModel = await tflite.loadTFLiteModel('krishi_drishti_model.tflite');
+        tflite.setWasmPath('/vendor/');
+        tfliteModel = await tflite.loadTFLiteModel('/krishi_drishti_model.tflite');
         modelReady = true;
         document.getElementById("valEngine").innerText = "TFLITE ACTIVE";
         document.getElementById("valEngine").style.color = "var(--accent-green)";
@@ -1216,7 +1216,7 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
       const demoScanId = (lastProcessedScanId || 0) + 1;
       lastProcessedScanId = demoScanId;
       log(`[DEMO] Triggering test scan #${demoScanId} on sample leaf...`, "ai");
-      await testRealLeaf('sample_leaves/late_blight_512.jpg', 'Field Demo Sample: Late Blight');
+      await testRealLeaf('/sample_leaves/late_blight_512.jpg', 'Field Demo Sample: Late Blight');
     }
 
     async function testRealLeaf(url, labelName) {
@@ -1561,10 +1561,13 @@ bool initialiseCamera() {
 // MICROSD IN 1-BIT MODE (DMA-PROTECTED)
 // --------------------------------------------------
 bool initialiseSD() {
-  Serial.println("[SD] Mounting MicroSD in 1-bit mode...");
-  if (!SD_MMC.begin("/sdcard", true)) {
-    Serial.println("[SD WARN] MicroSD card not mounted (insert Class 10 card)");
-    return false;
+  Serial.println("[SD] Mounting MicroSD in 1-bit mode (20MHz)...");
+  if (!SD_MMC.begin("/sdcard", true, false, 20000, 5)) {
+    Serial.println("[SD] 20MHz mount failed, retrying at 10MHz...");
+    if (!SD_MMC.begin("/sdcard", true, false, 10000, 5)) {
+      Serial.println("[SD WARN] MicroSD card not mounted (insert Class 10 card)");
+      return false;
+    }
   }
   uint8_t cardType = SD_MMC.cardType();
   if (cardType == CARD_NONE) {

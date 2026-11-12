@@ -6,8 +6,8 @@
   <title>KRISHI-DRISHTI :: Edge AI Co-Processor Daemon</title>
   
   <!-- Bundled Offline TensorFlow.js & TFLite WASM Runtimes -->
-  <script src="vendor/tf.min.js"></script>
-  <script src="vendor/tf-tflite.min.js"></script>
+  <script src="/vendor/tf.min.js"></script>
+  <script src="/vendor/tf-tflite.min.js"></script>
 
   <style>
     :root {
@@ -527,10 +527,10 @@
 
   <!-- Real Leaf Exhibition Test Palette -->
   <div class="sample-btn-row">
-    <button class="btn-sample btn-sample-blight" onclick="testRealLeaf('sample_leaves/late_blight_512.jpg', 'Real Tomato Late Blight')">
+    <button class="btn-sample btn-sample-blight" onclick="testRealLeaf('/sample_leaves/late_blight_512.jpg', 'Real Tomato Late Blight')">
       🍂 Real Blight
     </button>
-    <button class="btn-sample btn-sample-healthy" onclick="testRealLeaf('sample_leaves/healthy_512.jpg', 'Real Tomato Healthy')">
+    <button class="btn-sample btn-sample-healthy" onclick="testRealLeaf('/sample_leaves/healthy_512.jpg', 'Real Tomato Healthy')">
       🌿 Real Healthy
     </button>
     <label class="btn-sample btn-sample-upload">
@@ -675,8 +675,8 @@
         document.getElementById("valEngine").innerText = "LOADING MODEL...";
         document.getElementById("valEngine").style.color = "var(--accent-amber)";
         log("Booting bundled WASM TFLite co-processor engine...", "ai");
-        tflite.setWasmPath('vendor/wasm/');
-        tfliteModel = await tflite.loadTFLiteModel('krishi_drishti_model.tflite');
+        tflite.setWasmPath('/vendor/');
+        tfliteModel = await tflite.loadTFLiteModel('/krishi_drishti_model.tflite');
         modelReady = true;
         document.getElementById("valEngine").innerText = "TFLITE ACTIVE";
         document.getElementById("valEngine").style.color = "var(--accent-green)";
@@ -1139,7 +1139,7 @@
       const demoScanId = (lastProcessedScanId || 0) + 1;
       lastProcessedScanId = demoScanId;
       log(`[DEMO] Triggering test scan #${demoScanId} on sample leaf...`, "ai");
-      await testRealLeaf('sample_leaves/late_blight_512.jpg', 'Field Demo Sample: Late Blight');
+      await testRealLeaf('/sample_leaves/late_blight_512.jpg', 'Field Demo Sample: Late Blight');
     }
 
     async function testRealLeaf(url, labelName) {
