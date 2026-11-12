@@ -399,7 +399,7 @@ void ensureWiFiConnected() {
 
   // Re-apply static IP config before every reconnect attempt so the
   // controller always uses 192.168.4.2 and can reach the camera at 192.168.4.1.
-  WiFi.setTxPower(WIFI_POWER_14dBm); // stable RF power for USB-powered wand link
+  WiFi.setTxPower(WIFI_POWER_13dBm); // stable RF power for USB-powered wand link
 
   // Non-blocking: call WiFi.begin() every 5s and let ESP32 Wi-Fi driver
   // handle association in the background. Never block the main loop.
@@ -692,7 +692,7 @@ void setup() {
     display.display();
   }
 
-  // 3. Initialize NVS and Wi-Fi with stable RF TX power (14dBm)
+  // 3. Initialize NVS and Wi-Fi with stable RF TX power (13dBm)
   Serial.println("[INIT] Step 2: NVS & Radio Bringup..."); Serial.flush();
   esp_err_t nvsRet = nvs_flash_init();
   if (nvsRet == ESP_ERR_NVS_NO_FREE_PAGES || nvsRet == ESP_ERR_NVS_NEW_VERSION_FOUND) {
@@ -705,7 +705,7 @@ void setup() {
 
   WiFi.persistent(false);
   WiFi.mode(WIFI_STA);
-  WiFi.setTxPower(WIFI_POWER_14dBm); // stable RF power for USB-powered wand link
+  WiFi.setTxPower(WIFI_POWER_13dBm); // stable RF power for USB-powered wand link
   WiFi.config(WAND_STATIC_IP, WAND_GATEWAY, WAND_SUBNET, WAND_DNS);
   WiFi.begin(AP_SSID, AP_PASS);
 
