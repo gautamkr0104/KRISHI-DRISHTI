@@ -22,10 +22,6 @@
 #include <DHT.h>
 #include "MicroclimateTracker.h"
 #include <ArduinoJson.h>
-#include <nvs_flash.h>
-#include "esp_private/brownout.h"
-#include "soc/soc.h"
-#include "soc/rtc_cntl_reg.h"
 
 // -----------------------------------------------------------------
 // HARDWARE DEFINITIONS
@@ -113,7 +109,6 @@ MicroclimateTracker microclimateTracker(6.0f);
 // Wi-Fi Status Tracking
 bool wifiConnected = false;
 unsigned long lastWifiCheckMs = 0;
-bool wifiStaticTried = false;  // static IP already attempted this association cycle
 
 // Button Debounce & Hold Detection
 bool prevScan = HIGH;
@@ -383,8 +378,7 @@ void ensureWiFiConnected() {
   if (WiFi.status() == WL_CONNECTED) {
     if (!wifiConnected) {
       wifiConnected = true;
-      wifiStaticTried = false;
-      Serial.println("[WIFI] Connected to Camera SoftAP: KRISHI-DRISHTI!");
+      Serial.println("[WIFI] Connected to Camera SoftAP: KRISHI-DRISHTI! IP: " + WiFi.localIP().toString());
       renderActivePage();
     }
     return;
@@ -392,34 +386,21 @@ void ensureWiFiConnected() {
 
   if (wifiConnected) {
     wifiConnected = false;
-    wifiStaticTried = false;
     Serial.println("[WIFI] Disconnected from Camera SoftAP.");
     renderActivePage();
   }
 
-  // Re-apply static IP config before every reconnect attempt so the
-  // controller always uses 192.168.4.2 and can reach the camera at 192.168.4.1.
-  WiFi.setTxPower(WIFI_POWER_8_5dBm); // stable RF power for USB-powered wand link
-
-  // Non-blocking: call WiFi.begin() every 5s and let ESP32 Wi-Fi driver
-  // handle association in the background. Never block the main loop.
+  // Non-blocking reconnect: check every 5s without thrashing the Wi-Fi driver
+  static uint8_t reconnectAttempts = 0;
   if (lastWifiCheckMs == 0 || millis() - lastWifiCheckMs > 5000) {
     lastWifiCheckMs = millis();
-
-    if (!wifiStaticTried) {
-      // First attempt: static IP (192.168.4.2)
-      WiFi.config(WAND_STATIC_IP, WAND_GATEWAY, WAND_SUBNET, WAND_DNS);
-      Serial.println("[WIFI] Associating to camera SoftAP: KRISHI-DRISHTI (static IP)...");
+    reconnectAttempts++;
+    if (reconnectAttempts % 4 == 0) {
+      Serial.println("[WIFI] Refreshing connection parameters for KRISHI-DRISHTI...");
       WiFi.begin(AP_SSID, AP_PASS);
-      wifiStaticTried = true;
     } else {
-      // Fallback: DHCP (static IP assignment can fail on ESP32 SoftAP links)
-      Serial.println("[WIFI] Static IP failed, retrying with DHCP...");
-      WiFi.disconnect(true);
-      delay(50);
-      WiFi.config(IPAddress(0, 0, 0, 0), IPAddress(0, 0, 0, 0), IPAddress(0, 0, 0, 0), IPAddress(0, 0, 0, 0));
-      WiFi.begin(AP_SSID, AP_PASS);
-      wifiStaticTried = false; // reset so static IP is tried again next cycle
+      Serial.println("[WIFI] Retrying link to Camera SoftAP: KRISHI-DRISHTI...");
+      WiFi.reconnect();
     }
   }
 }
@@ -543,6 +524,11 @@ void handleAiTimeoutNonBlocking() {
 }
 
 void triggerRealScan() {
+  if (currentState == STATE_CAPTURING || currentState == STATE_AWAITING_AI) {
+    Serial.println("[SCAN] Scan already in progress. Ignoring duplicate trigger.");
+    return;
+  }
+
   // If camera is not yet connected (e.g. package not arrived or turned off)
   if (WiFi.status() != WL_CONNECTED) {
     systemStatusMsg = "Standby (No Cam)";
@@ -650,9 +636,6 @@ void triggerRealScan() {
 // ARDUINO SETUP
 // -----------------------------------------------------------------
 void setup() {
-  // 1. Lower CPU frequency to 80MHz to cut power draw in half and eliminate USB surge
-  setCpuFrequencyMhz(80);
-
   Serial.begin(115200);
   delay(150);
 
@@ -665,7 +648,7 @@ void setup() {
   pinMode(SCAN_BUTTON, INPUT_PULLUP);
   pinMode(NEXT_BUTTON, INPUT_PULLUP);
 
-  // 2. Initialize OLED Display FIRST so user immediately sees live boot state
+  // 1. Initialize OLED Display FIRST so user immediately sees live boot state
   Serial.println("[INIT] Step 1: I2C & OLED..."); Serial.flush();
   Wire.begin(21, 22);
 
@@ -692,27 +675,29 @@ void setup() {
     display.display();
   }
 
-  // 3. Initialize NVS and Wi-Fi with stable RF TX power (8.5dBm)
-  Serial.println("[INIT] Step 2: NVS & Radio Bringup..."); Serial.flush();
-  esp_err_t nvsRet = nvs_flash_init();
-  if (nvsRet == ESP_ERR_NVS_NO_FREE_PAGES || nvsRet == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-    nvs_flash_erase();
-    nvs_flash_init();
-  }
-
-  // Suppress hardware brownout trigger during Wi-Fi PLL lock
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
-
+  // 2. Wi-Fi Station Bringup (Standard, rock-solid Arduino stack)
+  Serial.println("[INIT] Step 2: Wi-Fi Radio Bringup..."); Serial.flush();
   WiFi.persistent(false);
+  WiFi.disconnect(true);
+  delay(100);
   WiFi.mode(WIFI_STA);
-  WiFi.setTxPower(WIFI_POWER_8_5dBm); // stable RF power for USB-powered wand link
+
+  // Static IP for instant routing (192.168.4.2 -> Gateway 192.168.4.1)
   WiFi.config(WAND_STATIC_IP, WAND_GATEWAY, WAND_SUBNET, WAND_DNS);
+
+  Serial.printf("[WIFI] Connecting to SoftAP: '%s'...\n", AP_SSID); Serial.flush();
   WiFi.begin(AP_SSID, AP_PASS);
 
-  // 4. Start Wi-Fi association (non-blocking). ensureWiFiConnected() in loop()
-  //    retries every 5s with static IP then DHCP fallback until linked.
-  Serial.println("[INIT] Step 3: Wi-Fi association started (non-blocking)..."); Serial.flush();
-  lastWifiCheckMs = 0; // force immediate retry in ensureWiFiConnected()
+  // 3. Sensor bringup
+  Serial.println("[INIT] Step 3: DHT11 Sensor..."); Serial.flush();
+  dht.begin();
+
+  // 4. Quick 2-second link check for display banner
+  unsigned long startLinkMs = millis();
+  while (WiFi.status() != WL_CONNECTED && (millis() - startLinkMs < 2000)) {
+    delay(100);
+    yield();
+  }
 
   if (WiFi.status() == WL_CONNECTED) {
     wifiConnected = true;
@@ -721,13 +706,10 @@ void setup() {
     display.setCursor(16, 49);
     display.print("CAM LINKED! [OK]");
     display.display();
-    delay(600);
+    delay(400);
   } else {
-    Serial.println("[WIFI] Associating in background... (NEXT button will work while linking)");
+    Serial.println("[WIFI] Associating in background... (Wand UI is live)"); Serial.flush();
   }
-
-  Serial.println("[INIT] Step 4: DHT11 Sensor..."); Serial.flush();
-  dht.begin();
 
   // Boot directly to the friendly READY TO SCAN home screen!
   activePage = 0;

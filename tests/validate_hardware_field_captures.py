@@ -75,7 +75,8 @@ def evaluate_field_captures(manifest_path=None):
         return 0
 
     model_path = REPO_ROOT / "ai_engine" / "krishi_drishti_model.tflite"
-    daemon = KrishiAIDaemon(model_path=str(model_path))
+    labels_path = REPO_ROOT / "ai_engine" / "labels.json"
+    daemon = KrishiAIDaemon(model_path=str(model_path), labels_path=str(labels_path))
 
     results = []
     exact_matches = 0
@@ -99,18 +100,28 @@ def evaluate_field_captures(manifest_path=None):
         is_shrouded = rec.get("shroud_attached", True)
 
         img = Image.open(fpath).convert("RGB")
-        res = daemon.predict_image(img)
+        tel_data = rec.get("telemetry", {})
+        telemetry = {
+            "temperature": tel_data.get("temperature_c", 25.0),
+            "humidity": tel_data.get("relative_humidity_pct", 60.0)
+        }
+        res = daemon.run_inference(img, telemetry=telemetry)
 
-        pred_label = res.get("label", "Unknown")
+        status = res.get("status", "UNKNOWN")
+        is_uncertain = (status == "UNCERTAIN")
+        
+        if is_uncertain:
+            pred_label = f"Uncertain ({res.get('disease', 'Ambiguous')})"
+            pred_pathogen = "Uncertain"
+        else:
+            pred_label = f"{res.get('crop')} {res.get('disease')}".strip()
+            pred_pathogen = PATHOGEN_MAP.get(pred_label, "Unknown")
+
         conf = res.get("confidence", 0.0)
         entropy = res.get("entropy", 0.0)
-        status = res.get("status", "UNKNOWN")
-
-        is_uncertain = (status == "UNCERTAIN" or "Uncertain" in pred_label or "No Leaf" in pred_label)
-        pred_pathogen = PATHOGEN_MAP.get(pred_label, "Unknown")
 
         is_exact = (pred_label == gt_canonical and not is_uncertain)
-        is_pathogen = (pred_pathogen == gt_pathogen and gt_pathogen != "Asymptomatic" and not is_uncertain)
+        is_pathogen = (pred_pathogen == gt_pathogen and gt_pathogen not in ("Asymptomatic", "Unknown") and not is_uncertain)
 
         if is_exact:
             exact_matches += 1
@@ -134,7 +145,7 @@ def evaluate_field_captures(manifest_path=None):
             "filename": fname,
             "ground_truth": gt_canonical,
             "prediction": pred_label,
-            "confidence_pct": round(conf * 100, 1),
+            "confidence_pct": round(conf, 1),
             "entropy": round(entropy, 3),
             "status": status,
             "shroud_attached": is_shrouded,

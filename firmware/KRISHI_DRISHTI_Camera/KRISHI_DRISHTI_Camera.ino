@@ -1322,36 +1322,79 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
       const ctx = cvs.getContext("2d", { willReadFrequently: true });
       ctx.drawImage(imgElement, 0, 0, 128, 128);
 
-      // 1. Biological Green Chromatic Foliar Validation Check
+      // 1. Biological Chlorophyll Foliar & Non-Leaf / Selfie Screening Check
       const frameData = ctx.getImageData(0, 0, 128, 128);
       const data = frameData.data;
       let totalPixels = 128 * 128;
-      let leafMaskPixels = 0;
-      let nonLeafPixels = 0;
+      let greenChlorophyllPixels = 0;
+      let necroticLesionPixels = 0;
+      let humanSkinPixels = 0;
+      let darkVoidPixels = 0;
 
       for (let i = 0; i < data.length; i += 4) {
         const r = data[i];
         const g = data[i + 1];
         const b = data[i + 2];
-        // Stricter foliar green: must be genuinely green-dominant, not just non-black
-        const isFoliarGreen = (g > 60) && (g > r * 1.1) && (g > b * 1.1) && (r > 20) && (b < 200);
-        const isNecroticBlightLesion = (r > 80) && (g > 40) && (b < 120) && (Math.abs(r - g) < 50) && ((r + g) > (2 * b));
-        
-        if (isFoliarGreen || isNecroticBlightLesion) {
-          leafMaskPixels++;
-        } else {
-          nonLeafPixels++;
+
+        // A. Chlorophyll foliar tissue (green must be competitive with red and higher than blue)
+        if (g > 32 && g >= r * 0.90 && g > b * 1.02) {
+          greenChlorophyllPixels++;
+        }
+        // B. Fungal necrotic tissue (blight spots - dark brown/olive with bounded red/green balance)
+        else if (r > 40 && g > 30 && b < 110 && r >= g && (r - g) < 50 && (r + g) > (2.2 * b)) {
+          necroticLesionPixels++;
+        }
+
+        // C. Biometric Human Skin Tone Filter (Selfie / Face / Hand detection)
+        if (r > 95 && g > 40 && b > 20 && r > g && g > b && (r - g) > 12 && (r - b) > 20) {
+          humanSkinPixels++;
+        }
+
+        // D. Peripheral dark void / lens cap
+        if (r < 30 && g < 30 && b < 30) {
+          darkVoidPixels++;
         }
       }
 
-      const foliarRatio = leafMaskPixels / totalPixels;
+      const greenRatio = greenChlorophyllPixels / totalPixels;
+      const skinRatio = humanSkinPixels / totalPixels;
+      const voidRatio = darkVoidPixels / totalPixels;
+      const totalFoliarRatio = (greenChlorophyllPixels + necroticLesionPixels) / totalPixels;
 
-      // Reject non-leaf images with insufficient foliar tissue (raised from 0.08 to 0.12)
-      if (foliarRatio < 0.12) {
+      // 1. Reject Human Face / Selfie / Hand
+      if (skinRatio > 0.12 && greenRatio < 0.08) {
         return {
           crop: "Invalid",
           disease: "No Leaf Detected",
-          pathogen: "Frame does not contain sufficient plant canopy or foliar tissue",
+          pathogen: "Non-Botanical Subject: Human face / skin detected in frame",
+          confidence: "0.0",
+          status: "UNCERTAIN",
+          organic: "KRISHI-DRISHTI is strictly calibrated for Solanaceae foliar pathology.",
+          chemical: "Position optical shroud over a tomato or potato crop leaf.",
+          entropy: "0.00"
+        };
+      }
+
+      // 2. Reject Lens Cap / Complete Darkness
+      if (voidRatio > 0.75) {
+        return {
+          crop: "Invalid",
+          disease: "No Leaf Detected",
+          pathogen: "Excessive darkness / Lens cap or closed shroud detected",
+          confidence: "0.0",
+          status: "UNCERTAIN",
+          organic: "Remove lens cap and ensure target leaf is adequately illuminated.",
+          chemical: "Position wand 10cm from leaf surface and re-scan.",
+          entropy: "0.00"
+        };
+      }
+
+      // 3. Reject Ambient Surfaces, Backgrounds & Non-Plant Objects (requires minimum chlorophyll)
+      if (greenRatio < 0.06 || totalFoliarRatio < 0.12) {
+        return {
+          crop: "Invalid",
+          disease: "No Leaf Detected",
+          pathogen: "Frame does not contain plant foliage or leaf canopy",
           confidence: "0.0",
           status: "UNCERTAIN",
           organic: "Target camera directly at symptomatic Solanaceae foliage.",
@@ -1846,11 +1889,20 @@ bool initialiseCamera() {
   config.pin_reset    = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
-  config.frame_size   = FRAMESIZE_UXGA;  // 1600 x 1200
-  config.jpeg_quality = 10;
-  config.fb_count     = 1;
-  config.grab_mode    = CAMERA_GRAB_WHEN_EMPTY;
-  config.fb_location  = psramAvailable ? CAMERA_FB_IN_PSRAM : CAMERA_FB_IN_DRAM;
+  if (psramAvailable) {
+    config.frame_size   = FRAMESIZE_UXGA;  // 1600 x 1200
+    config.jpeg_quality = 10;
+    config.fb_count     = 2;
+    config.grab_mode    = CAMERA_GRAB_LATEST;
+    config.fb_location  = CAMERA_FB_IN_PSRAM;
+  } else {
+    Serial.println("[CAM WARN] No PSRAM detected. Falling back to SVGA (800x600)");
+    config.frame_size   = FRAMESIZE_SVGA;  // 800 x 600
+    config.jpeg_quality = 12;
+    config.fb_count     = 1;
+    config.grab_mode    = CAMERA_GRAB_WHEN_EMPTY;
+    config.fb_location  = CAMERA_FB_IN_DRAM;
+  }
 
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
@@ -1987,9 +2039,12 @@ void handleCapture() {
 
   diagnosisReady = false; // Reset diagnosis flag for newly captured leaf
 
-  // Pulse Flash LED for 120ms to allow AEC/AGC to adapt
+  // Pulse Flash LED for illumination
   digitalWrite(FLASH_LED_PIN, HIGH);
-  delay(120);
+  // Flush pre-flash buffered frame so sensor AEC adapts to flash illumination
+  camera_fb_t* stale_fb = esp_camera_fb_get();
+  if (stale_fb) esp_camera_fb_return(stale_fb);
+  delay(80);
   camera_fb_t* fb = esp_camera_fb_get();
   digitalWrite(FLASH_LED_PIN, LOW); // Shut off LED immediately
 

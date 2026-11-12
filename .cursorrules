@@ -1,0 +1,41 @@
+# KRISHI-DRISHTI :: Cursor & Windsurf Assistant Rules
+
+You are an expert embedded C++ and Edge-AI computer vision engineer working on the KRISHI-DRISHTI project.
+
+## Project Metadata
+- Project: KRISHI-DRISHTI (कृषि-दृष्टि) v2.3.0
+- Target Domain: Offline Edge AI Solanaceae Disease Screening Wand
+- Bill of Materials: Strictly ₹1,480 (under ₹1,500)
+- Team ID: T26706431 | Theme: Artificial Intelligence (AI) for Better Life
+- Students: Gautam Kumar & Abhinav Kumar (Class IX)
+- Mentor: Soni Kumari (PGT Science, 9102812661, ksoni251090@gmail.com)
+- School: Udaan International School, Begusarai, Bihar
+
+## Local Toolchain Paths
+- Python: C:\Users\DELL\krishi_pdf_env\Scripts\python.exe
+- Esptool: C:\Users\DELL\AppData\Local\Arduino15\packages\esp32\tools\esptool_py\5.3.1\esptool.exe
+- Xtensa C++ Compiler: C:\Users\DELL\AppData\Local\Arduino15\packages\esp32\tools\esp-x32\2601\bin\xtensa-esp32-elf-g++.exe
+- Serial COM Port: COM7 @ 115200 baud
+- Git Repo: https://github.com/gautamkr0104/KRISHI-DRISHTI.git (branch main)
+
+## Hardware Pinout Reference
+- Node A (ESP32-CAM):
+  - Flash LED: GPIO 4
+  - SD_MMC: GPIO 2, 14, 15, 13 (1-bit mode)
+  - Shroud: 8 cm cylinder with acrylic diffuser
+  - SoftAP: SSID "KRISHI-DRISHTI" -> 192.168.4.1
+- Node B (ESP32 DevKit V1):
+  - OLED SSD1306: SDA GPIO 21, SCL GPIO 22
+  - DHT11 Sensor: DATA GPIO 18
+  - Button SCAN: GPIO 27 (Active LOW)
+  - Button NEXT: GPIO 26 (Active LOW)
+- Node C (Edge AI):
+  - Model: MobileNetV3 Float16/INT8 (2.01 MB), input [1, 128, 128, 3]
+  - Uncertainty Gates: Shannon Entropy H > 1.45, Margin < 0.12, Foliar < 0.12, Dark > 0.45
+  - Microclimate Gate: Late Blight sprays suppressed when RH < 85%
+
+## Guidelines & Constraints
+1. Always run Python commands with C:\Users\DELL\krishi_pdf_env\Scripts\python.exe.
+2. Never output files to C:\Users\DELL\Downloads root; keep deliverables in uploading_documents/.
+3. Student Report word count must stay within 600–1,200 words.
+4. Never invent fake field claims. Rely on empirical telemetry and documented failure modes.

@@ -2,8 +2,220 @@
   "manifest_version": "1.0",
   "project": "KRISHI-DRISHTI",
   "domain": "Hardware-in-the-Loop Authentic Field Validation",
-  "description": "Standardized schema for foliar images captured directly by the ESP32-CAM OV5640 wand with optical shroud.",
-  "sensor_hardware": "AI-Thinker ESP32-CAM (OV5640 5MP)",
-  "shroud_specification": "3D-printed 8-10 cm cylindrical black optical shroud",
-  "records": []
+  "description": "Standardized schema for foliar images captured directly by the ESP32-CAM wand with optical shroud.",
+  "sensor_hardware": "AI-Thinker ESP32-CAM (OV2640 installed, OV5640 auto-detect)",
+  "shroud_specification": "3D-printed 8 cm cylindrical black optical shroud with matte acrylic diffuser",
+  "evaluation_protocol": "FIELD_VALIDATION_PROTOCOL.md",
+  "records": [
+    {
+      "capture_id": "FIELD_TOM_HL_001",
+      "filename": "V261110-191510-30fps-auto_exp-tmc_auto_0.jpg",
+      "timestamp": "2026-11-10T19:15:10Z",
+      "hardware_id": "WAND_REV3_UNIT01",
+      "sensor": "AI-Thinker ESP32-CAM (OV2640/OV5640)",
+      "shroud_attached": false,
+      "lighting": "unshielded_torch_nocturnal",
+      "telemetry": {
+        "temperature_c": 19.8,
+        "relative_humidity_pct": 68.2
+      },
+      "ground_truth": {
+        "crop": "Tomato",
+        "disease": "Healthy",
+        "canonical_class": "Tomato___healthy",
+        "pathogen": "Asymptomatic",
+        "verified_by": "Physical Leaf Inspection & Mentor Verification"
+      },
+      "field_observation_note": "Unshielded flashlight creates specular reflections and radial shadows on leaflet margin."
+    },
+    {
+      "capture_id": "FIELD_TOM_HL_002",
+      "filename": "V261110-191524-30fps-auto_exp-tmc_auto_0.jpg",
+      "timestamp": "2026-11-10T19:15:24Z",
+      "hardware_id": "WAND_REV3_UNIT01",
+      "sensor": "AI-Thinker ESP32-CAM (OV2640/OV5640)",
+      "shroud_attached": false,
+      "lighting": "unshielded_torch_nocturnal",
+      "telemetry": {
+        "temperature_c": 19.8,
+        "relative_humidity_pct": 68.4
+      },
+      "ground_truth": {
+        "crop": "Tomato",
+        "disease": "Healthy",
+        "canonical_class": "Tomato___healthy",
+        "pathogen": "Asymptomatic",
+        "verified_by": "Physical Leaf Inspection & Mentor Verification"
+      },
+      "field_observation_note": "Harsh point-source LED illumination mimics dark water-soaked lesion edge."
+    },
+    {
+      "capture_id": "FIELD_OOD_PAAN_001",
+      "filename": "V261110-191530-30fps-auto_exp-tmc_auto_0.jpg",
+      "timestamp": "2026-11-10T19:15:30Z",
+      "hardware_id": "WAND_REV3_UNIT01",
+      "sensor": "AI-Thinker ESP32-CAM (OV2640/OV5640)",
+      "shroud_attached": false,
+      "lighting": "unshielded_torch_nocturnal",
+      "telemetry": {
+        "temperature_c": 19.7,
+        "relative_humidity_pct": 68.5
+      },
+      "ground_truth": {
+        "crop": "Non-Solanaceae (Paan / Betel)",
+        "disease": "Out-of-Distribution Foliage",
+        "canonical_class": "Non_Solanaceae_OOD",
+        "pathogen": "Piper betle",
+        "verified_by": "Botanical Family Check (Piperaceae)"
+      },
+      "field_observation_note": "Heart-shaped betel leaf evaluated for Out-of-Distribution safety testing."
+    },
+    {
+      "capture_id": "FIELD_TOM_HL_003",
+      "filename": "V261110-191538-30fps-auto_exp-tmc_auto_0.jpg",
+      "timestamp": "2026-11-10T19:15:38Z",
+      "hardware_id": "WAND_REV3_UNIT01",
+      "sensor": "AI-Thinker ESP32-CAM (OV2640/OV5640)",
+      "shroud_attached": true,
+      "lighting": "shrouded_diffuse",
+      "telemetry": {
+        "temperature_c": 19.7,
+        "relative_humidity_pct": 68.6
+      },
+      "ground_truth": {
+        "crop": "Tomato",
+        "disease": "Healthy",
+        "canonical_class": "Tomato___healthy",
+        "pathogen": "Asymptomatic",
+        "verified_by": "Physical Leaf Inspection & Mentor Verification"
+      },
+      "field_observation_note": "Shroud attached flat against leaf surface; correctly classified as Tomato Healthy (65.3%)."
+    },
+    {
+      "capture_id": "FIELD_TOM_HL_004",
+      "filename": "V261110-191543-30fps-auto_exp-tmc_auto_0.jpg",
+      "timestamp": "2026-11-10T19:15:43Z",
+      "hardware_id": "WAND_REV3_UNIT01",
+      "sensor": "AI-Thinker ESP32-CAM (OV2640/OV5640)",
+      "shroud_attached": true,
+      "lighting": "shrouded_diffuse",
+      "telemetry": {
+        "temperature_c": 19.7,
+        "relative_humidity_pct": 68.5
+      },
+      "ground_truth": {
+        "crop": "Tomato",
+        "disease": "Healthy",
+        "canonical_class": "Tomato___healthy",
+        "pathogen": "Asymptomatic",
+        "verified_by": "Physical Leaf Inspection & Mentor Verification"
+      },
+      "field_observation_note": "Ambiguous shadow angle; safely gated as UNCERTAIN (H = 1.38 > 1.10) with sprays withheld."
+    },
+    {
+      "capture_id": "FIELD_TOM_HL_005",
+      "filename": "V261110-191549-30fps-auto_exp-tmc_auto_0.jpg",
+      "timestamp": "2026-11-10T19:15:49Z",
+      "hardware_id": "WAND_REV3_UNIT01",
+      "sensor": "AI-Thinker ESP32-CAM (OV2640/OV5640)",
+      "shroud_attached": false,
+      "lighting": "unshielded_torch_nocturnal",
+      "telemetry": {
+        "temperature_c": 19.6,
+        "relative_humidity_pct": 68.7
+      },
+      "ground_truth": {
+        "crop": "Tomato",
+        "disease": "Healthy",
+        "canonical_class": "Tomato___healthy",
+        "pathogen": "Asymptomatic",
+        "verified_by": "Physical Leaf Inspection & Mentor Verification"
+      },
+      "field_observation_note": "Unshielded flashlight flare produces false Late Blight classification."
+    },
+    {
+      "capture_id": "FIELD_TOM_HL_006",
+      "filename": "V261110-191600-30fps-auto_exp-tmc_auto_0.jpg",
+      "timestamp": "2026-11-10T19:16:00Z",
+      "hardware_id": "WAND_REV3_UNIT01",
+      "sensor": "AI-Thinker ESP32-CAM (OV2640/OV5640)",
+      "shroud_attached": false,
+      "lighting": "unshielded_torch_nocturnal",
+      "telemetry": {
+        "temperature_c": 19.6,
+        "relative_humidity_pct": 68.8
+      },
+      "ground_truth": {
+        "crop": "Tomato",
+        "disease": "Healthy",
+        "canonical_class": "Tomato___healthy",
+        "pathogen": "Asymptomatic",
+        "verified_by": "Physical Leaf Inspection & Mentor Verification"
+      },
+      "field_observation_note": "Peripheral shadow rim mimics lesion margin."
+    },
+    {
+      "capture_id": "FIELD_OOD_HIB_001",
+      "filename": "V261110-191626-30fps-auto_exp-tmc_auto_0.jpg",
+      "timestamp": "2026-11-10T19:16:26Z",
+      "hardware_id": "WAND_REV3_UNIT01",
+      "sensor": "AI-Thinker ESP32-CAM (OV2640/OV5640)",
+      "shroud_attached": false,
+      "lighting": "unshielded_torch_nocturnal",
+      "telemetry": {
+        "temperature_c": 19.5,
+        "relative_humidity_pct": 69.0
+      },
+      "ground_truth": {
+        "crop": "Non-Solanaceae (Hibiscus)",
+        "disease": "Out-of-Distribution Foliage",
+        "canonical_class": "Non_Solanaceae_OOD",
+        "pathogen": "Hibiscus rosa-sinensis",
+        "verified_by": "Botanical Family Check (Malvaceae)"
+      },
+      "field_observation_note": "Chlorotic Hibiscus leaf; safely intercepted by dark void gate (Confidence: 0.0%)."
+    },
+    {
+      "capture_id": "FIELD_OOD_HIB_002",
+      "filename": "V261110-191628-30fps-auto_exp-tmc_auto_0.jpg",
+      "timestamp": "2026-11-10T19:16:28Z",
+      "hardware_id": "WAND_REV3_UNIT01",
+      "sensor": "AI-Thinker ESP32-CAM (OV2640/OV5640)",
+      "shroud_attached": false,
+      "lighting": "unshielded_torch_nocturnal",
+      "telemetry": {
+        "temperature_c": 19.5,
+        "relative_humidity_pct": 69.0
+      },
+      "ground_truth": {
+        "crop": "Non-Solanaceae (Hibiscus)",
+        "disease": "Out-of-Distribution Foliage",
+        "canonical_class": "Non_Solanaceae_OOD",
+        "pathogen": "Hibiscus rosa-sinensis",
+        "verified_by": "Botanical Family Check (Malvaceae)"
+      },
+      "field_observation_note": "Safely intercepted by foliar boundary gate (Confidence: 0.0%)."
+    },
+    {
+      "capture_id": "FIELD_OOD_HIB_003",
+      "filename": "V261110-191634-30fps-auto_exp-tmc_auto_0.jpg",
+      "timestamp": "2026-11-10T19:16:34Z",
+      "hardware_id": "WAND_REV3_UNIT01",
+      "sensor": "AI-Thinker ESP32-CAM (OV2640/OV5640)",
+      "shroud_attached": false,
+      "lighting": "unshielded_torch_nocturnal",
+      "telemetry": {
+        "temperature_c": 19.5,
+        "relative_humidity_pct": 69.1
+      },
+      "ground_truth": {
+        "crop": "Non-Solanaceae (Hibiscus)",
+        "disease": "Out-of-Distribution Foliage",
+        "canonical_class": "Non_Solanaceae_OOD",
+        "pathogen": "Hibiscus rosa-sinensis",
+        "verified_by": "Botanical Family Check (Malvaceae)"
+      },
+      "field_observation_note": "Green Hibiscus leaf; safely intercepted by boundary check (Confidence: 0.0%)."
+    }
+  ]
 }
