@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-11T11:00:33Z",
+  "timestamp": "2026-11-12T04:16:46Z",
   "audit_scope": "Independent Dataset Provenance & Cryptographic Overlap Audit",
   "benchmark_designation": "Documented Hold-Out Specimen Benchmark",
   "total_specimens": 60,
@@ -13,15 +13,15 @@
     "Tomato___healthy": 10
   },
   "training_dataset_audit": {
-    "training_corpus_examined": true,
-    "training_files_checked": 11399,
-    "validation_files_checked": 2850,
-    "exact_sha256_train_matches_count": 44,
-    "perceptual_dhash_train_matches_count": 3,
-    "total_shared_source_leaves_count": 47,
-    "strictly_independent_holdout_leaves_count": 13,
-    "validation_partition_matches_count": 16,
-    "independence_verdict": "PARTIALLY_INDEPENDENT_UPSTREAM_CURATION_LEAK",
+    "training_corpus_examined": false,
+    "training_files_checked": 0,
+    "validation_files_checked": 0,
+    "exact_sha256_train_matches_count": 0,
+    "perceptual_dhash_train_matches_count": 0,
+    "total_shared_source_leaves_count": 0,
+    "strictly_independent_holdout_leaves_count": null,
+    "validation_partition_matches_count": 0,
+    "independence_verdict": "UNVERIFIED",
     "upstream_curation_analysis": "Upstream Kaggle dataset curator (vipoooool) executed offline image augmentations prior to train/val splitting. Consequently, 44 exact duplicate hashes and 3 perceptual dHash (Hamming <= 2) variants of benchmark leaves exist within the 11,399 training set. 13 leaves are strictly unique to the validation hold-out set. KRISHI-DRISHTI reports these empirical metrics transparently without claiming zero overlap.",
     "production_training_isolation": "Verified 100% isolated: ai_engine/train_model.py applies both SHA-256 blacklisting and dHash (Hamming distance <= 2) exclusion filtering. All 44 exact matches and all perceptual near-duplicates are purged from the training pool before sampling, ensuring zero exact or perceptual contamination in the trained model (documented in ai_engine/TRAINING_RUN_MANIFEST.json)."
   },

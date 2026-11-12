@@ -18,7 +18,7 @@ Over **35% of potato and tomato crops across India are destroyed annually by fol
 
 **KRISHI-DRISHTI** is an ultra-low-cost (~₹1,514 INR / $18 USD total), **100% offline-first agritech screening system** designed for rural field environments.
 
-Instead of relying on cloud APIs or expensive 5G connectivity, KRISHI-DRISHTI uses a **handheld wireless telemetry wand**, an **ESP32-CAM optical capture unit**, and an ordinary budget smartphone (e.g. Samsung Galaxy A03) acting as an **invisible, headless edge AI co-processor** operating over a dedicated local Wi-Fi mesh.
+Instead of relying on cloud APIs or expensive 5G connectivity, KRISHI-DRISHTI uses a **handheld wireless telemetry wand**, an **ESP32-CAM optical capture unit**, and **any standard smartphone (Android or iOS / iPhone / any brand)** acting as a universal, **invisible, headless edge AI co-processor** operating over a dedicated local Wi-Fi mesh. Zero apps or APKs to install — it runs entirely in the browser via offline WebAssembly.
 
 ```
 +--------------------------------------------------------------------------+
@@ -32,8 +32,8 @@ Instead of relying on cloud APIs or expensive 5G connectivity, KRISHI-DRISHTI us
 |         ^                                             || (Local Wi-Fi)   |
 |         ||                                            \/                 |
 |         +=========== Diagnosis Payload ========= [ Pocket AI Engine ]   |
-|                      synced in < 15 ms           Samsung Galaxy A03      |
-|                                                  MobileNetV3 Edge Model  |
+|                      synced in < 15 ms           Any Phone (Android/iOS) |
+|                                                  MobileNetV3 WASM Model  |
 |                                                  100% Offline (No Data)  |
 +--------------------------------------------------------------------------+
 ```
