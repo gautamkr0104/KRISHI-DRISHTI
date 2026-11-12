@@ -547,6 +547,7 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
 
     let tfliteModel = null;
     let modelReady = false;
+    let isModelLoading = false;
     let currentTelemetry = null;
 
     const CAMERA_STATUS_URL   = "http://192.168.4.1/api/status";
@@ -648,12 +649,17 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
 
     // INITIALIZE OFFLINE TFLITE WASM RUNTIME
     async function initTFLite(retryCount = 0) {
+      if (modelReady || isModelLoading) return;
+      isModelLoading = true;
       try {
         if (typeof tflite === 'undefined') {
           if (retryCount < 20) {
             document.getElementById("valEngine").innerText = "INITIALIZING...";
             document.getElementById("valEngine").style.color = "var(--accent-amber)";
-            setTimeout(() => initTFLite(retryCount + 1), 300);
+            setTimeout(() => {
+              isModelLoading = false;
+              initTFLite(retryCount + 1);
+            }, 300);
             return;
           }
           throw new Error("tflite WASM backend not found in vendor/");
@@ -672,6 +678,8 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
         document.getElementById("valEngine").innerText = "AI OFFLINE";
         document.getElementById("valEngine").style.color = "var(--accent-red)";
         log(`TFLite load error: ${err.message}. Inference paused until model available.`, "err");
+      } finally {
+        isModelLoading = false;
       }
     }
 
@@ -931,14 +939,22 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
 
       // 2. TFLite Model Execution (Zero Fake Fallbacks)
       if (modelReady && tfliteModel && typeof tf !== 'undefined') {
-        const tfImg = tf.browser.fromPixels(cvs);
-        // MobileNetV3 model architecture already contains internal mobilenet_v3.preprocess_input layer
-        // Input contract: [1, 128, 128, 3] float32 in range [0.0, 255.0]
-        const inputTensor = tfImg.toFloat().expandDims(0);
-        const output = tfliteModel.predict(inputTensor);
-        // Output layer is already Softmax activation from training — no double softmax
-        probs = Array.from(output.dataSync());
-        tf.dispose([tfImg, inputTensor, output]);
+        let tfImg = null;
+        let inputTensor = null;
+        let output = null;
+        try {
+          tfImg = tf.browser.fromPixels(cvs);
+          // MobileNetV3 model architecture already contains internal mobilenet_v3.preprocess_input layer
+          // Input contract: [1, 128, 128, 3] float32 in range [0.0, 255.0]
+          inputTensor = tfImg.toFloat().expandDims(0);
+          output = tfliteModel.predict(inputTensor);
+          // Output layer is already Softmax activation from training — no double softmax
+          probs = Array.from(output.dataSync());
+        } finally {
+          if (tfImg) tfImg.dispose();
+          if (inputTensor) inputTensor.dispose();
+          if (output) output.dispose();
+        }
       } else {
         // TFLite model is not loaded — strictly refuse to produce fake heuristic diagnosis
         return {
@@ -1082,23 +1098,33 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
 
       const reader = new FileReader();
       reader.onload = (e) => {
-        const img = new Image();
-        img.src = e.target.result;
-        img.onload = async () => {
-          const leafImg = document.getElementById("leafImg");
-          const placeholder = document.getElementById("thumbPlaceholder");
-          leafImg.src = img.src;
-          leafImg.style.display = "block";
-          placeholder.style.display = "none";
+        try {
+          const img = new Image();
+          img.onload = async () => {
+            const leafImg = document.getElementById("leafImg");
+            const placeholder = document.getElementById("thumbPlaceholder");
+            leafImg.src = img.src;
+            leafImg.style.display = "block";
+            placeholder.style.display = "none";
 
-          const t0 = performance.now();
-          const diag = await runEdgeInference(img);
-          const latency = Math.round(performance.now() - t0);
+            const t0 = performance.now();
+            const diag = await runEdgeInference(img);
+            const latency = Math.round(performance.now() - t0);
 
-          updateMetricsAndUI(diag, latency, demoScanId);
-          playAudioChime();
-          log(`[CUSTOM DIAGNOSIS] ${diag.crop}: ${diag.disease} (${diag.confidence}%, H=${diag.entropy}) in ${latency}ms`, "ok");
-        };
+            updateMetricsAndUI(diag, latency, demoScanId);
+            playAudioChime();
+            log(`[CUSTOM DIAGNOSIS] ${diag.crop}: ${diag.disease} (${diag.confidence}%, H=${diag.entropy}) in ${latency}ms`, "ok");
+          };
+          img.onerror = () => {
+            log(`Failed to decode uploaded image: ${file.name}`, "err");
+          };
+          img.src = e.target.result;
+        } catch (err) {
+          log(`Error processing uploaded photo: ${err.message}`, "err");
+        }
+      };
+      reader.onerror = () => {
+        log(`Failed to read file from disk: ${file.name}`, "err");
       };
       reader.readAsDataURL(file);
     }
