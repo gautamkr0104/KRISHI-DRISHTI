@@ -109,7 +109,8 @@ The 7,710 training records reconcile into exactly 6,965 unique SHA-256 image has
 | **Potato Healthy Tissue F1** | **0.9824** | Precision: 98.46%, Recall: 98.03% |
 | **Tomato Healthy Tissue F1** | **0.9531** | Precision: 91.57%, Recall: 99.38% |
 | **60-Specimen Botanical Benchmark** | **88.33% Strict / 92.98% Accepted** | Strict 6-class exact match: 53/60 (88.33%); Accepted predictions: 53/57 (92.98% coverage, 3 gated UNCERTAIN; 54/60 90.0% pathogen match reported separately) |
-| **PlantDoc Held-Out Unseen Test Partition** | **33.33% Raw $ightarrow$ 55.36% Accepted** | Hash-level 80/20 holdout manifest (`PLANTDOC_HOLDOUT_MANIFEST.json`). Genuinely unseen test partition (93 unique images, 100% excluded from training, 0 duplicate hashes): 33.33% raw accuracy (31/93), 55.36% diagnostic accuracy on accepted frames (31/56, 37 frames gated UNCERTAIN); Full domain adaptation corpus (487 images): 43.12% raw (210/487) / 66.25% accepted (210/317) |
+| **PlantDoc Held-Out Unseen Test Partition** | **33.33% Raw $
+ightarrow$ 55.36% Accepted** | Hash-level 80/20 holdout manifest (`PLANTDOC_HOLDOUT_MANIFEST.json`). Genuinely unseen test partition (93 unique images, 100% excluded from training, 0 duplicate hashes): 33.33% raw accuracy (31/93), 55.36% diagnostic accuracy on accepted frames (31/56, 37 frames gated UNCERTAIN); Full domain adaptation corpus (487 images): 43.12% raw (210/487) / 66.25% accepted (210/317) |
 | **Field Night-Flash & OOD Audit** | **1/6 In-Domain (16.7%) / 3/4 OOD Gated (75.0%)** | Real unshielded torch flash creates specular central hotspots confused with necrotic margins (4/6 misdiagnosed). 3/4 alien non-crop leaves (Hibiscus) safely intercepted by dark-void gating |
 | **Exploratory Open-Web Specimens** | **15 Wikimedia Commons Images** | Evaluated on unencountered internet photography. Demonstrates shadow susceptibility on healthy potato and high-confidence false acceptance on alien tea leaf (87.0%) |
 | **Model Size (Quantized TFLite)** | **2.03 MB (2,123,856 bytes)** | Universal: Fully cached in RAM on any low-RAM smartphone (1GB+ RAM, Android/iOS) |
@@ -158,8 +159,9 @@ The definitive proof of KRISHI-DRISHTI's real-world diagnostic reliability canno
 > **Student Defense:**  
 > *"Respected Sir/Ma'am, I learned standard C++ and Python syntax through tutorials and official documentation. However, **KRISHI-DRISHTI is an original multi-tier systems architecture** designed specifically to overcome hardware limitations:  
 > 1. In `KRISHI_DRISHTI_Camera.ino`, the Edge AI server daemon is embedded directly into ESP32 flash memory (`PROGMEM`) and static files are streamed from SDMMC, overcoming Android 13's Scoped Storage restriction (`ERR_ACCESS_DENIED`) and allowing offline browser inference.  
-> 2. The Controller wand uses non-blocking polling and FreeRTOS-compatible timing for SSD1306 I2C telemetry, decoupling camera captures from sensor reads to prevent Watchdog Timer (WDT) resets.  
-> 3. The machine learning pipeline uses two-stage fine-tuning with canopy-specific augmentation on 7,710 dual-domain records representing 6,965 unique image files (6,600 clean PlantVillage + 1,110 clean PlantDoc outdoor, documented in TRAINING_RUN_MANIFEST.json) and evaluates against PlantDoc field images, with Shannon entropy gating to reject non-leaf frames."*
+> 2. The Controller wand uses non-blocking polling and FreeRTOS-compatible timing for SSD1306 I2C telemetry, decoupling camera captures from sensor reads to prevent Watchdog Timer (WDT) resets. **Wi-Fi association is fully non-blocking**: the wand calls `WiFi.begin()` every 5 seconds with static IP (192.168.4.2) first, then auto-falls back to DHCP if static assignment fails — the NEXT button (GPIO 26) remains responsive throughout association.  
+> 3. Wi-Fi RF transmit power is set to 14 dBm for stable USB-powered wand-to-camera SoftAP link, with hardware brownout protection disabled during Wi-Fi PLL lock to prevent resets under load.  
+> 4. The machine learning pipeline uses two-stage fine-tuning with canopy-specific augmentation on 7,710 dual-domain records representing 6,965 unique image files (6,600 clean PlantVillage + 1,110 clean PlantDoc outdoor, documented in TRAINING_RUN_MANIFEST.json) and evaluates against PlantDoc field images, with Shannon entropy gating to reject non-leaf frames."*
 
 ### Q2: "Is Late Blight caused by a fungus?"
 > **Student Defense:**  
@@ -170,7 +172,7 @@ The definitive proof of KRISHI-DRISHTI's real-world diagnostic reliability canno
 > *"An ESP32-S has 520 KB of internal SRAM and ~4 MB external PSRAM running at 240 MHz without hardware vector or NEON SIMD acceleration. Running a convolutional backbone like MobileNet directly on the microcontroller causes two major hardware failures:  
 > 1. Frame buffer starvation: The OV5640 5MP camera DMA channels compete with neural tensor allocations in PSRAM, leading to memory heap fragmentation and kernel panics.  
 > 2. Latency: Inference takes over 3.8 seconds per frame on an MCU, draining battery power.  
-> By delegating inference to the farmer's pocket smartphone over local Wi-Fi SoftAP, we achieve a **3.94 to 4.94-millisecond host reference inference time (~12–15 ms on budget smartphone CPUs)** on the phone's CPU while keeping the wand lightweight, ultra-low power, and strictly under ₹1,500 total cost."*
+> By delegating inference to the farmer's pocket smartphone over local Wi-Fi SoftAP, we achieve a **3.94 to 4.94-millisecond host reference inference time (~12–15 ms on budget smartphone CPUs)** on the phone's CPU while keeping the wand lightweight, ultra-low power, and total unit BOM of ₹1,480 (strictly under ₹1,500)."*
 
 ### Q4: "Why do you distinguish Pathogen Family Correlation from Exact 6-Class Classification?"
 > **Student Defense:**  
@@ -197,3 +199,23 @@ The definitive proof of KRISHI-DRISHTI's real-world diagnostic reliability canno
 ## 8. Source-Available Architecture
 All source code, CAD files, schematics, and model weights are released freely under the **Source-Available License** on GitHub:  
 **Repository:** [https://github.com/gautamkr0104/KRISHI-DRISHTI](https://github.com/gautamkr0104/KRISHI-DRISHTI)
+
+---
+
+## 9. Wi-Fi Connectivity & Network Resilience
+
+The Controller wand (ESP32 DevKit V1) operates as a Wi-Fi Station associating to the Camera unit's SoftAP (`KRISHI-DRISHTI` @ 192.168.4.1). The connection pipeline was hardened across three firmware revisions:
+
+### 9.1 Transmit Power
+Wi-Fi RF transmit power was set to `14 dBm` (~25 mW) — a stable level for USB-powered ESP32 operation that provides better range than the original `8.5 dBm` without causing TG1WDT watchdog resets during Wi-Fi radio bringup. Hardware brownout protection is suppressed during Wi-Fi PLL lock (`WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0)`) to prevent resets under radio load.
+
+### 9.2 Static IP with DHCP Fallback
+The controller requests static IP `192.168.4.2` (gateway `192.168.4.1`) for deterministic addressing. Because ESP32 static-IP assignment can fail on SoftAP links, the firmware retries with DHCP if static association does not complete within the retry window. The wand cycles between static-IP and DHCP attempts every 5 seconds until linked.
+
+### 9.3 Fully Non-Blocking Association
+Wi-Fi association is entirely non-blocking: `ensureWiFiConnected()` calls `WiFi.begin()` every 5 seconds and returns immediately, letting the ESP32 Wi-Fi driver handle association in the background. The NEXT button (GPIO 26) remains responsive and cycles OLED pages even while the wand is still linking to the camera — the user is never locked out of the UI during connection attempts.
+
+### 9.4 Connection State Machine
+- **WL_CONNECTED:** `wifiConnected = true`, OLED shows `CAM LINKED! [OK]` or `CAM LINKED! [DHCP]`
+- **Disconnected:** `wifiConnected = false`, OLED shows `Linking to Cam...`, background retries continue every 5s
+- **Standby Mode:** If camera is out of range after all retries, OLED shows `Camera not in range`; wand remains usable in demo/offline mode
