@@ -1159,34 +1159,51 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
       const sortedProbs = probs.slice().sort((a, b) => b - a);
       const margin = sortedProbs[0] - (sortedProbs.length > 1 ? sortedProbs[1] : 0.0);
 
-      // 5. Scientific Uncertainty Gating: Rejection of ambiguous samples and OOD species
-      if (maxProb < 0.50 || entropy > 1.45 || margin < 0.12) {
-        return {
-          crop: "Uncertain",
-          disease: "Low Confidence / Ambiguous",
-          pathogen: "Ambiguous foliar pattern or non-target species",
-          confidence: confPercent,
-          status: "UNCERTAIN",
-          organic: "Hold wand steady at 10cm distance from leaf.",
-          chemical: "Ensure uniform solar illumination without shadow.",
-          entropy: entropy.toFixed(2)
-        };
-      }
-
+      // 5. Scientific Multi-Tier Uncertainty Gating & Advisory
       const match = KB_CLASSES[maxIdx];
       let chemRec = match.chemical;
       // Microclimate-to-Diagnosis Cross-Gating
       if (match.disease.includes("Late Blight") && currentTelemetry && currentTelemetry.humidity > 0 && currentTelemetry.humidity < 85.0) {
         chemRec = `WITHHELD: Low RH (${Math.round(currentTelemetry.humidity)}%). Spores dormant under dry canopy (requires RH >= 85%). Suppressing fungicide; inspect for abiotic chlorosis.`;
       }
+
+      // Tier 1: High-Confidence Definitive Diagnosis
+      if (maxProb >= 0.50 && entropy <= 1.45 && margin >= 0.10) {
+        return {
+          crop: match.crop,
+          disease: match.disease,
+          pathogen: match.pathogen,
+          confidence: confPercent,
+          status: match.status,
+          organic: match.organic,
+          chemical: chemRec,
+          entropy: entropy.toFixed(2)
+        };
+      }
+
+      // Tier 2: Suspected Diagnosis with Active Gating (e.g. real-world noisy/shaded photos at 30-50% conf)
+      if (maxProb >= 0.30 || margin >= 0.05) {
+        return {
+          crop: match.crop,
+          disease: `${match.disease} (Suspected / Ambiguous)`,
+          pathogen: `${match.pathogen} [Early lesion / low contrast sample]`,
+          confidence: confPercent,
+          status: "UNCERTAIN",
+          organic: `Foliar symptoms suggest suspected ${match.crop} ${match.disease} (${confPercent}%). Prune isolated symptomatic leaflets; ensure canopy airflow.`,
+          chemical: `WITHHELD (Low Confidence ${confPercent}%): Do not spray chemical fungicides without secondary symptom confirmation or agronomist review. Retake photo under direct sunlight at 10cm.`,
+          entropy: entropy.toFixed(2)
+        };
+      }
+
+      // Tier 3: Out-of-Distribution or Non-Target Rejection (< 30% confidence)
       return {
-        crop: match.crop,
-        disease: match.disease,
-        pathogen: match.pathogen,
+        crop: "Uncertain",
+        disease: "Low Confidence / Ambiguous",
+        pathogen: "Ambiguous foliar pattern or non-target species",
         confidence: confPercent,
-        status: match.status,
-        organic: match.organic,
-        chemical: chemRec,
+        status: "UNCERTAIN",
+        organic: "Hold wand steady at 10cm distance from leaf.",
+        chemical: "Ensure uniform solar illumination without shadow or blurry focus.",
         entropy: entropy.toFixed(2)
       };
     }
@@ -1334,14 +1351,30 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
       } catch (e) {}
     }
 
-    // Auto-initialize TFLite on page load
+    // Auto-initialize TFLite and Hardware Status Watchdog on page load
+    function initHardwareWatchdog() {
+      // Immediate hardware detection (MicroSD & SoftAP Gateway)
+      checkCameraForNewScan();
+      // Continuous background hardware polling every 1200ms when server in standby
+      setInterval(() => {
+        if (!isRunning) {
+          checkCameraForNewScan();
+        }
+      }, 1200);
+    }
+
     if (document.readyState === 'loading') {
-      window.addEventListener("DOMContentLoaded", () => initTFLite(0));
+      window.addEventListener("DOMContentLoaded", () => {
+        initTFLite(0);
+        initHardwareWatchdog();
+      });
     } else {
       initTFLite(0);
+      initHardwareWatchdog();
     }
     window.addEventListener("load", () => {
       if (!modelReady && typeof tflite !== 'undefined') initTFLite(0);
+      checkCameraForNewScan();
     });
   </script>
 </body>
@@ -1505,10 +1538,11 @@ const char GALLERY_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
 // SCAN NUMBER RECOVERY ON BOOT
 // --------------------------------------------------
 void findNextScanNumber() {
-  scanCounter = 0;
   if (!sdReady) return;
+  if (scanCounter > 0) return;
+  scanCounter = 0;
 
-  while (scanCounter < 999999) {
+  while (scanCounter < 10000) {
     uint32_t nextId = scanCounter + 1;
     char filename[32];
     snprintf(filename, sizeof(filename), "/scan_%06lu.jpg", (unsigned long)nextId);
@@ -1584,7 +1618,10 @@ bool initialiseCamera() {
 // --------------------------------------------------
 // MICROSD IN 1-BIT MODE (DMA-PROTECTED)
 // --------------------------------------------------
+static uint64_t cachedSdCardSizeMB = 0;
+
 bool initialiseSD() {
+  if (sdReady && cachedSdCardSizeMB > 0) return true;
   Serial.println("[SD] Mounting MicroSD in 1-bit mode (20MHz)...");
   if (!SD_MMC.begin("/sdcard", true, false, 20000, 5)) {
     Serial.println("[SD] 20MHz mount failed, retrying at 10MHz...");
@@ -1599,8 +1636,8 @@ bool initialiseSD() {
     SD_MMC.end();
     return false;
   }
-  uint64_t sizeMB = SD_MMC.cardSize() / (1024ULL * 1024ULL);
-  Serial.printf("[SD] MicroSD Mounted Successfully! Capacity: %llu MB\n", sizeMB);
+  cachedSdCardSizeMB = SD_MMC.cardSize() / (1024ULL * 1024ULL);
+  Serial.printf("[SD] MicroSD Fast Mounted! Capacity: %llu MB\n", cachedSdCardSizeMB);
   return true;
 }
 
@@ -1636,10 +1673,7 @@ void handleStatus() {
     sdReady = initialiseSD();
     if (sdReady) findNextScanNumber();
   }
-  uint64_t sizeMB = 0;
-  if (sdReady) {
-    sizeMB = SD_MMC.cardSize() / (1024ULL * 1024ULL);
-  }
+  uint64_t sizeMB = sdReady ? cachedSdCardSizeMB : 0;
   int clientCount = WiFi.softAPgetStationNum();
   bool wandConnected = (clientCount >= 2) || (lastWandActivityMs > 0 && (millis() - lastWandActivityMs < 30000));
 
