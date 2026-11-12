@@ -1,0 +1,153 @@
+{
+  "timestamp": "2026-11-12T17:16:16Z",
+  "total_evaluated": 10,
+  "strict_6class_accuracy": {
+    "exact_matches": 1,
+    "total_evaluated": 10,
+    "raw_accuracy_pct": 10.0
+  },
+  "accepted_frame_triage": {
+    "accepted_frames": 6,
+    "accepted_exact": 1,
+    "accepted_accuracy_pct": 16.67,
+    "gated_uncertain": 4,
+    "coverage_pct": 60.0
+  },
+  "pathogen_family_correlation": {
+    "pathogen_matches": 1,
+    "pathogen_accuracy_pct": 10.0,
+    "scientific_note": "Evaluates Phytophthora infestans / Alternaria solani cross-host recognition. Reported separately from exact 6-class accuracy."
+  },
+  "optical_shroud_comparison": {
+    "shrouded": {
+      "total": 2,
+      "correct": 1
+    },
+    "unshielded": {
+      "total": 8,
+      "correct": 0
+    }
+  },
+  "specimens": [
+    {
+      "capture_id": "FIELD_TOM_HL_001",
+      "filename": "V261110-191510-30fps-auto_exp-tmc_auto_0.jpg",
+      "ground_truth": "Tomato Healthy",
+      "prediction": "Tomato Late Blight",
+      "confidence_pct": 79.7,
+      "entropy": 0.0,
+      "status": "INFECTED",
+      "shroud_attached": false,
+      "exact_match": false,
+      "pathogen_match": false
+    },
+    {
+      "capture_id": "FIELD_TOM_HL_002",
+      "filename": "V261110-191524-30fps-auto_exp-tmc_auto_0.jpg",
+      "ground_truth": "Tomato Healthy",
+      "prediction": "Tomato Late Blight",
+      "confidence_pct": 71.4,
+      "entropy": 0.0,
+      "status": "INFECTED",
+      "shroud_attached": false,
+      "exact_match": false,
+      "pathogen_match": false
+    },
+    {
+      "capture_id": "FIELD_OOD_PAAN_001",
+      "filename": "V261110-191530-30fps-auto_exp-tmc_auto_0.jpg",
+      "ground_truth": "Out-of-Distribution Foliage",
+      "prediction": "Tomato Late Blight",
+      "confidence_pct": 75.1,
+      "entropy": 0.0,
+      "status": "INFECTED",
+      "shroud_attached": false,
+      "exact_match": false,
+      "pathogen_match": false
+    },
+    {
+      "capture_id": "FIELD_TOM_HL_003",
+      "filename": "V261110-191538-30fps-auto_exp-tmc_auto_0.jpg",
+      "ground_truth": "Tomato Healthy",
+      "prediction": "Tomato Healthy",
+      "confidence_pct": 65.3,
+      "entropy": 0.0,
+      "status": "HEALTHY",
+      "shroud_attached": true,
+      "exact_match": true,
+      "pathogen_match": false
+    },
+    {
+      "capture_id": "FIELD_TOM_HL_004",
+      "filename": "V261110-191543-30fps-auto_exp-tmc_auto_0.jpg",
+      "ground_truth": "Tomato Healthy",
+      "prediction": "Uncertain (Uncertain / Ambiguous)",
+      "confidence_pct": 35.9,
+      "entropy": 1.451,
+      "status": "UNCERTAIN",
+      "shroud_attached": true,
+      "exact_match": false,
+      "pathogen_match": false
+    },
+    {
+      "capture_id": "FIELD_TOM_HL_005",
+      "filename": "V261110-191549-30fps-auto_exp-tmc_auto_0.jpg",
+      "ground_truth": "Tomato Healthy",
+      "prediction": "Tomato Late Blight",
+      "confidence_pct": 72.9,
+      "entropy": 0.0,
+      "status": "INFECTED",
+      "shroud_attached": false,
+      "exact_match": false,
+      "pathogen_match": false
+    },
+    {
+      "capture_id": "FIELD_TOM_HL_006",
+      "filename": "V261110-191600-30fps-auto_exp-tmc_auto_0.jpg",
+      "ground_truth": "Tomato Healthy",
+      "prediction": "Tomato Late Blight",
+      "confidence_pct": 51.2,
+      "entropy": 0.0,
+      "status": "INFECTED",
+      "shroud_attached": false,
+      "exact_match": false,
+      "pathogen_match": false
+    },
+    {
+      "capture_id": "FIELD_OOD_HIB_001",
+      "filename": "V261110-191626-30fps-auto_exp-tmc_auto_0.jpg",
+      "ground_truth": "Out-of-Distribution Foliage",
+      "prediction": "Uncertain (Framing / Void Detected)",
+      "confidence_pct": 0.0,
+      "entropy": 0.0,
+      "status": "UNCERTAIN",
+      "shroud_attached": false,
+      "exact_match": false,
+      "pathogen_match": false
+    },
+    {
+      "capture_id": "FIELD_OOD_HIB_002",
+      "filename": "V261110-191628-30fps-auto_exp-tmc_auto_0.jpg",
+      "ground_truth": "Out-of-Distribution Foliage",
+      "prediction": "Uncertain (Framing / Void Detected)",
+      "confidence_pct": 0.0,
+      "entropy": 0.0,
+      "status": "UNCERTAIN",
+      "shroud_attached": false,
+      "exact_match": false,
+      "pathogen_match": false
+    },
+    {
+      "capture_id": "FIELD_OOD_HIB_003",
+      "filename": "V261110-191634-30fps-auto_exp-tmc_auto_0.jpg",
+      "ground_truth": "Out-of-Distribution Foliage",
+      "prediction": "Uncertain (Framing / Void Detected)",
+      "confidence_pct": 0.0,
+      "entropy": 0.0,
+      "status": "UNCERTAIN",
+      "shroud_attached": false,
+      "exact_match": false,
+      "pathogen_match": false
+    }
+  ]
+}

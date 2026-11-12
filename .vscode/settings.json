@@ -1,0 +1,12 @@
+{
+  "python.defaultInterpreterPath": "C:\\Users\\DELL\\krishi_pdf_env\\Scripts\\python.exe",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/ai_engine",
+    "${workspaceFolder}/tests"
+  ],
+  "files.exclude": {
+    "**/.git": true,
+    "**/.pytest_cache": true,
+    "**/__pycache__": true
+  }
+}

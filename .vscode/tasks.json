@@ -1,0 +1,38 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "KRISHI: Run All Tests",
+      "type": "shell",
+      "command": "C:\\Users\\DELL\\krishi_pdf_env\\Scripts\\python.exe tests/validate_hardware_field_captures.py",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "KRISHI: Flash ESP32-CAM",
+      "type": "shell",
+      "command": "${workspaceFolder}/Flash_ESP32_CAM.bat",
+      "group": "build"
+    },
+    {
+      "label": "KRISHI: Flash ESP32 Controller",
+      "type": "shell",
+      "command": "${workspaceFolder}/Flash_ESP32_Controller.bat",
+      "group": "build"
+    },
+    {
+      "label": "KRISHI: Start Offline AI Server",
+      "type": "shell",
+      "command": "${workspaceFolder}/Start_AI_Server.bat",
+      "group": "build"
+    },
+    {
+      "label": "KRISHI: Build Submission Docs",
+      "type": "shell",
+      "command": "${workspaceFolder}/Build_All_Docs.bat",
+      "group": "build"
+    }
+  ]
+}

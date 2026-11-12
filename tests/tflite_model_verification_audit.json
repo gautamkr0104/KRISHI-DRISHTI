@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-12T04:16:43Z",
+  "timestamp": "2026-11-12T17:15:49Z",
   "model_file": "krishi_drishti_model.tflite",
   "file_size_bytes": 2123856,
   "sha256": "be71ededc29f19f69ab98b63bebf281c6a1d88f468b6dc1a2a2dac655f406aaa",
@@ -28,11 +28,37 @@
   "softmax_sum_check": 1.0,
   "softmax_check_status": "PASSED",
   "sample_evaluations_summary": {
-    "total_tested": 8,
+    "total_tested": 10,
     "verified_correct": 8,
-    "accuracy_pct": 100.0
+    "accuracy_pct": 80.0
   },
   "sample_evaluations": [
+    {
+      "filename": "healthy_512.jpg",
+      "ground_truth": "Unknown",
+      "predicted_class": "Tomato Healthy",
+      "confidence_pct": 100.0,
+      "decision": "ACCEPTED (HEALTHY)",
+      "status": "HEALTHY",
+      "verified_match": false,
+      "latency_ms": 16.69,
+      "pathogen": "None (Healthy Tissue)",
+      "organic_recommendation": "Maintain balanced NPK fertilizer and drip irrigation schedule.",
+      "chemical_recommendation": "No chemical intervention needed."
+    },
+    {
+      "filename": "late_blight_512.jpg",
+      "ground_truth": "Unknown",
+      "predicted_class": "Tomato Late Blight",
+      "confidence_pct": 99.5,
+      "decision": "ACCEPTED (INFECTED)",
+      "status": "INFECTED",
+      "verified_match": false,
+      "latency_ms": 7.57,
+      "pathogen": "Phytophthora infestans",
+      "organic_recommendation": "Neem Oil 5ml/L + Trichoderma viride drench. Prune infected leaves.",
+      "chemical_recommendation": "Mancozeb 75% WP @ 2.5g/L or Ridomil Gold @ 2.0g/L."
+    },
     {
       "filename": "potato_early_blight.jpg",
       "ground_truth": "Potato Early Blight",
@@ -41,7 +67,7 @@
       "decision": "ACCEPTED (WARNING)",
       "status": "WARNING",
       "verified_match": true,
-      "latency_ms": 6.73,
+      "latency_ms": 12.74,
       "pathogen": "Alternaria solani",
       "organic_recommendation": "Crop rotation with non-solanaceous crops + Neem cake soil application.",
       "chemical_recommendation": "Azoxystrobin 23% SC @ 1.0ml/L."
@@ -51,10 +77,10 @@
       "ground_truth": "Potato Healthy",
       "predicted_class": "Potato Healthy",
       "confidence_pct": 100.0,
-      "decision": "ACCEPTED (OPTIMAL)",
-      "status": "OPTIMAL",
+      "decision": "ACCEPTED (HEALTHY)",
+      "status": "HEALTHY",
       "verified_match": true,
-      "latency_ms": 4.83,
+      "latency_ms": 15.72,
       "pathogen": "None (Healthy Tissue)",
       "organic_recommendation": "Regular earthing-up and balanced potassium application.",
       "chemical_recommendation": "No chemical intervention needed."
@@ -64,10 +90,10 @@
       "ground_truth": "Potato Late Blight",
       "predicted_class": "Potato Late Blight",
       "confidence_pct": 100.0,
-      "decision": "ACCEPTED (SEVERE)",
-      "status": "SEVERE",
+      "decision": "ACCEPTED (INFECTED)",
+      "status": "INFECTED",
       "verified_match": true,
-      "latency_ms": 4.3,
+      "latency_ms": 11.06,
       "pathogen": "Phytophthora infestans",
       "organic_recommendation": "Copper soap spray + destroy infected haulms 10 days before harvest.",
       "chemical_recommendation": "Cymoxanil 8% + Mancozeb 64% WP @ 2.5g/L."
@@ -80,7 +106,7 @@
       "decision": "REJECTED (No Leaf Detected)",
       "status": "UNCERTAIN",
       "verified_match": true,
-      "latency_ms": 4.04,
+      "latency_ms": 5.1,
       "pathogen": "Insufficient foliar tissue in frame",
       "organic_recommendation": "Aim camera lens squarely at leaf surface",
       "chemical_recommendation": "Ensure good ambient daylight"
@@ -93,7 +119,7 @@
       "decision": "REJECTED (Framing / Void Detected)",
       "status": "UNCERTAIN",
       "verified_match": true,
-      "latency_ms": 3.04,
+      "latency_ms": 8.72,
       "pathogen": "Excessive peripheral dark void (100.0%). Leaf must be centered in optical shroud.",
       "organic_recommendation": "Center camera wand shroud directly over leaf surface",
       "chemical_recommendation": "Ensure optical shroud blocks peripheral background"
@@ -106,7 +132,7 @@
       "decision": "ACCEPTED (WARNING)",
       "status": "WARNING",
       "verified_match": true,
-      "latency_ms": 4.1,
+      "latency_ms": 18.44,
       "pathogen": "Alternaria solani",
       "organic_recommendation": "Baking soda 5g/L spray + compost tea soil amendment.",
       "chemical_recommendation": "Chlorothalonil 75% WP @ 2.0g/L or Copper Oxychloride @ 3.0g/L."
@@ -116,10 +142,10 @@
       "ground_truth": "Tomato Healthy",
       "predicted_class": "Tomato Healthy",
       "confidence_pct": 100.0,
-      "decision": "ACCEPTED (OPTIMAL)",
-      "status": "OPTIMAL",
+      "decision": "ACCEPTED (HEALTHY)",
+      "status": "HEALTHY",
       "verified_match": true,
-      "latency_ms": 5.76,
+      "latency_ms": 9.6,
       "pathogen": "None (Healthy Tissue)",
       "organic_recommendation": "Maintain balanced NPK fertilizer and drip irrigation schedule.",
       "chemical_recommendation": "No chemical intervention needed."
@@ -129,10 +155,10 @@
       "ground_truth": "Tomato Late Blight",
       "predicted_class": "Tomato Late Blight",
       "confidence_pct": 99.5,
-      "decision": "ACCEPTED (SEVERE)",
-      "status": "SEVERE",
+      "decision": "ACCEPTED (INFECTED)",
+      "status": "INFECTED",
       "verified_match": true,
-      "latency_ms": 5.05,
+      "latency_ms": 6.59,
       "pathogen": "Phytophthora infestans",
       "organic_recommendation": "Neem Oil 5ml/L + Trichoderma viride drench. Prune infected leaves.",
       "chemical_recommendation": "Mancozeb 75% WP @ 2.5g/L or Ridomil Gold @ 2.0g/L."

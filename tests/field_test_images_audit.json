@@ -30,7 +30,7 @@
       "confidence": 79.7,
       "status": "SEVERE",
       "in_domain_match": false,
-      "latency_ms": 22.64
+      "latency_ms": 19.99
     },
     {
       "filename": "V261110-191524-30fps-auto_exp-tmc_auto_0.jpg",
@@ -42,7 +42,7 @@
       "confidence": 71.4,
       "status": "SEVERE",
       "in_domain_match": false,
-      "latency_ms": 21.71
+      "latency_ms": 18.69
     },
     {
       "filename": "V261110-191530-30fps-auto_exp-tmc_auto_0.jpg",
@@ -54,7 +54,7 @@
       "confidence": 75.1,
       "status": "SEVERE",
       "in_domain_match": false,
-      "latency_ms": 20.75
+      "latency_ms": 18.41
     },
     {
       "filename": "V261110-191538-30fps-auto_exp-tmc_auto_0.jpg",
@@ -66,7 +66,7 @@
       "confidence": 65.3,
       "status": "OPTIMAL",
       "in_domain_match": true,
-      "latency_ms": 24.23
+      "latency_ms": 19.77
     },
     {
       "filename": "V261110-191543-30fps-auto_exp-tmc_auto_0.jpg",
@@ -78,7 +78,7 @@
       "confidence": 35.9,
       "status": "UNCERTAIN",
       "in_domain_match": false,
-      "latency_ms": 26.74
+      "latency_ms": 20.19
     },
     {
       "filename": "V261110-191549-30fps-auto_exp-tmc_auto_0.jpg",
@@ -90,7 +90,7 @@
       "confidence": 72.9,
       "status": "SEVERE",
       "in_domain_match": false,
-      "latency_ms": 21.14
+      "latency_ms": 18.31
     },
     {
       "filename": "V261110-191600-30fps-auto_exp-tmc_auto_0.jpg",
@@ -102,7 +102,7 @@
       "confidence": 51.2,
       "status": "SEVERE",
       "in_domain_match": false,
-      "latency_ms": 24.2
+      "latency_ms": 21.56
     },
     {
       "filename": "V261110-191626-30fps-auto_exp-tmc_auto_0.jpg",
@@ -114,7 +114,7 @@
       "confidence": 0.0,
       "status": "UNCERTAIN",
       "in_domain_match": false,
-      "latency_ms": 26.43
+      "latency_ms": 25.36
     },
     {
       "filename": "V261110-191628-30fps-auto_exp-tmc_auto_0.jpg",
@@ -126,7 +126,7 @@
       "confidence": 0.0,
       "status": "UNCERTAIN",
       "in_domain_match": false,
-      "latency_ms": 29.23
+      "latency_ms": 24.52
     },
     {
       "filename": "V261110-191634-30fps-auto_exp-tmc_auto_0.jpg",
@@ -138,7 +138,7 @@
       "confidence": 0.0,
       "status": "UNCERTAIN",
       "in_domain_match": false,
-      "latency_ms": 24.54
+      "latency_ms": 22.63
     }
   ]
 }
