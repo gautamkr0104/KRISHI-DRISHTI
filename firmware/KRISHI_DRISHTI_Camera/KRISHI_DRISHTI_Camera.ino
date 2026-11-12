@@ -59,6 +59,7 @@ uint32_t scanCounter = 0;
 float lastCanopyTemp = 0.0;
 float lastCanopyHum = 0.0;
 bool canopyTelemetryPresent = false;
+unsigned long lastWandActivityMs = 0;
 static bool isStreaming = false;
 
 // AI Diagnosis Bridge State (Phone AI Daemon <-> Camera <-> Controller Wand)
@@ -189,7 +190,7 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
     /* Grid of Telemetry Metrics */
     .metrics-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
       gap: 8px;
     }
     .metric-card {
@@ -215,6 +216,72 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+
+    /* MicroSD Hardware Health Card */
+    .sd-audit-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: all 0.3s ease;
+    }
+    .sd-status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .sd-indicator-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sd-badge-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent-amber);
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .sd-badge-dot.sd-ok {
+      background: var(--accent-green);
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+    }
+    .sd-badge-dot.sd-alert {
+      background: var(--accent-red);
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+      animation: pulse 1s infinite;
+    }
+    .sd-title-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .sd-detail-text {
+      font-size: 11px;
+      line-height: 1.4;
+      color: var(--text-dim);
+    }
+    .btn-check-sd {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      transition: background 0.2s;
+    }
+    .btn-check-sd:hover {
+      background: rgba(255, 255, 255, 0.15);
     }
 
     /* Diagnosis Visualizer Box */
@@ -454,23 +521,41 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
     </div>
   </div>
 
-  <!-- Telemetry Metrics Bar -->
+  <!-- Telemetry Metrics Bar (5 Core Parameters) -->
   <div class="metrics-grid">
     <div class="metric-card">
-      <div class="metric-label">Wand Mesh</div>
-      <div class="metric-value" id="valWandLink" style="color: var(--text-dim)">OFFLINE</div>
+      <div class="metric-label">Cam Gateway</div>
+      <div class="metric-value" id="valCameraLink" style="color: var(--text-dim)">SEARCHING...</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">MicroSD Slot</div>
+      <div class="metric-value" id="valSdStatus" style="color: var(--accent-amber)">CHECKING...</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Wand Link</div>
+      <div class="metric-value" id="valWandLink" style="color: var(--text-dim)">WAND OFF</div>
     </div>
     <div class="metric-card">
       <div class="metric-label">TFLite Engine</div>
       <div class="metric-value" id="valEngine" style="color: var(--accent-amber)">LOADING...</div>
     </div>
     <div class="metric-card">
-      <div class="metric-label">Inference</div>
-      <div class="metric-value" id="valLatency">-- ms</div>
-    </div>
-    <div class="metric-card">
       <div class="metric-label">Scans Synced</div>
       <div class="metric-value" id="valScanCount">0</div>
+    </div>
+  </div>
+
+  <!-- MicroSD Hardware Presence & Health Section -->
+  <div class="sd-audit-card" id="sdAuditCard" style="border-color: rgba(245, 158, 11, 0.3);">
+    <div class="sd-status-row">
+      <div class="sd-indicator-box">
+        <span class="sd-badge-dot" id="sdBadgeDot"></span>
+        <span class="sd-title-text" id="sdTitleText">Checking MicroSD Card Slot...</span>
+      </div>
+      <button class="btn-check-sd" onclick="pollMeshNow()">RE-CHECK HARDWARE</button>
+    </div>
+    <div class="sd-detail-text" id="sdDetailText">
+      Querying camera slot for Class 10 FAT32 card and offline model weights...
     </div>
   </div>
 
@@ -776,15 +861,28 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
       btn.innerText = "START AI SERVER";
       btn.className = "btn btn-primary";
 
-      document.getElementById("valWandLink").innerText = "STANDBY";
-      document.getElementById("valWandLink").style.color = "var(--text-dim)";
+      const camEl = document.getElementById("valCameraLink");
+      if (camEl) {
+        camEl.innerText = "STANDBY";
+        camEl.style.color = "var(--text-dim)";
+      }
+      const wandEl = document.getElementById("valWandLink");
+      if (wandEl) {
+        wandEl.innerText = "STANDBY";
+        wandEl.style.color = "var(--text-dim)";
+      }
       log("AI Server stopped by operator.", "warn");
+    }
+
+    async function pollMeshNow() {
+      log("Manually auditing ESP32-CAM hardware & SD slot...", "ai");
+      await checkCameraForNewScan();
     }
 
     async function checkCameraForNewScan() {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 550);
+        const timeoutId = setTimeout(() => controller.abort(), 750);
 
         const res = await fetch(CAMERA_STATUS_URL, { signal: controller.signal });
         clearTimeout(timeoutId);
@@ -792,6 +890,62 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
         if (!res.ok) return;
         const status = await res.json();
 
+        // 1. Camera Gateway Link
+        const camEl = document.getElementById("valCameraLink");
+        if (camEl) {
+          camEl.innerText = "ONLINE (AP)";
+          camEl.style.color = "var(--accent-green)";
+        }
+
+        // 2. MicroSD Card Detection & Verification
+        const sdEl = document.getElementById("valSdStatus");
+        const sdCard = document.getElementById("sdAuditCard");
+        const sdDot = document.getElementById("sdBadgeDot");
+        const sdTitle = document.getElementById("sdTitleText");
+        const sdDetail = document.getElementById("sdDetailText");
+
+        if (status.sd_ready) {
+          const capText = status.sd_capacity_mb ? `${Math.round(status.sd_capacity_mb/1024*10)/10} GB` : "FAT32";
+          if (sdEl) {
+            sdEl.innerText = `READY (${capText})`;
+            sdEl.style.color = "var(--accent-green)";
+          }
+          if (sdCard) sdCard.style.borderColor = "rgba(34, 197, 94, 0.3)";
+          if (sdDot) { sdDot.className = "sd-badge-dot sd-ok"; }
+          if (sdTitle) { sdTitle.innerText = `MicroSD Card: Detected & Mounted (${capText})`; }
+          if (sdDetail) {
+            sdDetail.innerText = "Camera filesystem active. Offline MobileNetV3 TFLite weights & WASM assets available. All shutter scans saved to /scans/.";
+          }
+          // If model was not loaded due to previous missing SD card, initialize it now!
+          if (!modelReady && !isModelLoading) {
+            initTFLite(0);
+          }
+        } else {
+          if (sdEl) {
+            sdEl.innerText = "NOT DETECTED";
+            sdEl.style.color = "var(--accent-red)";
+          }
+          if (sdCard) sdCard.style.borderColor = "rgba(239, 68, 68, 0.4)";
+          if (sdDot) { sdDot.className = "sd-badge-dot sd-alert"; }
+          if (sdTitle) { sdTitle.innerText = "⚠️ MicroSD Card NOT DETECTED in ESP32-CAM Slot!"; }
+          if (sdDetail) {
+            sdDetail.innerHTML = "<b style='color: var(--accent-red)'>Card missing in camera.</b> If inserted in PC (Drive E:), unplug it and firmly push it into the TF slot on the ESP32-CAM board, then tap RE-CHECK HARDWARE.";
+          }
+        }
+
+        // 3. Wand Controller Connectivity
+        const wandEl = document.getElementById("valWandLink");
+        if (wandEl) {
+          if (status.wand_connected) {
+            wandEl.innerText = "CONNECTED";
+            wandEl.style.color = "var(--accent-green)";
+          } else {
+            wandEl.innerText = "WAND OFF";
+            wandEl.style.color = "var(--text-dim)";
+          }
+        }
+
+        // 4. Microclimate Canopy Telemetry
         if (status.telemetry_available && status.humidity > 0) {
           currentTelemetry = {
             humidity: status.humidity,
@@ -801,9 +955,7 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
           currentTelemetry = null;
         }
 
-        document.getElementById("valWandLink").innerText = "CONNECTED";
-        document.getElementById("valWandLink").style.color = "var(--accent-green)";
-
+        // 5. Automatic Shutter Sync
         const latestScanId = status.scan_count || 0;
         if (latestScanId > lastProcessedScanId && latestScanId > 0) {
           log(`New leaf captured by Wand! Scan #${latestScanId}`, "ai");
@@ -811,8 +963,21 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
           await processScanAndRespond(latestScanId);
         }
       } catch (e) {
-        document.getElementById("valWandLink").innerText = "SEARCHING";
-        document.getElementById("valWandLink").style.color = "var(--accent-amber)";
+        const camEl = document.getElementById("valCameraLink");
+        if (camEl) {
+          camEl.innerText = "SEARCHING...";
+          camEl.style.color = "var(--accent-amber)";
+        }
+        const sdEl = document.getElementById("valSdStatus");
+        if (sdEl) {
+          sdEl.innerText = "STANDBY";
+          sdEl.style.color = "var(--text-dim)";
+        }
+        const wandEl = document.getElementById("valWandLink");
+        if (wandEl) {
+          wandEl.innerText = "STANDBY";
+          wandEl.style.color = "var(--text-dim)";
+        }
       }
     }
 
@@ -1440,14 +1605,27 @@ void handleGallery() {
 }
 
 void handleStatus() {
+  if (!sdReady) {
+    sdReady = initialiseSD();
+    if (sdReady) findNextScanNumber();
+  }
+  uint64_t sizeMB = 0;
+  if (sdReady) {
+    sizeMB = SD_MMC.cardSize() / (1024ULL * 1024ULL);
+  }
+  int clientCount = WiFi.softAPgetStationNum();
+  bool wandConnected = (clientCount >= 2) || (lastWandActivityMs > 0 && (millis() - lastWandActivityMs < 30000));
+
   String json = "{";
   json += "\"device\":\"KRISHI-DRISHTI-CAM\",";
   json += "\"camera_ready\":" + String(cameraReady ? "true" : "false") + ",";
   json += "\"sd_ready\":" + String(sdReady ? "true" : "false") + ",";
+  json += "\"sd_capacity_mb\":" + String((unsigned long)sizeMB) + ",";
+  json += "\"wand_connected\":" + String(wandConnected ? "true" : "false") + ",";
   json += "\"psram_available\":" + String(psramAvailable ? "true" : "false") + ",";
   json += "\"sensor\":\"" + sensorModel + "\",";
   json += "\"scan_count\":" + String(scanCounter) + ",";
-  json += "\"clients\":" + String(WiFi.softAPgetStationNum()) + ",";
+  json += "\"clients\":" + String(clientCount) + ",";
   json += "\"diagnosis_ready\":" + String(diagnosisReady ? "true" : "false") + ",";
   json += "\"telemetry_available\":" + String(canopyTelemetryPresent ? "true" : "false") + ",";
   json += "\"humidity\":" + String(lastCanopyHum, 1) + ",";
@@ -1458,6 +1636,7 @@ void handleStatus() {
 }
 
 void handleCapture() {
+  lastWandActivityMs = millis();
   // Reset telemetry availability for each new scan to prevent stale readings
   canopyTelemetryPresent = false;
   lastCanopyHum = 0.0f;
@@ -1697,7 +1876,11 @@ void handleFlashToggle() {
 // --------------------------------------------------
 void handleStaticFile() {
   if (!sdReady) {
-    server.send(503, "text/plain", "SD offline");
+    sdReady = initialiseSD();
+    if (sdReady) findNextScanNumber();
+  }
+  if (!sdReady) {
+    server.send(503, "text/plain", "SD offline - Insert MicroSD card in ESP32-CAM slot");
     return;
   }
   String path = server.uri();
