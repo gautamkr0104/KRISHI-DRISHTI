@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>KRISHI-DRISHTI :: Edge AI Co-Processor Daemon</title>
+  <title>KRISHI-DRISHTI :: Edge AI Co-Processor</title>
   
   <!-- Bundled Offline TensorFlow.js & TFLite WASM Runtimes -->
   <script src="/vendor/tf.min.js"></script>
@@ -11,128 +11,238 @@
 
   <style>
     :root {
-      --bg-dark: #0a0e14;
-      --card-bg: #111722;
-      --card-border: #1e293b;
-      --accent-green: #10b981;
-      --accent-green-dim: rgba(16, 185, 129, 0.15);
-      --accent-cyan: #06b6d4;
-      --accent-amber: #f59e0b;
-      --accent-red: #ef4444;
-      --text-main: #f1f5f9;
-      --text-muted: #94a3b8;
-      --text-dim: #64748b;
-      --font-mono: "SF Mono", Monaco, Consolas, "Liberation Mono", Menlo, Courier, monospace;
-      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --bg-base: #070B0E;
+      --bg-surface: #0E141B;
+      --bg-surface-elevated: #141D26;
+      --bg-surface-glass: rgba(16, 24, 34, 0.85);
+      --border-subtle: rgba(255, 255, 255, 0.07);
+      --border-focus: rgba(16, 185, 129, 0.4);
+      
+      --accent-emerald: #10B981;
+      --accent-emerald-dim: rgba(16, 185, 129, 0.15);
+      --accent-teal: #14B8A6;
+      --accent-amber: #F59E0B;
+      --accent-amber-dim: rgba(245, 158, 11, 0.15);
+      --accent-rose: #F43F5E;
+      --accent-rose-dim: rgba(244, 63, 94, 0.15);
+      --accent-cyan: #06B6D4;
+      
+      --text-main: #F1F5F9;
+      --text-muted: #94A3B8;
+      --text-dim: #64748B;
+      
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
     body {
-      background-color: var(--bg-dark);
+      background-color: var(--bg-base);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(20, 184, 166, 0.06) 0px, transparent 50%);
+      background-attachment: fixed;
       color: var(--text-main);
       font-family: var(--font-sans);
-      padding: 14px;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      -webkit-font-smoothing: antialiased;
+      align-items: center;
+      padding: 14px;
     }
 
-    /* Top Brand Card */
-    .brand-card {
-      background: linear-gradient(135deg, #111927 0%, #162032 100%);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 14px 16px;
+    .app-shell {
+      width: 100%;
+      max-width: 1180px;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+      flex-direction: column;
+      gap: 14px;
     }
-    .brand-title {
-      font-size: 15px;
-      font-weight: 800;
-      letter-spacing: 0.8px;
-      color: #ffffff;
+
+    /* TOP BRAND NAVIGATION BAR */
+    .top-navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-surface-glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 12px 18px;
+      box-shadow: var(--shadow-glass);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #10B981, #059669);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .brand-meta {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-title-wrap {
       display: flex;
       align-items: center;
       gap: 8px;
     }
-    .brand-title .badge-tag {
-      background: var(--accent-green-dim);
-      color: var(--accent-green);
-      font-size: 10px;
+
+    .brand-name {
+      font-size: 17px;
       font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #FFFFFF;
+    }
+
+    .version-pill {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
       padding: 2px 7px;
       border-radius: 6px;
+      background: var(--accent-emerald-dim);
+      color: var(--accent-emerald);
       border: 1px solid rgba(16, 185, 129, 0.3);
       font-family: var(--font-mono);
     }
-    .brand-subtitle {
-      font-size: 11px;
+
+    .brand-desc {
+      font-size: 12px;
       color: var(--text-muted);
-      margin-top: 3px;
     }
+
     .status-pill {
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 5px 11px;
+      gap: 7px;
+      padding: 6px 14px;
       border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      transition: all 0.3s ease;
       font-family: var(--font-mono);
-      letter-spacing: 0.5px;
-      transition: all 0.25s ease;
     }
-    .pill-active {
-      background: rgba(16, 185, 129, 0.18);
-      color: #34d399;
+
+    .status-pill.pill-running {
+      background: var(--accent-emerald-dim);
+      color: var(--accent-emerald);
       border: 1px solid rgba(16, 185, 129, 0.4);
     }
-    .pill-stopped {
-      background: rgba(239, 68, 68, 0.15);
-      color: #f87171;
-      border: 1px solid rgba(239, 68, 68, 0.4);
+
+    .status-pill.pill-stopped {
+      background: rgba(148, 163, 184, 0.1);
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
     }
+
     .pulsing-dot {
       width: 7px;
       height: 7px;
       border-radius: 50%;
       background-color: currentColor;
       box-shadow: 0 0 8px currentColor;
-      animation: pulse 1.6s infinite ease-in-out;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.85); }
+      animation: pulse 1.8s infinite;
     }
 
-    /* Grid of Telemetry Metrics */
-    .metrics-grid {
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    /* TELEMETRY METRICS 6-GRID */
+    .metrics-bar {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-      gap: 8px;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
     }
+
+    @media (max-width: 640px) {
+      .metrics-bar {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+      }
+      .metric-card {
+        padding: 8px 10px;
+      }
+      .metric-header {
+        font-size: 10px;
+      }
+      .metric-value {
+        font-size: 13px;
+      }
+      .brand-desc {
+        display: none;
+      }
+      .brand-name {
+        font-size: 16px;
+      }
+      .hardware-card {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+      .btn-hw-check {
+        width: 100%;
+        text-align: center;
+      }
+      .btn-secondary {
+        padding: 9px 8px;
+        font-size: 11px;
+      }
+    }
+
     .metric-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 8px 10px;
-      text-align: left;
+      background: var(--bg-surface-glass);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: border-color 0.2s;
     }
-    .metric-label {
-      font-size: 9px;
-      font-weight: 600;
+
+    .metric-card:hover {
+      border-color: var(--border-focus);
+    }
+
+    .metric-header {
+      font-size: 11px;
+      font-weight: 500;
       color: var(--text-dim);
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 2px;
+      letter-spacing: 0.05em;
     }
+
     .metric-value {
-      font-size: 12px;
+      font-size: 14px;
       font-weight: 700;
       font-family: var(--font-mono);
       color: var(--text-main);
@@ -141,413 +251,612 @@
       text-overflow: ellipsis;
     }
 
-    /* MicroSD Hardware Health Card */
-    .sd-audit-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 10px 14px;
+    /* MAIN 2-COLUMN WORKSPACE */
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    @media (min-width: 900px) {
+      .workspace-grid {
+        grid-template-columns: 420px 1fr;
+      }
+    }
+
+    /* CARD CONTAINER */
+    .glass-panel {
+      background: var(--bg-surface-glass);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: var(--shadow-glass);
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      transition: all 0.3s ease;
+      gap: 14px;
     }
-    .sd-status-row {
+
+    .panel-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 8px;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 10px;
     }
-    .sd-indicator-box {
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
       display: flex;
       align-items: center;
       gap: 8px;
     }
-    .sd-badge-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--accent-amber);
-      display: inline-block;
-      flex-shrink: 0;
-    }
-    .sd-badge-dot.sd-ok {
-      background: var(--accent-green);
-      box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
-    }
-    .sd-badge-dot.sd-alert {
-      background: var(--accent-red);
-      box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
-      animation: pulse 1s infinite;
-    }
-    .sd-title-text {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-main);
-    }
-    .sd-detail-text {
-      font-size: 11px;
-      line-height: 1.4;
-      color: var(--text-dim);
-    }
-    .btn-check-sd {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--card-border);
-      color: var(--text-main);
-      padding: 4px 10px;
-      border-radius: 6px;
+
+    .panel-badge {
       font-size: 10px;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: var(--font-sans);
-      transition: background 0.2s;
-    }
-    .btn-check-sd:hover {
-      background: rgba(255, 255, 255, 0.15);
+      font-family: var(--font-mono);
+      color: var(--text-dim);
+      background: var(--bg-surface-elevated);
+      padding: 2px 8px;
+      border-radius: 4px;
     }
 
-    /* Diagnosis Visualizer Box */
-    .diagnosis-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 14px;
+    /* VIEWPORT / LEAF FRAME */
+    .viewfinder-wrap {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      max-height: 380px;
+      background: #040709;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-md);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+    }
+
+    .viewfinder-grid-lines {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 24px 24px;
+      pointer-events: none;
+    }
+
+    .viewfinder-crosshair {
+      position: absolute;
+      width: 48px;
+      height: 48px;
+      border: 1px dashed rgba(16, 185, 129, 0.3);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .viewfinder-corners {
+      position: absolute;
+      inset: 16px;
+      pointer-events: none;
+    }
+    .viewfinder-corners::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 14px; height: 14px;
+      border-top: 2px solid var(--accent-emerald);
+      border-left: 2px solid var(--accent-emerald);
+    }
+    .viewfinder-corners::after {
+      content: '';
+      position: absolute;
+      bottom: 0; right: 0; width: 14px; height: 14px;
+      border-bottom: 2px solid var(--accent-emerald);
+      border-right: 2px solid var(--accent-emerald);
+    }
+
+    .leaf-preview-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+      z-index: 2;
+    }
+
+    .leaf-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-dim);
+      font-size: 13px;
+      z-index: 1;
+    }
+
+    .leaf-placeholder svg {
+      width: 42px;
+      height: 42px;
+      stroke: currentColor;
+      opacity: 0.6;
+    }
+
+    /* ACTION BUTTONS & SAMPLES */
+    .action-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .btn-main {
+      grid-column: span 2;
+      padding: 13px 18px;
+      border-radius: var(--radius-sm);
+      border: none;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #10B981, #059669);
+      color: #FFFFFF;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+      transition: all 0.2s ease;
+    }
+
+    .btn-main:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface-elevated);
+      color: var(--text-main);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .sample-pill-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    .btn-sample {
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      text-align: center;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+
+    .btn-sample:hover {
+      border-color: var(--border-focus);
+      color: var(--text-main);
+    }
+
+    .btn-sample-blight {
+      border-color: rgba(245, 158, 11, 0.3);
+      color: #FCD34D;
+    }
+
+    .btn-sample-healthy {
+      border-color: rgba(16, 185, 129, 0.3);
+      color: #6EE7B7;
+    }
+
+    .btn-sample-upload {
+      border-color: rgba(6, 182, 212, 0.3);
+      color: #67E8F9;
+    }
+
+    /* RIGHT COLUMN: DIAGNOSTIC REPORT */
+    .diagnosis-hero-box {
+      background: linear-gradient(180deg, rgba(20, 29, 38, 0.9) 0%, rgba(14, 20, 27, 0.95) 100%);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px;
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
-    .card-header-label {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: var(--accent-cyan);
+
+    .diag-title-row {
       display: flex;
+      align-items: flex-start;
       justify-content: space-between;
-      align-items: center;
+      gap: 12px;
     }
-    .diagnosis-body {
-      display: flex;
-      gap: 14px;
-      align-items: center;
-    }
-    .leaf-thumb-wrap {
-      width: 76px;
-      height: 76px;
-      border-radius: 8px;
-      border: 1px solid var(--card-border);
-      background: #000;
-      position: relative;
-      overflow: hidden;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .leaf-thumb-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .leaf-thumb-wrap .placeholder-text {
-      font-size: 9px;
-      color: var(--text-dim);
-      text-align: center;
-      padding: 4px;
-      font-family: var(--font-mono);
-    }
-    .diag-details {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
+
     .diag-primary {
-      font-size: 15px;
-      font-weight: 700;
-      color: #ffffff;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: #FFFFFF;
+      line-height: 1.2;
     }
+
     .diag-pathogen {
-      font-size: 11px;
+      font-size: 13px;
       font-style: italic;
       color: var(--text-muted);
     }
+
     .diag-confidence {
-      font-size: 11px;
+      font-size: 12px;
       font-family: var(--font-mono);
-      color: var(--accent-green);
-      font-weight: 600;
-      margin-top: 2px;
+      color: var(--accent-emerald);
+      background: var(--accent-emerald-dim);
+      padding: 4px 10px;
+      border-radius: 6px;
+      display: inline-block;
+      align-self: flex-start;
+      border: 1px solid rgba(16, 185, 129, 0.2);
     }
 
-    /* Prescription Drawer */
-    .prescription-box {
-      background: #0d131d;
-      border-left: 3px solid var(--accent-green);
-      border-radius: 4px 8px 8px 4px;
-      padding: 10px 12px;
-      font-size: 11px;
-      line-height: 1.5;
-    }
-    .rx-label {
-      font-weight: 700;
-      color: var(--accent-green);
-      text-transform: uppercase;
-      font-size: 10px;
-      letter-spacing: 0.5px;
-      margin-bottom: 2px;
-    }
-    .rx-text {
-      color: var(--text-main);
-    }
-    .rx-chem {
-      color: var(--text-muted);
-      margin-top: 4px;
-      font-size: 10px;
-    }
-
-    /* Terminal Console */
-    .terminal-container {
-      flex: 1;
-      background: #090d13;
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 12px;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      line-height: 1.55;
-      overflow-y: auto;
-      max-height: 260px;
-      min-height: 140px;
+    /* PRESCRIPTION BOX */
+    .presc-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 14px;
       display: flex;
       flex-direction: column;
-      box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
-    }
-    .log-line {
-      margin-bottom: 2px;
-      word-break: break-all;
-    }
-    .log-t { color: var(--text-dim); }
-    .log-tag-info { color: var(--accent-cyan); }
-    .log-tag-ok { color: var(--accent-green); font-weight: bold; }
-    .log-tag-warn { color: var(--accent-amber); }
-    .log-tag-err { color: var(--accent-red); font-weight: bold; }
-
-    /* Action Controls */
-    .controls-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
       gap: 10px;
-      margin-top: 4px;
-    }
-    .btn {
-      padding: 14px 16px;
-      font-size: 13px;
-      font-weight: 700;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      font-family: var(--font-sans);
-      transition: all 0.2s ease;
-      letter-spacing: 0.3px;
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      color: #ffffff;
-      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
-    }
-    .btn-stop {
-      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-      color: #ffffff;
-      box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
-    }
-    .btn-secondary {
-      background: #1e293b;
-      color: var(--text-main);
-      border: 1px solid var(--card-border);
-    }
-    .btn:active {
-      transform: scale(0.98);
     }
 
-    /* Sample Real Leaf Palette */
-    .sample-btn-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
-      margin-top: 2px;
-    }
-    .btn-sample {
-      padding: 10px 4px;
+    .rx-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       font-size: 11px;
       font-weight: 700;
-      border-radius: 8px;
-      border: 1px solid var(--card-border);
-      text-align: center;
-      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent-emerald);
+    }
+
+    .rx-section {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      border-left: 2px solid var(--accent-emerald);
+      padding-left: 10px;
+    }
+
+    .rx-subhead {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .rx-body {
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text-main);
+    }
+
+    .rx-section-chem {
+      border-left-color: var(--accent-amber);
+    }
+
+    /* HARDWARE STATUS WIDGET */
+    .hardware-card {
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      background: rgba(245, 158, 11, 0.04);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 4px;
-      background: #141b27;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .hw-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .hw-title {
+      font-size: 13px;
+      font-weight: 600;
       color: var(--text-main);
-      font-family: var(--font-sans);
-      transition: all 0.2s ease;
-      text-decoration: none;
-    }
-    .btn-sample:active {
-      transform: scale(0.96);
-    }
-    .btn-sample-blight {
-      border-color: rgba(239, 68, 68, 0.4);
-      color: #fca5a5;
-    }
-    .btn-sample-healthy {
-      border-color: rgba(16, 185, 129, 0.4);
-      color: #6ee7b7;
-    }
-    .btn-sample-upload {
-      border-color: rgba(6, 182, 212, 0.4);
-      color: #67e8f9;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .footer-note {
-      text-align: center;
-      font-size: 10px;
+    .hw-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .btn-hw-check {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 7px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .btn-hw-check:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* ACTIVITY CONSOLE DRAWER */
+    .activity-container {
+      background: #05080A;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .activity-header {
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.02);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 600;
       color: var(--text-dim);
-      font-family: var(--font-mono);
-      padding-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
-    canvas { display: none; }
+    .terminal-feed {
+      height: 120px;
+      overflow-y: auto;
+      padding: 10px 14px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .log-line {
+      display: flex;
+      gap: 8px;
+    }
+
+    .log-t { color: var(--text-dim); }
+    .log-tag-ok { color: var(--accent-emerald); font-weight: 700; }
+    .log-tag-err { color: var(--accent-rose); font-weight: 700; }
+    .log-tag-ai { color: var(--accent-cyan); font-weight: 700; }
+    .log-tag-warn { color: var(--accent-amber); font-weight: 700; }
+    .log-tag-info { color: var(--text-muted); font-weight: 700; }
+
+    /* FOOTER */
+    .app-footer {
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-dim);
+      padding: 8px 0;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Brand & Status Header -->
-  <div class="brand-card">
-    <div>
-      <div class="brand-title">
-        KRISHI-DRISHTI
-        <span class="badge-tag">v2.2 EDGE</span>
+  <div class="app-shell">
+
+    <!-- Brand Header -->
+    <header class="top-navbar">
+      <div class="brand-group">
+        <div class="brand-icon">🌱</div>
+        <div class="brand-meta">
+          <div class="brand-title-wrap">
+            <span class="brand-name">KRISHI-DRISHTI</span>
+            <span class="version-pill">v2.2 EDGE</span>
+          </div>
+          <span class="brand-desc">Offline Field Neural Co-Processor &bull; MobileNetV3</span>
+        </div>
       </div>
-      <div class="brand-subtitle">Headless Neural Co-Processor &bull; MobileNetV3 TFLite</div>
-    </div>
-    <div id="statusPill" class="status-pill pill-stopped">
-      <span class="pulsing-dot"></span>
-      <span id="statusText">STANDBY</span>
-    </div>
-  </div>
-
-  <!-- Telemetry Metrics Bar (6 Core Parameters) -->
-  <div class="metrics-grid">
-    <div class="metric-card">
-      <div class="metric-label">Cam Gateway</div>
-      <div class="metric-value" id="valCameraLink" style="color: var(--text-dim)">SEARCHING...</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">MicroSD Slot</div>
-      <div class="metric-value" id="valSdStatus" style="color: var(--accent-amber)">CHECKING...</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">Wand Link</div>
-      <div class="metric-value" id="valWandLink" style="color: var(--text-dim)">WAND OFF</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">TFLite Engine</div>
-      <div class="metric-value" id="valEngine" style="color: var(--accent-amber)">LOADING...</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">Inference</div>
-      <div class="metric-value" id="valLatency">-- ms</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">Scans Synced</div>
-      <div class="metric-value" id="valScanCount">0</div>
-    </div>
-  </div>
-
-  <!-- MicroSD Hardware Presence & Health Section -->
-  <div class="sd-audit-card" id="sdAuditCard" style="border-color: rgba(245, 158, 11, 0.3);">
-    <div class="sd-status-row">
-      <div class="sd-indicator-box">
-        <span class="sd-badge-dot" id="sdBadgeDot"></span>
-        <span class="sd-title-text" id="sdTitleText">Checking MicroSD Card Slot...</span>
+      <div id="statusPill" class="status-pill pill-stopped">
+        <span class="pulsing-dot"></span>
+        <span id="statusText">STANDBY</span>
       </div>
-      <button class="btn-check-sd" onclick="pollMeshNow()">RE-CHECK HARDWARE</button>
-    </div>
-    <div class="sd-detail-text" id="sdDetailText">
-      Querying camera slot for Class 10 FAT32 card and offline model weights...
-    </div>
-  </div>
+    </header>
 
-  <!-- Live Diagnosis Result Box -->
-  <div class="diagnosis-card">
-    <div class="card-header-label">
-      <span>Latest Edge AI Diagnosis</span>
-      <span id="scanTimestamp" style="font-family: var(--font-mono); font-size: 10px; color: var(--text-dim);">AWAITING SCAN</span>
-    </div>
+    <!-- 6-Metric Telemetry Bar -->
+    <section class="metrics-bar">
+      <div class="metric-card">
+        <span class="metric-header">Cam Gateway</span>
+        <span class="metric-value" id="valCameraLink" style="color: var(--text-dim)">SEARCHING...</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-header">MicroSD Storage</span>
+        <span class="metric-value" id="valSdStatus" style="color: var(--accent-amber)">CHECKING...</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-header">Sensor Wand</span>
+        <span class="metric-value" id="valWandLink" style="color: var(--text-dim)">WAND OFF</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-header">Neural Engine</span>
+        <span class="metric-value" id="valEngine" style="color: var(--accent-amber)">LOADING...</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-header">Inference</span>
+        <span class="metric-value" id="valLatency">-- ms</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-header">Field Syncs</span>
+        <span class="metric-value" id="valScanCount">0</span>
+      </div>
+    </section>
 
-    <div class="diagnosis-body">
-      <div class="leaf-thumb-wrap" id="leafThumbWrap">
-        <span class="placeholder-text" id="thumbPlaceholder">LEAF FRAME</span>
-        <img id="leafImg" style="display: none;" alt="Leaf Scan" />
+    <!-- Main Workspace (2-Column on Desktop, Stack on Mobile) -->
+    <div class="workspace-grid">
+
+      <!-- LEFT COLUMN: Optical Viewfinder & Action Controls -->
+      <div class="glass-panel">
+        <div class="panel-header">
+          <span class="panel-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Optical Leaf Viewfinder
+          </span>
+          <span class="panel-badge" id="scanTimestamp">AWAITING SCAN</span>
+        </div>
+
+        <div class="viewfinder-wrap" id="leafThumbWrap">
+          <div class="viewfinder-grid-lines"></div>
+          <div class="viewfinder-crosshair"></div>
+          <div class="viewfinder-corners"></div>
+          <div class="leaf-placeholder" id="thumbPlaceholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+            <span>Waiting for Wand Shutter [SCAN]</span>
+          </div>
+          <img id="leafImg" class="leaf-preview-img" alt="Leaf Scan" />
+        </div>
+
+        <!-- Sample Palettes & Custom Upload -->
+        <div class="sample-pill-row">
+          <button class="btn-sample btn-sample-blight" onclick="testRealLeaf('/sample_leaves/late_blight_512.jpg', 'Real Tomato Late Blight')">
+            🍂 Blight
+          </button>
+          <button class="btn-sample btn-sample-healthy" onclick="testRealLeaf('/sample_leaves/healthy_512.jpg', 'Real Tomato Healthy')">
+            🌿 Healthy
+          </button>
+          <label class="btn-sample btn-sample-upload">
+            📷 Upload
+            <input type="file" id="leafFileInput" accept="image/*" style="display: none;" onchange="handleLeafUpload(event)">
+          </label>
+        </div>
+
+        <!-- Server Toggle & Demo Buttons -->
+        <div class="action-row">
+          <button class="btn-main" id="btnToggle" onclick="toggleServer()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            START AI INFERENCE SERVER
+          </button>
+          <button class="btn-secondary" onclick="simulateFieldScan()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+            DEMO SCAN
+          </button>
+          <button class="btn-secondary" onclick="pollMeshNow()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+            AUDIT HW
+          </button>
+        </div>
       </div>
 
-      <div class="diag-details">
-        <div class="diag-primary" id="diagPrimary">Waiting for Wand [SCAN]</div>
-        <div class="diag-pathogen" id="diagPathogen">Mesh SoftAP: KRISHI-DRISHTI (192.168.4.1)</div>
-        <div class="diag-confidence" id="diagConfidence">MobileNetV3 Edge Core: 2.01 MB TFLite</div>
+      <!-- RIGHT COLUMN: Edge AI Diagnosis & Agronomic Advisory -->
+      <div class="glass-panel">
+        <div class="panel-header">
+          <span class="panel-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            Edge AI Diagnosis & Telemetry
+          </span>
+          <span class="panel-badge">Dual-Domain Solanaceae Core</span>
+        </div>
+
+        <!-- Diagnosis Result Hero Card -->
+        <div class="diagnosis-hero-box">
+          <div class="diag-title-row">
+            <div>
+              <div class="diag-primary" id="diagPrimary">Waiting for Wand [SCAN]</div>
+              <div class="diag-pathogen" id="diagPathogen">Mesh SoftAP: KRISHI-DRISHTI (192.168.4.1)</div>
+            </div>
+            <div class="diag-confidence" id="diagConfidence">Core: 2.01 MB TFLite</div>
+          </div>
+        </div>
+
+        <!-- Clinical Agronomic Advisory -->
+        <div class="presc-card" id="prescBox">
+          <div class="rx-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            <span id="rxLabel">Agronomic Advisory & Treatment Protocol</span>
+          </div>
+
+          <div class="rx-section">
+            <span class="rx-subhead">Biological & Cultural Control</span>
+            <div class="rx-body" id="rxBio">Keep phone in pocket. When you press SCAN on the wand, results sync here and to the SSD1306 OLED automatically.</div>
+          </div>
+
+          <div class="rx-section rx-section-chem">
+            <span class="rx-subhead">Chemical Intervention (ICAR / KVK Guidelines)</span>
+            <div class="rx-body" id="rxChem" style="color: var(--text-muted)">Integrated Pest Management (IPM) guidelines apply. Suppressed if RH &lt; 85%.</div>
+          </div>
+        </div>
+
+        <!-- MicroSD Hardware Presence & Health Section -->
+        <div class="hardware-card" id="sdAuditCard">
+          <div class="hw-info">
+            <div class="hw-title">
+              <span class="pulsing-dot" id="sdBadgeDot" style="color: var(--accent-amber)"></span>
+              <span id="sdTitleText">MicroSD Card Slot: Checking...</span>
+            </div>
+            <div class="hw-desc" id="sdDetailText">
+              Querying camera slot for FAT32 filesystem and offline neural weights...
+            </div>
+          </div>
+          <button class="btn-hw-check" onclick="pollMeshNow()">RE-CHECK HARDWARE</button>
+        </div>
+
+        <!-- Collapsible System Log -->
+        <div class="activity-container">
+          <div class="activity-header">
+            <span>Edge System Activity Stream</span>
+            <span style="font-size: 10px; color: var(--accent-emerald);">Live Mesh Daemon</span>
+          </div>
+          <div class="terminal-feed" id="terminal">
+            <div class="log-line"><span class="log-t">[SYSTEM]</span> <span class="log-tag-info">INIT</span> KRISHI-DRISHTI Edge AI Server daemon loaded.</div>
+            <div class="log-line"><span class="log-t">[SYSTEM]</span> <span class="log-tag-info">MESH</span> SoftAP gateway target: http://192.168.4.1</div>
+          </div>
+        </div>
+
       </div>
+
     </div>
 
-    <div class="prescription-box" id="prescBox">
-      <div class="rx-label" id="rxLabel">Agronomic Advisory & Treatment</div>
-      <div class="rx-text" id="rxBio">Keep phone in pocket. When you press SCAN on the wand, results sync here and to the SSD1306 OLED automatically.</div>
-      <div class="rx-chem" id="rxChem">Chemical: Integrated Pest Management (IPM) guidelines.</div>
-    </div>
-  </div>
+    <!-- Hidden Offscreen Canvas for Neural Pre-processing -->
+    <canvas id="offscreenCanvas" width="128" height="128" style="display: none;"></canvas>
 
-  <!-- Live Terminal Console -->
-  <div class="terminal-container" id="terminal">
-    <div class="log-line"><span class="log-t">[SYSTEM]</span> <span class="log-tag-info">INIT</span> KRISHI-DRISHTI Edge AI Server daemon loaded.</div>
-    <div class="log-line"><span class="log-t">[SYSTEM]</span> <span class="log-tag-info">MESH</span> SoftAP gateway target: http://192.168.4.1</div>
-  </div>
+    <footer class="app-footer">
+      KRISHI-DRISHTI &bull; Autonomous Offline Edge AI Plant Telemetry &bull; Powered by MobileNetV3 Float16
+    </footer>
 
-  <!-- Action Controls -->
-  <div class="controls-grid">
-    <button class="btn btn-primary" id="btnToggle" onclick="toggleServer()">
-      START AI SERVER
-    </button>
-    <button class="btn btn-secondary" onclick="simulateFieldScan()">
-      TEST DEMO
-    </button>
   </div>
-
-  <!-- Real Leaf Exhibition Test Palette -->
-  <div class="sample-btn-row">
-    <button class="btn-sample btn-sample-blight" onclick="testRealLeaf('/sample_leaves/late_blight_512.jpg', 'Real Tomato Late Blight')">
-      🍂 Real Blight
-    </button>
-    <button class="btn-sample btn-sample-healthy" onclick="testRealLeaf('/sample_leaves/healthy_512.jpg', 'Real Tomato Healthy')">
-      🌿 Real Healthy
-    </button>
-    <label class="btn-sample btn-sample-upload">
-      📷 Upload Photo
-      <input type="file" id="leafFileInput" accept="image/*" style="display: none;" onchange="handleLeafUpload(event)">
-    </label>
-  </div>
-
-  <div class="footer-note">
-    KRISHI-DRISHTI &bull; Offline Edge AI Plant Telemetry &bull; Source Available
-  </div>
-
-  <canvas id="offscreenCanvas" width="128" height="128"></canvas>
 
   <script>
     let isRunning = false;
@@ -575,7 +884,7 @@
         disease: "Late Blight",
         pathogen: "Phytophthora infestans (Oomycete)",
         status: "INFECTED",
-        organic: "Neem Oil 5ml/L + Trichoderma viride. Prune lower canopy.",
+        organic: "Neem Oil 5ml/L + Trichoderma viride. Prune lower canopy to enhance aeration.",
         chemical: "Cymoxanil 8% + Mancozeb 64% WP @ 2.5g/L or Ridomil Gold @ 2g/L"
       },
       {
@@ -585,7 +894,7 @@
         disease: "Early Blight",
         pathogen: "Alternaria solani (Fungus)",
         status: "WARNING",
-        organic: "Baking soda 5g/L + compost tea. Mulch soil to prevent rain splash.",
+        organic: "Baking soda 5g/L + compost tea. Mulch soil to prevent rain splash dispersal.",
         chemical: "Chlorothalonil 75% WP @ 2g/L or Copper Oxychloride 3g/L"
       },
       {
@@ -595,7 +904,7 @@
         disease: "Healthy",
         pathogen: "Optimal (Zero Pathogen)",
         status: "HEALTHY",
-        organic: "Maintain drip irrigation schedule & balanced 19:19:19 NPK.",
+        organic: "Maintain drip irrigation schedule & balanced 19:19:19 NPK foliar nutrition.",
         chemical: "No chemical fungicides required."
       },
       {
@@ -605,7 +914,7 @@
         disease: "Late Blight",
         pathogen: "Phytophthora infestans (Oomycete)",
         status: "INFECTED",
-        organic: "Copper soap spray + haulm destruction 10 days pre-harvest.",
+        organic: "Copper soap spray + haulm destruction 10 days pre-harvest to protect tubers.",
         chemical: "Cymoxanil 8% + Mancozeb 64% WP @ 2.5g/L"
       },
       {
@@ -625,73 +934,67 @@
         disease: "Healthy",
         pathogen: "Optimal (Zero Pathogen)",
         status: "HEALTHY",
-        organic: "Regular earthing-up and balanced potassium application.",
-        chemical: "No chemical fungicides required."
+        organic: "Maintain uniform soil hilling to prevent tuber greening & solar exposure.",
+        chemical: "No chemical intervention needed."
       }
     ];
 
     function log(msg, type = "info") {
       const term = document.getElementById("terminal");
-      const d = new Date();
-      const timeStr = d.toTimeString().split(' ')[0];
-
-      let tagClass = "log-tag-info";
-      let tagLabel = "INFO";
-
-      if (type === "ok") {
-        tagClass = "log-tag-ok";
-        tagLabel = "SUCCESS";
-      } else if (type === "warn") {
-        tagClass = "log-tag-warn";
-        tagLabel = "WARN";
-      } else if (type === "err") {
-        tagClass = "log-tag-err";
-        tagLabel = "ERROR";
-      } else if (type === "ai") {
-        tagClass = "log-tag-ok";
-        tagLabel = "NEURAL";
-      }
-
-      const line = document.createElement("div");
-      line.className = "log-line";
-      line.innerHTML = `<span class="log-t">[${timeStr}]</span> <span class="${tagClass}">${tagLabel}</span> ${msg}`;
-      term.appendChild(line);
+      if (!term) return;
+      const d = document.createElement("div");
+      d.className = "log-line";
+      const timeStr = new Date().toLocaleTimeString();
+      let tagHtml = `<span class="log-tag-info">INFO</span>`;
+      if (type === "ok")   tagHtml = `<span class="log-tag-ok">SUCCESS</span>`;
+      if (type === "err")  tagHtml = `<span class="log-tag-err">ERROR</span>`;
+      if (type === "ai")   tagHtml = `<span class="log-tag-ai">NEURAL</span>`;
+      if (type === "warn") tagHtml = `<span class="log-tag-warn">WARN</span>`;
+      d.innerHTML = `<span class="log-t">[${timeStr}]</span> ${tagHtml} <span>${msg}</span>`;
+      term.appendChild(d);
       term.scrollTop = term.scrollHeight;
     }
 
-    // INITIALIZE OFFLINE TFLITE WASM RUNTIME
     async function initTFLite(retryCount = 0) {
       if (modelReady || isModelLoading) return;
       isModelLoading = true;
+
+      const engineEl = document.getElementById("valEngine");
+      if (engineEl) {
+        engineEl.innerText = "INITIALIZING...";
+        engineEl.style.color = "var(--accent-amber)";
+      }
+
       try {
-        if (typeof tflite === 'undefined') {
-          if (retryCount < 20) {
-            document.getElementById("valEngine").innerText = "INITIALIZING...";
-            document.getElementById("valEngine").style.color = "var(--accent-amber)";
-            setTimeout(() => {
-              isModelLoading = false;
-              initTFLite(retryCount + 1);
-            }, 300);
-            return;
-          }
-          throw new Error("tflite WASM backend not found in vendor/");
-        }
-        document.getElementById("valEngine").innerText = "LOADING MODEL...";
-        document.getElementById("valEngine").style.color = "var(--accent-amber)";
         log("Booting bundled WASM TFLite co-processor engine...", "ai");
-        tflite.setWasmPath('/vendor/');
+        if (typeof tflite !== 'undefined' && tflite.setWasmPath) {
+          tflite.setWasmPath('/vendor/');
+        }
+
+        if (engineEl) {
+          engineEl.innerText = "LOADING MODEL...";
+          engineEl.style.color = "var(--accent-amber)";
+        }
+
         tfliteModel = await tflite.loadTFLiteModel('/krishi_drishti_model.tflite');
         modelReady = true;
-        document.getElementById("valEngine").innerText = "TFLITE ACTIVE";
-        document.getElementById("valEngine").style.color = "var(--accent-green)";
+        isModelLoading = false;
+
+        if (engineEl) {
+          engineEl.innerText = "TFLITE ACTIVE";
+          engineEl.style.color = "var(--accent-emerald)";
+        }
         log("MobileNetV3 Edge TFLite core loaded 100% offline.", "ok");
       } catch (err) {
-        modelReady = false;
-        document.getElementById("valEngine").innerText = "AI OFFLINE";
-        document.getElementById("valEngine").style.color = "var(--accent-red)";
-        log(`TFLite load error: ${err.message}. Inference paused until model available.`, "err");
-      } finally {
         isModelLoading = false;
+        if (engineEl) {
+          engineEl.innerText = "AI OFFLINE";
+          engineEl.style.color = "var(--accent-rose)";
+        }
+        log(`TFLite load error: ${err.message}. Retrying...`, "err");
+        if (retryCount < 3) {
+          setTimeout(() => initTFLite(retryCount + 1), 3000);
+        }
       }
     }
 
@@ -699,70 +1002,60 @@
       try {
         if ('wakeLock' in navigator) {
           wakeLock = await navigator.wakeLock.request('screen');
-          wakeLock.addEventListener('release', () => {
-            log("Screen WakeLock released by OS power management.", "ai");
-            wakeLock = null;
+          document.addEventListener('visibilitychange', async () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') {
+              wakeLock = await navigator.wakeLock.request('screen');
+            }
           });
-          log("Hardware Screen WakeLock active across mobile browser.", "ok");
         }
-      } catch (err) {
-        log(`WakeLock notice (${err.name || 'unsupported'}): using audio-thread keep-alive.`, "warn");
-      }
-      startKeepAliveAudio();
+      } catch (err) {}
     }
 
     function startKeepAliveAudio() {
       try {
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        if (AudioCtx) {
-          if (!keepAliveAudio) {
-            keepAliveAudio = new AudioCtx();
-            const osc = keepAliveAudio.createOscillator();
-            const gain = keepAliveAudio.createGain();
-            gain.gain.value = 0.00001; // Inaudible buffer keeps mobile event loop unthrottled in pocket
-            osc.connect(gain);
-            gain.connect(keepAliveAudio.destination);
-            osc.start();
-          } else if (keepAliveAudio.state === 'suspended') {
-            keepAliveAudio.resume();
-          }
-        }
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        keepAliveAudio = new AudioContext();
+        const buffer = keepAliveAudio.createBuffer(1, keepAliveAudio.sampleRate * 1, keepAliveAudio.sampleRate);
+        const source = keepAliveAudio.createBufferSource();
+        source.buffer = buffer;
+        source.loop = true;
+        source.connect(keepAliveAudio.destination);
+        source.start();
       } catch (e) {}
     }
 
     function stopKeepAliveAudio() {
-      try {
-        if (keepAliveAudio) {
-          keepAliveAudio.close();
-          keepAliveAudio = null;
-        }
-      } catch (e) {}
+      if (keepAliveAudio) {
+        try { keepAliveAudio.close(); } catch (e) {}
+        keepAliveAudio = null;
+      }
     }
 
-    // Auto re-acquire WakeLock whenever phone is unlocked or screen wakes
-    document.addEventListener("visibilitychange", async () => {
-      if (document.visibilityState === "visible" && isRunning) {
-        log("Screen restored to foreground — re-asserting WakeLock...", "ai");
-        await requestWakeLock();
-      }
-    });
-
     function toggleServer() {
-      if (!isRunning) startServer();
-      else stopServer();
+      if (isRunning) {
+        stopServer();
+      } else {
+        startServer();
+      }
     }
 
     function startServer() {
+      if (isRunning) return;
       isRunning = true;
+
       requestWakeLock();
+      startKeepAliveAudio();
 
       const pill = document.getElementById("statusPill");
-      pill.className = "status-pill pill-active";
-      document.getElementById("statusText").innerText = "INFERENCE ACTIVE";
+      if (pill) pill.className = "status-pill pill-running";
+      safeSetText("statusText", "INFERENCE ACTIVE");
 
       const btn = document.getElementById("btnToggle");
-      btn.innerText = "STOP AI SERVER";
-      btn.className = "btn btn-stop";
+      if (btn) {
+        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> PAUSE AI SERVER`;
+        btn.style.background = "linear-gradient(135deg, #F59E0B, #D97706)";
+        btn.style.boxShadow = "0 4px 14px rgba(245, 158, 11, 0.35)";
+      }
 
       log("Edge AI Co-Processor started. Polling softAP mesh...", "ok");
       pollInterval = setInterval(checkCameraForNewScan, 600);
@@ -781,24 +1074,22 @@
       stopKeepAliveAudio();
 
       const pill = document.getElementById("statusPill");
-      pill.className = "status-pill pill-stopped";
-      document.getElementById("statusText").innerText = "STANDBY";
+      if (pill) pill.className = "status-pill pill-stopped";
+      safeSetText("statusText", "STANDBY");
 
       const btn = document.getElementById("btnToggle");
-      btn.innerText = "START AI SERVER";
-      btn.className = "btn btn-primary";
+      if (btn) {
+        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg> START AI INFERENCE SERVER`;
+        btn.style.background = "linear-gradient(135deg, #10B981, #059669)";
+        btn.style.boxShadow = "0 4px 14px rgba(16, 185, 129, 0.35)";
+      }
 
-      const camEl = document.getElementById("valCameraLink");
-      if (camEl) {
-        camEl.innerText = "STANDBY";
-        camEl.style.color = "var(--text-dim)";
-      }
-      const wandEl = document.getElementById("valWandLink");
-      if (wandEl) {
-        wandEl.innerText = "STANDBY";
-        wandEl.style.color = "var(--text-dim)";
-      }
-      log("AI Server stopped by operator.", "warn");
+      safeSetText("valCameraLink", "STANDBY");
+      safeSetStyle("valCameraLink", "color", "var(--text-dim)");
+      safeSetText("valWandLink", "STANDBY");
+      safeSetStyle("valWandLink", "color", "var(--text-dim)");
+
+      log("Edge AI Co-Processor paused.", "warn");
     }
 
     async function pollMeshNow() {
@@ -821,7 +1112,7 @@
         const camEl = document.getElementById("valCameraLink");
         if (camEl) {
           camEl.innerText = "ONLINE (AP)";
-          camEl.style.color = "var(--accent-green)";
+          camEl.style.color = "var(--accent-emerald)";
         }
 
         // 2. MicroSD Card Detection & Verification
@@ -835,28 +1126,27 @@
           const capText = status.sd_capacity_mb ? `${Math.round(status.sd_capacity_mb/1024*10)/10} GB` : "FAT32";
           if (sdEl) {
             sdEl.innerText = `READY (${capText})`;
-            sdEl.style.color = "var(--accent-green)";
+            sdEl.style.color = "var(--accent-emerald)";
           }
-          if (sdCard) sdCard.style.borderColor = "rgba(34, 197, 94, 0.3)";
-          if (sdDot) { sdDot.className = "sd-badge-dot sd-ok"; }
+          if (sdCard) sdCard.style.borderColor = "rgba(16, 185, 129, 0.3)";
+          if (sdDot) { sdDot.style.color = "var(--accent-emerald)"; }
           if (sdTitle) { sdTitle.innerText = `MicroSD Card: Detected & Mounted (${capText})`; }
           if (sdDetail) {
-            sdDetail.innerText = "Camera filesystem active. Offline MobileNetV3 TFLite weights & WASM assets available. All shutter scans saved to /scans/.";
+            sdDetail.innerText = "Camera filesystem active. Offline MobileNetV3 weights & WASM assets available. All shutter scans saved to /scans/.";
           }
-          // If model was not loaded due to previous missing SD card, initialize it now!
           if (!modelReady && !isModelLoading) {
             initTFLite(0);
           }
         } else {
           if (sdEl) {
             sdEl.innerText = "NOT DETECTED";
-            sdEl.style.color = "var(--accent-red)";
+            sdEl.style.color = "var(--accent-rose)";
           }
-          if (sdCard) sdCard.style.borderColor = "rgba(239, 68, 68, 0.4)";
-          if (sdDot) { sdDot.className = "sd-badge-dot sd-alert"; }
-          if (sdTitle) { sdTitle.innerText = "⚠️ MicroSD Card NOT DETECTED in ESP32-CAM Slot!"; }
+          if (sdCard) sdCard.style.borderColor = "rgba(244, 63, 94, 0.4)";
+          if (sdDot) { sdDot.style.color = "var(--accent-rose)"; }
+          if (sdTitle) { sdTitle.innerText = "MicroSD Card Slot: Card Not Detected"; }
           if (sdDetail) {
-            sdDetail.innerHTML = "<b style='color: var(--accent-red)'>Card missing in camera.</b> If inserted in PC (Drive E:), unplug it and firmly push it into the TF slot on the ESP32-CAM board, then tap RE-CHECK HARDWARE.";
+            sdDetail.innerHTML = "<b style='color: var(--accent-rose)'>Card missing in camera slot.</b> Ensure a FAT32 Class-10 TF card is inserted, then tap RE-CHECK HARDWARE.";
           }
         }
 
@@ -865,15 +1155,15 @@
         if (wandEl) {
           if (status.wand_connected) {
             wandEl.innerText = "CONNECTED";
-            wandEl.style.color = "var(--accent-green)";
+            wandEl.style.color = "var(--accent-emerald)";
           } else {
             wandEl.innerText = "WAND OFF";
             wandEl.style.color = "var(--text-dim)";
           }
         }
 
-        // 4. Microclimate Canopy Telemetry
-        if (status.telemetry_available && status.humidity > 0) {
+        // 4. Ingest Ambient Telemetry
+        if (status.telemetry_available) {
           currentTelemetry = {
             humidity: status.humidity,
             temperature: status.temperature
@@ -882,35 +1172,25 @@
           currentTelemetry = null;
         }
 
-        // 5. Automatic Shutter Sync
-        const latestScanId = status.scan_count || 0;
-        if (latestScanId > lastProcessedScanId && latestScanId > 0) {
-          log(`New leaf captured by Wand! Scan #${latestScanId}`, "ai");
-          lastProcessedScanId = latestScanId;
-          await processScanAndRespond(latestScanId);
+        // 5. New Shutter Scan Discovery
+        if (status.scan_count && status.scan_count > lastProcessedScanId) {
+          if (isRunning) {
+            await processScanAndRespond(status.scan_count);
+          }
         }
-      } catch (e) {
-        const camEl = document.getElementById("valCameraLink");
-        if (camEl) {
-          camEl.innerText = "SEARCHING...";
-          camEl.style.color = "var(--accent-amber)";
-        }
-        const sdEl = document.getElementById("valSdStatus");
-        if (sdEl) {
-          sdEl.innerText = "STANDBY";
-          sdEl.style.color = "var(--text-dim)";
-        }
-        const wandEl = document.getElementById("valWandLink");
-        if (wandEl) {
-          wandEl.innerText = "STANDBY";
-          wandEl.style.color = "var(--text-dim)";
+      } catch (err) {
+        if (!isRunning) {
+          safeSetText("valCameraLink", "DISCONNECTED");
+          safeSetStyle("valCameraLink", "color", "var(--accent-rose)");
         }
       }
     }
 
     async function processScanAndRespond(scanId) {
+      lastProcessedScanId = scanId;
+      log(`New Shutter Capture detected: Scan #${scanId}`, "ai");
+
       const t0 = performance.now();
-      log(`Retrieving Scan #${scanId} frame over 2.4GHz softAP...`);
 
       try {
         const img = new Image();
@@ -924,11 +1204,15 @@
 
         const leafImg = document.getElementById("leafImg");
         const placeholder = document.getElementById("thumbPlaceholder");
-        leafImg.src = img.src;
-        leafImg.style.display = "block";
-        placeholder.style.display = "none";
+        if (leafImg) {
+          leafImg.src = img.src;
+          leafImg.style.display = "block";
+        }
+        if (placeholder) {
+          placeholder.style.display = "none";
+        }
 
-        log(`Scan #${scanId} loaded into RAM. Running genuine neural inference...`, "ai");
+        log(`Scan #${scanId} loaded into RAM. Running neural inference...`, "ai");
         const diag = await runEdgeInference(img);
         const elapsed = Math.round(performance.now() - t0);
 
@@ -938,109 +1222,76 @@
         log(`Diagnosis: ${diag.crop} - ${diag.disease} (${diag.confidence}%, H=${diag.entropy}) in ${elapsed}ms`, "ok");
         log(`Advisory: ${diag.organic}`);
 
-        // Post back to ESP32-CAM bridge for Wand OLED via standard CORS with response checking
         const setUrl = `${CAMERA_DIAG_SET_URL}?scan_id=${scanId}&crop=${encodeURIComponent(diag.crop)}&disease=${encodeURIComponent(diag.disease)}&confidence=${diag.confidence}&status=${encodeURIComponent(diag.status)}&organic=${encodeURIComponent(diag.organic)}&chemical=${encodeURIComponent(diag.chemical)}`;
 
         try {
           const syncRes = await fetch(setUrl);
           if (syncRes.ok) {
             log(`>> TELEMETRY SYNCED TO CONTROLLER WAND OLED [Scan #${scanId}] <<`, "ok");
-          } else if (syncRes.status === 409) {
-            const errJson = await syncRes.json().catch(() => ({}));
-            log(`[SYNC REJECTED] Camera rejected stale diagnosis for Scan #${scanId} (Active: ${errJson.active_scan || 'Newer'})`, "warn");
           } else {
-            log(`[SYNC FAILED] Camera returned HTTP ${syncRes.status}`, "warn");
+            log(`[SYNC REJECTED] HTTP ${syncRes.status}`, "warn");
           }
         } catch (syncErr) {
-          log(`[SYNC ERROR] Could not reach camera bridge: ${syncErr.message}`, "warn");
+          log(`Failed to sync to wand: ${syncErr.message}`, "err");
         }
 
       } catch (err) {
-        log(`Inference exception on Scan #${scanId}: ${err.message || 'Timeout'}`, "err");
+        log(`Failed to process Scan #${scanId}: ${err.message}`, "err");
       }
     }
 
-    // GENUINE NEURAL INFERENCE (ZERO MATH.RANDOM, STRICT UNCERTAINTY GATING)
-    async function runEdgeInference(img) {
+    async function runEdgeInference(imgElement) {
       const cvs = document.getElementById("offscreenCanvas");
       const ctx = cvs.getContext("2d", { willReadFrequently: true });
-      ctx.drawImage(img, 0, 0, 128, 128);
+      ctx.drawImage(imgElement, 0, 0, 128, 128);
 
-      const frame = ctx.getImageData(0, 0, 128, 128);
-      const data = frame.data;
-      let foliarCount = 0;
-      let necroticCount = 0;
-      let chloroticCount = 0;
-      const total = 128 * 128;
+      // 1. Biological Green Chromatic Foliar Validation Check
+      const frameData = ctx.getImageData(0, 0, 128, 128);
+      const data = frameData.data;
+      let totalPixels = 128 * 128;
+      let leafMaskPixels = 0;
+      let nonLeafPixels = 0;
 
       for (let i = 0; i < data.length; i += 4) {
-        const r = data[i], g = data[i+1], b = data[i+2];
-        // Green chlorophyll foliar tissue
-        if (g > r * 0.95 && g > b * 1.05) {
-          foliarCount++;
-        }
-        // Lesions / necrotic tissue
-        else if (r > 60 && g > 50 && b < 80) {
-          foliarCount++;
-          necroticCount++;
-        }
-        // Yellow chlorosis
-        else if (r > 130 && g > 120 && b < 90) {
-          chloroticCount++;
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        const isFoliarGreen = (g > 35) && (g >= r * 0.88) && (g >= b * 0.95);
+        const isNecroticBlightLesion = (r > 30) && (g > 20) && (b < 140) && (Math.abs(r - g) < 45) && ((r + g) > (2 * b));
+        
+        if (isFoliarGreen || isNecroticBlightLesion) {
+          leafMaskPixels++;
+        } else {
+          nonLeafPixels++;
         }
       }
 
-      const foliarRatio = foliarCount / total;
+      const foliarRatio = leafMaskPixels / totalPixels;
 
-      // 1. Peripheral dark void check: Reject unshielded night flash / off-center leaf
-      let darkCount = 0;
-      for (let i = 0; i < total; i++) {
-        const r = data[i * 4];
-        const g = data[i * 4 + 1];
-        const b = data[i * 4 + 2];
-        if (r < 35 && g < 35 && b < 35) darkCount++;
-      }
-      if (darkCount / total > 0.45) {
-        return {
-          crop: "Uncertain",
-          disease: "Framing / Void Detected",
-          pathogen: `Excessive peripheral dark void (${((darkCount/total)*100).toFixed(1)}%). Leaf must be centered in optical shroud.`,
-          confidence: "0.0",
-          status: "UNCERTAIN",
-          organic: "Center camera wand shroud directly over leaf surface.",
-          chemical: "Ensure optical shroud blocks peripheral night darkness.",
-          entropy: "0.00"
-        };
-      }
-
-      // Plausibility check: Reject lens cap, blank white surface, non-leaf background
-      if (foliarRatio < 0.12) {
+      // Reject non-leaf images with 0 foliar tissue
+      if (foliarRatio < 0.08) {
         return {
           crop: "Invalid",
           disease: "No Leaf Detected",
-          pathogen: "Insufficient foliar tissue in frame",
+          pathogen: "Frame does not contain plant canopy or foliar tissue",
           confidence: "0.0",
           status: "UNCERTAIN",
-          organic: "Aim camera wand directly at target leaf surface.",
-          chemical: "Maintain 8-15cm focal distance in daylight.",
+          organic: "Target camera directly at symptomatic Solanaceae foliage.",
+          chemical: "Position wand 10cm from leaf surface and re-scan.",
           entropy: "0.00"
         };
       }
 
+      // 2. Genuine MobileNetV3 Float16 WASM Inference
       let probs = [];
-
-      // 2. TFLite Model Execution (Zero Fake Fallbacks)
-      if (modelReady && tfliteModel && typeof tf !== 'undefined') {
+      if (modelReady && tfliteModel) {
         let tfImg = null;
         let inputTensor = null;
         let output = null;
         try {
           tfImg = tf.browser.fromPixels(cvs);
-          // MobileNetV3 model architecture already contains internal mobilenet_v3.preprocess_input layer
-          // Input contract: [1, 128, 128, 3] float32 in range [0.0, 255.0]
           inputTensor = tfImg.toFloat().expandDims(0);
           output = tfliteModel.predict(inputTensor);
-          // Output layer is already Softmax activation from training — no double softmax
           probs = Array.from(output.dataSync());
         } finally {
           if (tfImg) tfImg.dispose();
@@ -1048,7 +1299,6 @@
           if (output) output.dispose();
         }
       } else {
-        // TFLite model is not loaded — strictly refuse to produce fake heuristic diagnosis
         return {
           crop: "System Notice",
           disease: "AI Engine Unavailable",
@@ -1141,6 +1391,11 @@
       if (el) el.innerHTML = html;
     }
 
+    function safeSetStyle(id, prop, val) {
+      const el = document.getElementById(id);
+      if (el && el.style) el.style[prop] = val;
+    }
+
     function updateMetricsAndUI(diag, latency, scanId) {
       totalScansProcessed++;
       safeSetText("valScanCount", totalScansProcessed);
@@ -1154,13 +1409,21 @@
       if (confEl) {
         confEl.innerText = `Confidence: ${diag.confidence}% | Entropy: ${diag.entropy} | Latency: ${latency}ms | Status: ${diag.status}`;
         if (diag.status === "INFECTED") {
-          confEl.style.color = "var(--accent-red)";
+          confEl.style.color = "var(--accent-rose)";
+          confEl.style.background = "var(--accent-rose-dim)";
+          confEl.style.borderColor = "rgba(244, 63, 94, 0.3)";
         } else if (diag.status === "WARNING") {
           confEl.style.color = "var(--accent-amber)";
+          confEl.style.background = "var(--accent-amber-dim)";
+          confEl.style.borderColor = "rgba(245, 158, 11, 0.3)";
         } else if (diag.status === "UNCERTAIN") {
           confEl.style.color = "var(--accent-cyan)";
+          confEl.style.background = "rgba(6, 182, 212, 0.15)";
+          confEl.style.borderColor = "rgba(6, 182, 212, 0.3)";
         } else {
-          confEl.style.color = "var(--accent-green)";
+          confEl.style.color = "var(--accent-emerald)";
+          confEl.style.background = "var(--accent-emerald-dim)";
+          confEl.style.borderColor = "rgba(16, 185, 129, 0.3)";
         }
       }
 
@@ -1185,7 +1448,7 @@
         img.crossOrigin = "anonymous";
         await new Promise((resolve, reject) => {
           img.onload = resolve;
-          img.onerror = (e) => reject(new Error("Could not load " + url));
+          img.onerror = () => reject(new Error("Could not load " + url));
           img.src = `${url}?t=${Date.now()}`;
         });
 
@@ -1208,7 +1471,8 @@
         log(`[NEURAL VERIFIED] ${diag.crop}: ${diag.disease} (${diag.confidence}%, H=${diag.entropy}) in ${latency}ms`, "ok");
         return diag;
       } catch (err) {
-        log(`Could not load sample image from ${url}: ${err.message}`, "err");
+        log(`Error diagnosing ${labelName}: ${err.message}`, "err");
+        console.error(err);
         return null;
       }
     }
@@ -1260,7 +1524,8 @@
 
     function playAudioChime() {
       try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioContext();
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.connect(gain);
