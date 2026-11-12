@@ -398,11 +398,13 @@ void ensureWiFiConnected() {
   // controller always uses 192.168.4.2 and can reach the camera at 192.168.4.1.
   WiFi.config(WAND_STATIC_IP, WAND_GATEWAY, WAND_SUBNET, WAND_DNS);
 
-  // Check every 5 seconds without interrupting an ongoing handshake
+  // Check every 5 seconds without interrupting an ongoing handshake.
+  // Use WiFi.begin() instead of WiFi.reconnect() because reconnect() does
+  // not reliably re-associate with a static IP config on ESP32.
   if (lastWifiCheckMs == 0 || millis() - lastWifiCheckMs > 5000) {
     lastWifiCheckMs = millis();
     Serial.println("[WIFI] Reconnecting to camera SoftAP: KRISHI-DRISHTI...");
-    WiFi.reconnect();
+    WiFi.begin(AP_SSID, AP_PASS);
   }
 }
 
