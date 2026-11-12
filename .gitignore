@@ -30,3 +30,6 @@ scratch/
 tests/internet_test_images/
 
 *.bak
+
+# Precompiled release archives (hosted on GitHub Releases)
+releases/*.zip
