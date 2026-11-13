@@ -22,6 +22,7 @@
 #include <DHT.h>
 #include "MicroclimateTracker.h"
 #include <ArduinoJson.h>
+#include "esp_private/brownout.h"
 
 // -----------------------------------------------------------------
 // HARDWARE DEFINITIONS
@@ -641,7 +642,11 @@ void triggerRealScan() {
 // ARDUINO SETUP
 // -----------------------------------------------------------------
 void setup() {
-  setCpuFrequencyMhz(240);
+  // 1. Hardware Brownout Suppression (ESP-IDF 5.x official API)
+  esp_brownout_disable();
+
+  // 2. Stable 160MHz CPU clock (low power, APB locked to 80MHz for reliable Wi-Fi)
+  setCpuFrequencyMhz(160);
 
   Serial.begin(115200);
   delay(150);
@@ -655,7 +660,7 @@ void setup() {
   pinMode(SCAN_BUTTON, INPUT_PULLUP);
   pinMode(NEXT_BUTTON, INPUT_PULLUP);
 
-  // 1. Initialize OLED Display FIRST so user immediately sees bright live state
+  // 3. Initialize OLED Display FIRST so user immediately sees bright live state
   Serial.println("[INIT] Step 1: I2C & OLED..."); Serial.flush();
   Wire.begin(21, 22);
   Wire.setClock(100000); // 100 kHz standard mode: rock-solid on breadboards
@@ -693,9 +698,10 @@ void setup() {
     Serial.println("[OLED ERROR] Display not detected on I2C bus (Check SDA:21, SCL:22)!"); Serial.flush();
   }
 
-  // 2. Wi-Fi Station Bringup
+  // 4. Wi-Fi Station Bringup with power cap to eliminate USB brownout sag
   Serial.println("[INIT] Step 2: Wi-Fi Radio Bringup..."); Serial.flush();
   WiFi.mode(WIFI_STA);
+  WiFi.setTxPower(WIFI_POWER_8_5dBm); // 8.5 dBm prevents USB brownout surge
   WiFi.config(WAND_STATIC_IP, WAND_GATEWAY, WAND_SUBNET, WAND_DNS);
   Serial.printf("[WIFI] Connecting to SoftAP: '%s'...\n", AP_SSID); Serial.flush();
   WiFi.begin(AP_SSID, AP_PASS);
