@@ -15,17 +15,36 @@
 
 ---
 
-## 2. Camera Unit (AI-Thinker ESP32-CAM)
+## 2. Camera Unit (AI-Thinker ESP32-CAM + OV2640)
 
-When using the **ESP32-CAM-MB Programmer Shield**, no manual jumper wires are required for programming or power! The camera snaps directly onto the shield headers.
+When using the **ESP32-CAM-MB Programmer Shield**, no manual jumper wires are required for programming or power. The camera snaps directly onto the shield headers.
 
-| Subsystem | Pin on ESP-32S | Hardware Assignment |
+> **Camera sensor:** OV2640 (standard on AI-Thinker ESP32-CAM)
+> **XCLK frequency:** 16 MHz (deliberately set below default 20 MHz to eliminate DMA frame-buffer overflow / `cam_hal: FB-OVF`)
+
+| Subsystem | Pin on ESP32-CAM | Hardware Assignment |
 | :--- | :--- | :--- |
-| **OV5640 / GC2145 D0 - D7** | GPIO 5, 18, 19, 21, 36, 39, 34, 35 | 8-bit DVP Parallel Video Bus |
-| **Camera PCLK / XCLK** | GPIO 22, GPIO 0 | Pixel Clock & External Master Clock |
-| **Camera VSYNC / HREF** | GPIO 25, GPIO 23 | Vertical Sync & Horizontal Reference |
-| **Camera I2C (SIOC / SIOD)** | GPIO 27, GPIO 26 | Sensor Configuration SCCB Bus |
-| **Camera Power Down (PWDN)**| GPIO 32 | Hardware sleep control |
-| **MicroSD Slot** | GPIO 14 (CLK), GPIO 15 (CMD), GPIO 2 (DAT0) | 1-bit high-speed SD_MMC Mode |
+| **OV2640 D0-D7 (Y2-Y9)** | GPIO 5, 18, 19, 21, 36, 39, 34, 35 | 8-bit DVP Parallel Video Bus |
+| **Camera XCLK** | GPIO 0 | External Master Clock (16 MHz set in firmware) |
+| **Camera PCLK** | GPIO 22 | Pixel Clock |
+| **Camera VSYNC** | GPIO 25 | Vertical Sync |
+| **Camera HREF** | GPIO 23 | Horizontal Reference |
+| **Camera I2C SIOD** | GPIO 26 | Sensor SCCB Data |
+| **Camera I2C SIOC** | GPIO 27 | Sensor SCCB Clock |
+| **Camera Power Down (PWDN)** | GPIO 32 | Hardware sleep control |
+| **Camera RESET** | -1 (not used) | Software reset only |
+| **MicroSD Slot** | GPIO 14 (CLK), GPIO 15 (CMD), GPIO 2 (DAT0) | 1-bit SD_MMC Mode (FAT32, up to 8 GB) |
 | **High-Power Flash LED** | **GPIO 4** | Transistor-driven ultra-bright white LED |
 | **Power Input** | **5V & GND** | Regulated USB 5V via AMS1117-3.3 |
+
+---
+
+## 3. Programming Notes
+
+### Controller Wand
+- Connect via USB — auto-resets into bootloader (no manual GPIO bridging needed on DevKit V1).
+
+### ESP32-CAM
+- **To flash:** Bridge **IO0 to GND**, then press **RST** to enter bootloader mode.
+- **To run:** Disconnect IO0 from GND, press **RST** again.
+- Using the ESP32-CAM-MB shield handles this automatically via the onboard DTR/RTS lines.
