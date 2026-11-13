@@ -14,7 +14,7 @@ Foliar plant blights—specifically Late Blight (*Phytophthora infestans*, an oo
 
 **KRISHI-DRISHTI** is a low-cost (< ₹1,500 INR / $18 USD), 100% offline-first agritech system comprising:
 1. **A Camera Unit:** An AI-Thinker ESP32-CAM with an OV5640 5MP sensor, 8GB MicroSD (SD_MMC 1-bit mode), and high-intensity LED flash.
-2. **A Handheld Controller Wand:** An ESP32 DevKit V1 with an SSD1306 OLED display, active-low SCAN/NEXT buttons, and canopy microclimate telemetry (DHT11 on GPIO 18).
+2. **A Handheld Controller Wand:** An ESP32 DevKit V1 with an SSD1306 OLED display, active-low multifunction button (GPIO 27), and canopy microclimate telemetry (DHT11 on GPIO 18).
 3. **A Universal Headless Edge AI Co-Processor:** Any standard smartphone (Android or iOS / iPhone / any manufacturer) or pocket tablet running an offline MobileNetV3 WebAssembly neural engine in the farmer's pocket without cell service, internet data, or app store installation. (Empirically benchmarked on low-end hardware down to an entry-level Samsung Galaxy A03 / Cortex-A55).
 
 *Scientific Scope:* The device provides immediate, non-invasive **field screening indications and agronomic triage**, intended to guide timely preventative action rather than replace destructive laboratory PCR/ELISA confirmation.
@@ -160,7 +160,7 @@ The definitive proof of KRISHI-DRISHTI's real-world diagnostic reliability canno
 > *"Respected Sir/Ma'am, I learned standard C++ and Python syntax through tutorials and official documentation. However, **KRISHI-DRISHTI is an original multi-tier systems architecture** designed specifically to overcome hardware limitations:  
 > 1. In `KRISHI_DRISHTI_Camera.ino`, the Edge AI server daemon is embedded directly into ESP32 flash memory (`PROGMEM`) and static files are streamed from SDMMC, overcoming Android 13's Scoped Storage restriction (`ERR_ACCESS_DENIED`) and allowing offline browser inference.  
 > 2. The Controller wand uses non-blocking polling and FreeRTOS-compatible timing for SSD1306 I2C telemetry, decoupling camera captures from sensor reads to prevent Watchdog Timer (WDT) resets. **Wi-Fi association is fully non-blocking**: the wand calls `WiFi.begin()` every 5 seconds with static IP (192.168.4.2) first, then auto-falls back to DHCP if static assignment fails — the NEXT button (GPIO 26) remains responsive throughout association.  
-> 3. Wi-Fi RF transmit power is set to 13 dBm for stable USB-powered wand-to-camera SoftAP link, with hardware brownout protection disabled during Wi-Fi PLL lock to prevent resets under load.  
+> 3. Wi-Fi RF transmit power is set to 8.5 dBm for stable USB-powered wand-to-camera SoftAP link, with hardware brownout protection disabled during Wi-Fi PLL lock to prevent resets under load.  
 > 4. The machine learning pipeline uses two-stage fine-tuning with canopy-specific augmentation on 7,710 dual-domain records representing 6,965 unique image files (6,600 clean PlantVillage + 1,110 clean PlantDoc outdoor, documented in TRAINING_RUN_MANIFEST.json) and evaluates against PlantDoc field images, with Shannon entropy gating to reject non-leaf frames."*
 
 ### Q2: "Is Late Blight caused by a fungus?"
@@ -207,7 +207,7 @@ All source code, CAD files, schematics, and model weights are released freely un
 The Controller wand (ESP32 DevKit V1) operates as a Wi-Fi Station associating to the Camera unit's SoftAP (`KRISHI-DRISHTI` @ 192.168.4.1). The connection pipeline was hardened across three firmware revisions:
 
 ### 9.1 Transmit Power
-Wi-Fi RF transmit power was set to `13 dBm` (~20 mW) — a stable level for USB-powered ESP32 operation that provides better range than the original `8.5 dBm` without causing TG1WDT watchdog resets during Wi-Fi radio bringup. Hardware brownout protection is suppressed during Wi-Fi PLL lock (`WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0)`) to prevent resets under radio load.
+Wi-Fi RF transmit power was set to `8.5 dBm` — a stable level for USB-powered ESP32 operation that avoids TG1WDT watchdog resets during Wi-Fi radio bringup. Higher power levels (13–19.5 dBm) caused crashes on USB power, so 8.5 dBm was retained for reliability. Hardware brownout protection is suppressed during Wi-Fi PLL lock (`WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0)`) to prevent resets under radio load. Hardware brownout protection is suppressed during Wi-Fi PLL lock (`WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0)`) to prevent resets under radio load.
 
 ### 9.2 Static IP with DHCP Fallback
 The controller requests static IP `192.168.4.2` (gateway `192.168.4.1`) for deterministic addressing. Because ESP32 static-IP assignment can fail on SoftAP links, the firmware retries with DHCP if static association does not complete within the retry window. The wand cycles between static-IP and DHCP attempts every 5 seconds until linked.
