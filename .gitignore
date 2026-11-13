@@ -33,3 +33,5 @@ tests/internet_test_images/
 
 # Precompiled release archives (hosted on GitHub Releases)
 releases/*.zip
+uploading_documents/*.zip
+*.zip

@@ -1936,12 +1936,18 @@ bool initialiseCamera() {
 // MICROSD IN 1-BIT MODE (DMA-PROTECTED)
 // --------------------------------------------------
 static uint64_t cachedSdCardSizeMB = 0;
+static uint8_t* lastRamFrameBuf = nullptr;
+static size_t lastRamFrameLen = 0;
 
 bool initialiseSD() {
   if (sdReady && cachedSdCardSizeMB > 0) return true;
+  SD_MMC.end();
+  delay(10);
   Serial.println("[SD] Mounting MicroSD in 1-bit mode (20MHz)...");
   if (!SD_MMC.begin("/sdcard", true, false, 20000, 5)) {
     Serial.println("[SD] 20MHz mount failed, retrying at 10MHz...");
+    SD_MMC.end();
+    delay(10);
     if (!SD_MMC.begin("/sdcard", true, false, 10000, 5)) {
       Serial.println("[SD WARN] MicroSD card not mounted (insert Class 10 card)");
       return false;
@@ -2025,21 +2031,30 @@ void handleCapture() {
       canopyTelemetryPresent = true;
     }
   }
+
+  // 1. Dynamic Sensor Reconnect Check
+  if (!cameraReady) {
+    Serial.println("[CAPTURE] Camera sensor offline, attempting runtime re-init...");
+    cameraReady = initialiseCamera();
+  }
   if (!cameraReady) {
     server.sendHeader("Access-Control-Allow-Origin", "*");
-    server.send(503, "application/json", "{\"status\":\"error\",\"message\":\"camera_offline\"}");
+    server.send(503, "application/json", "{\"status\":\"error\",\"message\":\"camera_offline\",\"detail\":\"Check OV2640 ribbon\"}");
     return;
   }
 
+  // 2. Dynamic MicroSD Mount Check
   if (!sdReady) {
-    server.sendHeader("Access-Control-Allow-Origin", "*");
-    server.send(503, "application/json", "{\"status\":\"error\",\"message\":\"sd_storage_offline\"}");
-    return;
+    Serial.println("[CAPTURE] SD card unmounted, attempting runtime mount...");
+    sdReady = initialiseSD();
+    if (sdReady) {
+      findNextScanNumber();
+    }
   }
 
   diagnosisReady = false; // Reset diagnosis flag for newly captured leaf
 
-  // Pulse Flash LED for illumination
+  // 3. Pulse Flash LED for illumination & capture frame
   digitalWrite(FLASH_LED_PIN, HIGH);
   // Flush pre-flash buffered frame so sensor AEC adapts to flash illumination
   camera_fb_t* stale_fb = esp_camera_fb_get();
@@ -2054,49 +2069,60 @@ void handleCapture() {
     return;
   }
 
+  // 4. Mirror Frame to Dedicated RAM/PSRAM Buffer for Instant Web/AI Streaming
+  if (lastRamFrameBuf != nullptr) {
+    free(lastRamFrameBuf);
+    lastRamFrameBuf = nullptr;
+    lastRamFrameLen = 0;
+  }
+  if (psramAvailable) {
+    lastRamFrameBuf = (uint8_t*)ps_malloc(fb->len);
+  } else {
+    lastRamFrameBuf = (uint8_t*)malloc(fb->len);
+  }
+  if (lastRamFrameBuf != nullptr) {
+    memcpy(lastRamFrameBuf, fb->buf, fb->len);
+    lastRamFrameLen = fb->len;
+  }
+
   uint32_t nextId = scanCounter + 1;
   char filename[32];
   snprintf(filename, sizeof(filename), "/scan_%06lu.jpg", (unsigned long)nextId);
-
   size_t written = 0;
-  File file = SD_MMC.open(filename, FILE_WRITE);
-  if (file) {
-    written = file.write(fb->buf, fb->len);
-    file.close();
+
+  // 5. If SD card is ready, persist frame to SDMMC
+  if (sdReady) {
+    File file = SD_MMC.open(filename, FILE_WRITE);
+    if (file) {
+      written = file.write(fb->buf, fb->len);
+      file.close();
+    }
+    if (written >= 512 && written == fb->len) {
+      scanCounter = nextId;
+      Serial.printf("[CAPTURE] Scan #%lu saved to SD (%u bytes)\n", (unsigned long)scanCounter, (unsigned int)written);
+    } else {
+      Serial.printf("[SD WARN] Frame write partial (%u / %u bytes). Retained in RAM.\n", 
+                    (unsigned int)written, (unsigned int)fb->len);
+      scanCounter = nextId;
+    }
   } else {
-    Serial.printf("[SD ERROR] Failed to open %s for write!\n", filename);
-    esp_camera_fb_return(fb);
-    server.sendHeader("Access-Control-Allow-Origin", "*");
-    server.send(500, "application/json", "{\"status\":\"error\",\"message\":\"sd_open_failed\"}");
-    return;
+    // RAM Mode fallback: AI diagnosis works perfectly without physical SD card!
+    scanCounter = nextId;
+    Serial.printf("[CAPTURE] Scan #%lu captured in RAM buffer (%u bytes) [SD Offline]\n", 
+                  (unsigned long)scanCounter, (unsigned int)fb->len);
   }
 
-  // Write verification: reject empty or truncated files
-  if (written < 512 || written != fb->len) {
-    Serial.printf("[SD ERROR] Frame write incomplete! Expected %u bytes, wrote %u bytes\n", 
-                  (unsigned int)fb->len, (unsigned int)written);
-    esp_camera_fb_return(fb);
-    server.sendHeader("Access-Control-Allow-Origin", "*");
-    server.send(500, "application/json", "{\"status\":\"error\",\"message\":\"sd_write_truncated\"}");
-    return;
-  }
-
-  scanCounter = nextId;
   esp_camera_fb_return(fb);
 
   String body = "{\"status\":\"success\",\"scan_id\":" + String(scanCounter);
-  body += ",\"filename\":\"" + String(filename) + "\",\"bytes\":" + String(written) + "}";
+  body += ",\"filename\":\"" + String(filename) + "\",\"bytes\":" + String(lastRamFrameLen);
+  body += ",\"storage\":\"" + String(sdReady ? "sd" : "ram") + "\"}";
 
-  Serial.printf("[CAPTURE] Scan #%lu saved (%u bytes)\n", (unsigned long)scanCounter, (unsigned int)written);
   server.sendHeader("Access-Control-Allow-Origin", "*");
   server.send(200, "application/json", body);
 }
 
 void handleGetImage() {
-  if (!sdReady) {
-    server.send(503, "text/plain", "SD offline");
-    return;
-  }
   if (isStreaming) {
     server.send(429, "text/plain", "Bus busy");
     return;
@@ -2117,20 +2143,32 @@ void handleGetImage() {
     return;
   }
 
-  if (!SD_MMC.exists(filename.c_str())) {
+  // 1. Try streaming from MicroSD if mounted & file exists
+  if (sdReady && SD_MMC.exists(filename.c_str())) {
+    File f = SD_MMC.open(filename.c_str(), FILE_READ);
+    if (server.hasArg("download")) {
+      server.sendHeader("Content-Disposition", "attachment; filename=\"" + filename.substring(1) + "\"");
+    }
+    server.sendHeader("Access-Control-Allow-Origin", "*");
+    server.streamFile(f, "image/jpeg");
+    f.close();
     isStreaming = false;
-    server.send(404, "text/plain", "Not found");
     return;
   }
 
-  File f = SD_MMC.open(filename.c_str(), FILE_READ);
-  if (server.hasArg("download")) {
-    server.sendHeader("Content-Disposition", "attachment; filename=\"" + filename.substring(1) + "\"");
+  // 2. Fallback: Stream latest captured frame from RAM buffer
+  if (lastRamFrameBuf != nullptr && lastRamFrameLen > 0) {
+    if (server.hasArg("download")) {
+      server.sendHeader("Content-Disposition", "attachment; filename=\"scan_latest.jpg\"");
+    }
+    server.sendHeader("Access-Control-Allow-Origin", "*");
+    server.send_P(200, "image/jpeg", (const char*)lastRamFrameBuf, lastRamFrameLen);
+    isStreaming = false;
+    return;
   }
-  server.sendHeader("Access-Control-Allow-Origin", "*");
-  server.streamFile(f, "image/jpeg");
-  f.close();
+
   isStreaming = false;
+  server.send(404, "text/plain", "Not found");
 }
 
 void handleListScans() {

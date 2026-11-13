@@ -22,10 +22,6 @@
 #include <DHT.h>
 #include "MicroclimateTracker.h"
 #include <ArduinoJson.h>
-#include <nvs_flash.h>
-#include "esp_private/brownout.h"
-#include "soc/soc.h"
-#include "soc/rtc_cntl_reg.h"
 
 // -----------------------------------------------------------------
 // HARDWARE DEFINITIONS
@@ -394,14 +390,11 @@ void ensureWiFiConnected() {
     renderActivePage();
   }
 
-  // Non-blocking reconnect: check every 7s without thrashing the Wi-Fi driver
-  if (lastWifiCheckMs == 0 || millis() - lastWifiCheckMs > 7000) {
+  // Non-blocking reconnect: check every 8s without thrashing the Wi-Fi driver
+  if (lastWifiCheckMs == 0 || millis() - lastWifiCheckMs > 8000) {
     lastWifiCheckMs = millis();
-    WiFi.setTxPower(WIFI_POWER_8_5dBm);
     Serial.println("[WIFI] Seeking Camera SoftAP: KRISHI-DRISHTI...");
-    WiFi.disconnect(false);
-    delay(20);
-    WiFi.begin(AP_SSID, AP_PASS);
+    WiFi.reconnect();
   }
 }
 
@@ -580,18 +573,30 @@ void triggerRealScan() {
   if (httpCode != 200) {
     Serial.printf("[SCAN] Camera capture failed! HTTP code: %d\n", httpCode);
     systemStatusMsg = "Capture Failed";
+    String errPayload = http.getString();
+    http.end();
+
     display.clearDisplay();
     drawHeader("CAPTURE NOTICE", "!");
     display.setTextSize(1);
-    display.setCursor(0, 18);
+    display.setCursor(0, 16);
     display.printf("Camera returned %d", httpCode);
-    display.setCursor(0, 30);
-    display.print("Check SD Card & Lens");
-    display.setCursor(0, 42);
-    display.print("Retrying next press...");
-    display.display();
-    delay(1800);
-    http.end();
+    display.setCursor(0, 28);
+    if (errPayload.indexOf("sd_storage_offline") >= 0 || errPayload.indexOf("sd_offline") >= 0) {
+      display.print("MicroSD Not Ready");
+      display.setCursor(0, 40);
+      display.print("Insert FAT32 Card");
+    } else if (errPayload.indexOf("camera_offline") >= 0) {
+      display.print("Sensor Offline");
+      display.setCursor(0, 40);
+      display.print("Check Lens Cable");
+    } else {
+      display.print("Check SD Card & Lens");
+      display.setCursor(0, 40);
+      display.print("Hold SCAN for Demo");
+    }
+    drawFooter("[PRESS SCAN TO RETRY]");
+    delay(2000);
     currentState = STATE_IDLE;
     renderActivePage();
     return;
@@ -636,8 +641,7 @@ void triggerRealScan() {
 // ARDUINO SETUP
 // -----------------------------------------------------------------
 void setup() {
-  // 1. Lower CPU frequency to 80MHz to cut power draw in half and eliminate USB surge
-  setCpuFrequencyMhz(80);
+  setCpuFrequencyMhz(240);
 
   Serial.begin(115200);
   delay(150);
@@ -651,13 +655,22 @@ void setup() {
   pinMode(SCAN_BUTTON, INPUT_PULLUP);
   pinMode(NEXT_BUTTON, INPUT_PULLUP);
 
-  // 1. Initialize OLED Display FIRST so user immediately sees live boot state
+  // 1. Initialize OLED Display FIRST so user immediately sees bright live state
   Serial.println("[INIT] Step 1: I2C & OLED..."); Serial.flush();
   Wire.begin(21, 22);
+  Wire.setClock(100000); // 100 kHz standard mode: rock-solid on breadboards
 
-  if (display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDRESS)) {
+  bool oledOk = display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+  if (!oledOk) {
+    Serial.println("[OLED] Address 0x3C failed, trying 0x3D..."); Serial.flush();
+    oledOk = display.begin(SSD1306_SWITCHCAPVCC, 0x3D);
+  }
+
+  if (oledOk) {
     Serial.println("[OLED] SSD1306 Initialized successfully."); Serial.flush();
-    display.dim(true); // Energy-efficient low-current drive (<15mA)
+    display.dim(false); // Bright, high-visibility contrast
+    display.ssd1306_command(SSD1306_SETCONTRAST);
+    display.ssd1306_command(0xCF); // Maximum contrast register value
     display.clearDisplay();
     display.setTextColor(SSD1306_WHITE);
 
@@ -676,27 +689,14 @@ void setup() {
     display.setCursor(10, 49);
     display.print("Linking to Cam...");
     display.display();
+  } else {
+    Serial.println("[OLED ERROR] Display not detected on I2C bus (Check SDA:21, SCL:22)!"); Serial.flush();
   }
 
-  // 2. Suppress hardware brownout trigger & init NVS
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
-  esp_err_t nvsRet = nvs_flash_init();
-  if (nvsRet == ESP_ERR_NVS_NO_FREE_PAGES || nvsRet == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-    nvs_flash_erase();
-    nvs_flash_init();
-  }
-
-  // 3. Wi-Fi Station Bringup with capped TX power (8.5 dBm)
+  // 2. Wi-Fi Station Bringup
   Serial.println("[INIT] Step 2: Wi-Fi Radio Bringup..."); Serial.flush();
-  WiFi.persistent(false);
-  WiFi.disconnect(true);
-  delay(50);
   WiFi.mode(WIFI_STA);
-  WiFi.setTxPower(WIFI_POWER_8_5dBm); // 8.5 dBm prevents USB brownout sag
-
-  // Static IP for instant routing (192.168.4.2 -> Gateway 192.168.4.1)
   WiFi.config(WAND_STATIC_IP, WAND_GATEWAY, WAND_SUBNET, WAND_DNS);
-
   Serial.printf("[WIFI] Connecting to SoftAP: '%s'...\n", AP_SSID); Serial.flush();
   WiFi.begin(AP_SSID, AP_PASS);
 
@@ -704,23 +704,32 @@ void setup() {
   Serial.println("[INIT] Step 3: DHT11 Sensor..."); Serial.flush();
   dht.begin();
 
-  // 4. Quick 2-second link check for display banner
+  // 6. Non-blocking quick link check for splash banner
   unsigned long startLinkMs = millis();
-  while (WiFi.status() != WL_CONNECTED && (millis() - startLinkMs < 2000)) {
-    delay(100);
+  while (WiFi.status() != WL_CONNECTED && (millis() - startLinkMs < 1500)) {
+    delay(50);
     yield();
   }
 
   if (WiFi.status() == WL_CONNECTED) {
     wifiConnected = true;
     Serial.println("[WIFI] Cam Linked! IP: " + WiFi.localIP().toString()); Serial.flush();
-    display.fillRect(0, 48, 128, 16, SSD1306_BLACK);
-    display.setCursor(16, 49);
-    display.print("CAM LINKED! [OK]");
-    display.display();
-    delay(400);
+    if (oledOk) {
+      display.fillRect(0, 48, 128, 16, SSD1306_BLACK);
+      display.setCursor(16, 49);
+      display.print("CAM LINKED! [OK]");
+      display.display();
+      delay(400);
+    }
   } else {
-    Serial.println("[WIFI] Associating in background... (Wand UI is live)"); Serial.flush();
+    Serial.println("[WIFI] Cam not detected yet. Starting in Standby Mode..."); Serial.flush();
+    if (oledOk) {
+      display.fillRect(0, 48, 128, 16, SSD1306_BLACK);
+      display.setCursor(12, 49);
+      display.print("STANDBY READY [OK]");
+      display.display();
+      delay(300);
+    }
   }
 
   // Boot directly to the friendly READY TO SCAN home screen!
