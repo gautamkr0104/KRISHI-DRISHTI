@@ -1459,7 +1459,7 @@
       if (maxProb >= 0.30 || margin >= 0.05) {
         return {
           crop: match.crop,
-          disease: `${match.disease} (Suspected / Ambiguous)`,
+          disease: match.disease,
           pathogen: `${match.pathogen} [Early lesion / low contrast sample]`,
           confidence: confPercent,
           status: "UNCERTAIN",
