@@ -139,7 +139,7 @@ void drawHeader(const char* title, const char* pageIndicator) {
   display.drawLine(0, 9, 127, 9, SSD1306_WHITE);
 }
 
-void drawFooter(const char* actionPrompt = "[SCAN]Snap [NEXT]>") {
+void drawFooter(const char* actionPrompt = "[TAP] Next  [HOLD] Scan") {
   display.drawLine(0, 52, 127, 52, SSD1306_WHITE);
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
@@ -181,7 +181,7 @@ void renderPage0_ReadyToScan() {
     display.print("DHT11: Initializing...");
   }
 
-  drawFooter("[PRESS SCAN BUTTON]");
+  drawFooter("[PRESS TO SCAN]");
 }
 
 // -----------------------------------------------------------------
@@ -219,7 +219,7 @@ void renderPage1_Canopy() {
     display.print("Check 3.3V / Data wire");
   }
 
-  drawFooter("[SCAN]Snap [NEXT]>");
+  drawFooter("[TAP] Next  [HOLD] Scan");
 }
 
 // -----------------------------------------------------------------
@@ -256,7 +256,7 @@ void renderPage2_Diagnosis() {
     display.print("green [SCAN] button");
   }
 
-  drawFooter("[SCAN]New  [NEXT]Cure");
+  drawFooter("[TAP] Cure  [HOLD] Scan");
 }
 
 // -----------------------------------------------------------------
@@ -311,7 +311,7 @@ void renderPage3_Cure() {
     display.print("Perform leaf scan");
   }
 
-  drawFooter("[SCAN]Snap [NEXT]>");
+  drawFooter("[TAP] Next  [HOLD] Scan");
 }
 
 // -----------------------------------------------------------------
@@ -339,7 +339,7 @@ void renderPage4_Status() {
   display.setCursor(0, 42);
   display.printf("Scans   : %u Completed", totalScansRecorded);
 
-  drawFooter("[SCAN]Snap [NEXT]Home");
+  drawFooter("[TAP] Home  [HOLD] Scan");
 }
 
 void renderActivePage() {
@@ -596,7 +596,7 @@ void triggerRealScan() {
       display.setCursor(0, 40);
       display.print("Hold SCAN for Demo");
     }
-    drawFooter("[PRESS SCAN TO RETRY]");
+    drawFooter("[TAP TO RETRY]");
     delay(2000);
     currentState = STATE_IDLE;
     renderActivePage();
@@ -658,7 +658,7 @@ void setup() {
   Serial.flush();
 
   pinMode(SCAN_BUTTON, INPUT_PULLUP);
-  pinMode(NEXT_BUTTON, INPUT_PULLUP);
+  // pinMode(NEXT_BUTTON, INPUT_PULLUP); // Unified 1-Button mode
 
   // 3. Initialize OLED Display FIRST so user immediately sees bright live state
   Serial.println("[INIT] Step 1: I2C & OLED..."); Serial.flush();
@@ -771,38 +771,45 @@ void loop() {
     }
   }
 
+  // UNIFIED 1-BUTTON CONTROL (GPIO 27 to GND)
+  // - Tap / Short Press (< 800ms):
+  //     * On Home (Screen 0): Trigger Leaf Scan directly!
+  //     * On Screens 1-4: Advance to next screen (Canopy -> Diagnosis -> Cure -> Status -> Home)
+  // - Long Press (>= 800ms):
+  //     * Triggers Leaf Scan from ANY screen!
+  //     * If Camera offline and press >= 1.5s: Triggers Demo Simulation Scan.
   bool sScan = digitalRead(SCAN_BUTTON);
-  bool sNext = digitalRead(NEXT_BUTTON);
 
-  // BUTTON 1: SCAN (GPIO 27)
-  // Pressing SCAN starts real capture if camera is connected.
-  // If camera is offline, short press shows friendly notice, long press (>1.2s) triggers DEMO TEST!
   if (prevScan == HIGH && sScan == LOW) {
     scanPressStartMs = millis();
   } else if (prevScan == LOW && sScan == HIGH) {
     unsigned long pressDuration = millis() - scanPressStartMs;
     if (pressDuration >= DEBOUNCE_MS) {
-      if (WiFi.status() != WL_CONNECTED && pressDuration >= 1200) {
-        Serial.println("[USER] Long-press on SCAN detected -> Triggering DEMO TEST SCAN!");
-        triggerDemoScan();
+      if (pressDuration >= 800) {
+        // LONG PRESS: Always Scan from anywhere!
+        if (WiFi.status() != WL_CONNECTED && pressDuration >= 1500) {
+          Serial.println("[USER] Hold on Button detected -> Triggering DEMO TEST SCAN!");
+          triggerDemoScan();
+        } else {
+          Serial.println("[USER] Hold on Button detected -> Initiating leaf scan...");
+          triggerRealScan();
+        }
       } else {
-        Serial.println("[USER] SCAN Button Pressed -> Initiating scan sequence...");
-        triggerRealScan();
+        // SHORT TAP:
+        if (activePage == 0) {
+          // On Home Screen, quick tap scans immediately!
+          Serial.println("[USER] Tap on Home -> Initiating leaf scan...");
+          triggerRealScan();
+        } else {
+          // On Result / Telemetry screens, quick tap pages through carousel
+          activePage = (activePage + 1) % TOTAL_PAGES;
+          Serial.printf("[USER] Tap Button -> Showing Page %d/%d\n", activePage + 1, TOTAL_PAGES);
+          renderActivePage();
+        }
       }
     }
   }
-
-  // BUTTON 2: NEXT (GPIO 26)
-  // Uneducated farmer controls pages at their own pace. Zero sudden auto-flipping!
-  if (prevNext == HIGH && sNext == LOW && millis() - lastNextMs > DEBOUNCE_MS) {
-    lastNextMs = millis();
-    activePage = (activePage + 1) % TOTAL_PAGES;
-    Serial.printf("[USER] NEXT Button Pressed -> Showing Page %d/%d\n", activePage + 1, TOTAL_PAGES);
-    renderActivePage();
-  }
-
   prevScan = sScan;
-  prevNext = sNext;
 
   // Update environmental telemetry on Screen 0 & 1 periodically without flashing
   static unsigned long lastOledRefreshMs = 0;
