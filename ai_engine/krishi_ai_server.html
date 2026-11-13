@@ -6,8 +6,17 @@
   <title>KRISHI-DRISHTI :: Edge AI Co-Processor</title>
   
   <!-- Bundled Offline TensorFlow.js & TFLite WASM Runtimes -->
-  <script src="/vendor/tf.min.js"></script>
-  <script src="/vendor/tf-tflite.min.js"></script>
+  <script src="/vendor/tf.min.js" onerror="log('CRITICAL: Failed to load /vendor/tf.min.js', 'err');"></script>
+  <script src="/vendor/tf-tflite.min.js" onerror="log('CRITICAL: Failed to load /vendor/tf-tflite.min.js', 'err');"></script>
+  <script>
+    window.__vendorScriptsLoaded = false;
+    window.addEventListener('load', () => {
+      window.__vendorScriptsLoaded = (typeof tf !== 'undefined') && (typeof tflite !== 'undefined' || (typeof tf !== 'undefined' && typeof tf.tflite !== 'undefined'));
+      if (!window.__vendorScriptsLoaded) {
+        log('WARNING: TFLite vendor scripts may not have loaded correctly. AI inference will be unavailable.', 'err');
+      }
+    });
+  </script>
 
   <style>
     :root {
@@ -967,8 +976,19 @@
 
       try {
         log("Booting bundled WASM TFLite co-processor engine...", "ai");
+
+        // Resolve TFLite API: try standalone global first, then tf namespace
+        let tfliteApi = null;
         if (typeof tflite !== 'undefined' && tflite.setWasmPath) {
-          tflite.setWasmPath('/vendor/');
+          tfliteApi = tflite;
+          tfliteApi.setWasmPath('/vendor/');
+        } else if (typeof tf !== 'undefined' && tf.tflite && tf.tflite.setWasmPath) {
+          tfliteApi = tf.tflite;
+          await tf.setBackend('wasm');
+          await tf.ready();
+          tfliteApi.setWasmPath('/vendor/');
+        } else {
+          throw new Error("TFLite runtime not loaded. Check /vendor/tf.min.js and /vendor/tf-tflite.min.js");
         }
 
         if (engineEl) {
@@ -976,7 +996,7 @@
           engineEl.style.color = "var(--accent-amber)";
         }
 
-        tfliteModel = await tflite.loadTFLiteModel('/krishi_drishti_model.tflite');
+        tfliteModel = await tfliteApi.loadTFLiteModel('/krishi_drishti_model.tflite');
         modelReady = true;
         isModelLoading = false;
 
