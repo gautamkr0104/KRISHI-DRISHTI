@@ -673,13 +673,20 @@ void setup() {
 
   if (oledOk) {
     Serial.println("[OLED] SSD1306 Initialized successfully."); Serial.flush();
-    display.dim(false); // Bright, high-visibility contrast
-    display.ssd1306_command(SSD1306_SETCONTRAST);
-    display.ssd1306_command(0xCF); // Maximum contrast register value
+
+    // Send contrast command + value in ONE Wire transaction (SSD1306 protocol requires this)
+    Wire.beginTransmission(OLED_ADDRESS);
+    Wire.write(0x00);       // Co=0, D/C#=0 → command stream
+    Wire.write(0x81);       // Set Contrast Control command
+    Wire.write(0xFF);       // Maximum contrast (0x00=off, 0xFF=max)
+    Wire.endTransmission();
+
+    display.dim(false);     // Ensure charge pump is at full brightness
     display.clearDisplay();
     display.setTextColor(SSD1306_WHITE);
 
-    // Centered Title Bar
+    // Splash screen - confirm display is alive
+    display.fillRect(0, 0, 128, 64, SSD1306_BLACK); // clear VRAM
     display.setTextSize(1);
     display.setCursor(22, 6);
     display.print("KRISHI-DRISHTI");
@@ -694,6 +701,7 @@ void setup() {
     display.setCursor(10, 49);
     display.print("Linking to Cam...");
     display.display();
+    delay(50); // Let I2C bus settle after bulk transfer
   } else {
     Serial.println("[OLED ERROR] Display not detected on I2C bus (Check SDA:21, SCL:22)!"); Serial.flush();
   }
