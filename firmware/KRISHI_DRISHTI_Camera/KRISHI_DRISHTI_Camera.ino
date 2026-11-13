@@ -57,8 +57,6 @@ String sensorModel = "Unknown";
 
 uint32_t scanCounter = 0;
 float lastCanopyTemp = 0.0;
-
-unsigned long lastSdCheckMs = 0;
 float lastCanopyHum = 0.0;
 bool canopyTelemetryPresent = false;
 unsigned long lastWandActivityMs = 0;
@@ -1945,11 +1943,8 @@ bool initialiseSD() {
   if (!SD_MMC.begin("/sdcard", true, false, 20000, 5)) {
     Serial.println("[SD] 20MHz mount failed, retrying at 10MHz...");
     if (!SD_MMC.begin("/sdcard", true, false, 10000, 5)) {
-      Serial.println("[SD] Mount failed, retrying with format_if_empty=true...");
-      if (!SD_MMC.begin("/sdcard", true, true, 10000, 5)) {
-        Serial.println("[SD WARN] MicroSD card not mounted (insert Class 10 FAT32 card)");
-        return false;
-      }
+      Serial.println("[SD WARN] MicroSD card not mounted (insert Class 10 card)");
+      return false;
     }
   }
   uint8_t cardType = SD_MMC.cardType();
@@ -2337,16 +2332,4 @@ void setup() {
 void loop() {
   server.handleClient();
   delay(2);
-
-  // Periodic SD re-check: detects cards inserted after boot,
-  // recovers from transient mount failures, and clears 503 errors.
-  if (!sdReady && (lastSdCheckMs == 0 || millis() - lastSdCheckMs > 5000)) {
-    lastSdCheckMs = millis();
-    Serial.println("[SD] Periodic re-check: attempting mount...");
-    sdReady = initialiseSD();
-    if (sdReady) {
-      findNextScanNumber();
-      Serial.println("[SD] Card mounted successfully — 503 errors cleared.");
-    }
-  }
 }
