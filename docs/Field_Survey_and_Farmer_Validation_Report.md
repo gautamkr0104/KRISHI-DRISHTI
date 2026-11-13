@@ -40,7 +40,7 @@ The investigation progressed through five structured phases:
    Real-world camera testing under unshielded LED torch lighting revealed a key failure mode: specular glare and radial shadows on healthy leaflets mimicked Late Blight necrosis (16.7% raw accuracy). This empirically validated why the physical 8 cm shroud and DHT11 microclimate gating (suppressing Late Blight spray alerts when RH < 85%) are essential. Conducted field usability walkthroughs with 5 local farmers (15 test leaf scans) demonstrating the physical wand, OLED carousel, and offline operation.
 
 5. **Phase V (Nov 9 – Nov 12, 2026): Firmware Hardening (v2.3), Cost Audit & Final Documentation**  
-   Locked firmware with `READY TO SCAN` default state, hardened write-verification checks, standardized unit BOM to exactly ₹1,480, and finalized exhibition reports and evidence dossiers on November 12, 2026. **Wi-Fi connectivity hardened:** controller RF TX power raised to 13 dBm, static-IP association with DHCP fallback, fully non-blocking Wi-Fi retry every 5 seconds so the NEXT button remains responsive during camera association.
+   Locked firmware with `READY TO SCAN` default state, hardened write-verification checks, standardized unit BOM to exactly ₹1,480, and finalized exhibition reports and evidence dossiers on November 12, 2026. **Wi-Fi connectivity hardened:** controller RF TX power at 8.5 dBm (stable on USB), static-IP association with DHCP fallback, fully non-blocking Wi-Fi retry every 5 seconds so the navigation button remains responsive during camera association.
 
 ---
 
@@ -89,7 +89,7 @@ Testing unconstrained mobile cameras under artificial night illumination and pub
 
 2. **In-Situ Prototype Usability Demonstration:**
    - Evaluated prototype ergonomics and workflow with 5 local growers in Begusarai across 15 leaf scans.
-   - Farmers praised the tactile pushbuttons (GPIO 27 SCAN, GPIO 26 NEXT) and high-contrast OLED display, confirming readability under open daylight.
+   - Farmers praised the tactile tactile pushbutton on GPIO 27 (unified 1-button navigation) and high-contrast OLED display, confirming readability under open daylight.
 
 ---
 
