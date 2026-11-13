@@ -568,7 +568,7 @@ void triggerRealScan() {
     captureUrl += "?temp=" + String(currentTemp, 1) + "&hum=" + String(currentHum, 1);
   }
   http.begin(captureUrl);
-  http.setTimeout(4000);
+  http.setTimeout(8000); // 8s: camera needs time to flush FB-OVF stale frames before serving
   int httpCode = http.GET();
 
   if (httpCode != 200) {
