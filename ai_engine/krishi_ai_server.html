@@ -6,8 +6,17 @@
   <title>KRISHI-DRISHTI :: Edge AI Co-Processor</title>
   
   <!-- Bundled Offline TensorFlow.js & TFLite WASM Runtimes -->
-  <script src="/vendor/tf.min.js"></script>
-  <script src="/vendor/tf-tflite.min.js"></script>
+  <script src="/vendor/tf.min.js" onerror="log('CRITICAL: Failed to load /vendor/tf.min.js', 'err');"></script>
+  <script src="/vendor/tf-tflite.min.js" onerror="log('CRITICAL: Failed to load /vendor/tf-tflite.min.js', 'err');"></script>
+  <script>
+    window.__vendorScriptsLoaded = false;
+    window.addEventListener('load', () => {
+      window.__vendorScriptsLoaded = (typeof tf !== 'undefined') && (typeof tflite !== 'undefined' || (typeof tf !== 'undefined' && typeof tf.tflite !== 'undefined'));
+      if (!window.__vendorScriptsLoaded) {
+        log('WARNING: TFLite vendor scripts may not have loaded correctly. AI inference will be unavailable.', 'err');
+      }
+    });
+  </script>
 
   <style>
     :root {
@@ -967,8 +976,19 @@
 
       try {
         log("Booting bundled WASM TFLite co-processor engine...", "ai");
+
+        // Resolve TFLite API: try standalone global first, then tf namespace
+        let tfliteApi = null;
         if (typeof tflite !== 'undefined' && tflite.setWasmPath) {
-          tflite.setWasmPath('/vendor/');
+          tfliteApi = tflite;
+          tfliteApi.setWasmPath('/vendor/');
+        } else if (typeof tf !== 'undefined' && tf.tflite && tf.tflite.setWasmPath) {
+          tfliteApi = tf.tflite;
+          await tf.setBackend('wasm');
+          await tf.ready();
+          tfliteApi.setWasmPath('/vendor/');
+        } else {
+          throw new Error("TFLite runtime not loaded. Check /vendor/tf.min.js and /vendor/tf-tflite.min.js");
         }
 
         if (engineEl) {
@@ -976,7 +996,7 @@
           engineEl.style.color = "var(--accent-amber)";
         }
 
-        tfliteModel = await tflite.loadTFLiteModel('/krishi_drishti_model.tflite');
+        tfliteModel = await tfliteApi.loadTFLiteModel('/krishi_drishti_model.tflite');
         modelReady = true;
         isModelLoading = false;
 
@@ -1243,9 +1263,18 @@
     async function runEdgeInference(imgElement) {
       const cvs = document.getElementById("offscreenCanvas");
       const ctx = cvs.getContext("2d", { willReadFrequently: true });
-      ctx.drawImage(imgElement, 0, 0, 128, 128);
 
-      // 1. Biological Chlorophyll Foliar & Non-Leaf / Selfie Screening Check
+      // 1. Aspect-Ratio Preserving Center-Square Crop to 128x128
+      // Fixes squishing of 1280x1024 / 4:3 / 16:9 frames so leaf geometry matches model training!
+      const nw = imgElement.naturalWidth || imgElement.width || 128;
+      const nh = imgElement.naturalHeight || imgElement.height || 128;
+      const side = Math.min(nw, nh);
+      const sx = Math.floor((nw - side) / 2);
+      const sy = Math.floor((nh - side) / 2);
+      ctx.clearRect(0, 0, 128, 128);
+      ctx.drawImage(imgElement, sx, sy, side, side, 0, 0, 128, 128);
+
+      // 2. Enhanced Biological Foliar Screening & Glare Rejection Gate
       const frameData = ctx.getImageData(0, 0, 128, 128);
       const data = frameData.data;
       let totalPixels = 128 * 128;
@@ -1253,22 +1282,24 @@
       let necroticLesionPixels = 0;
       let humanSkinPixels = 0;
       let darkVoidPixels = 0;
+      let glarePixels = 0;
+      let neutralPixels = 0;
 
       for (let i = 0; i < data.length; i += 4) {
         const r = data[i];
         const g = data[i + 1];
         const b = data[i + 2];
 
-        // A. Chlorophyll foliar tissue (green must be competitive with red and higher than blue)
-        if (g > 32 && g >= r * 0.90 && g > b * 1.02) {
+        // A. True foliar chlorophyll (green dominant and elevated above blue)
+        if (g > 35 && g > r && g > b) {
           greenChlorophyllPixels++;
         }
-        // B. Fungal necrotic tissue (blight spots - dark brown/olive with bounded red/green balance)
-        else if (r > 40 && g > 30 && b < 110 && r >= g && (r - g) < 50 && (r + g) > (2.2 * b)) {
+        // B. Fungal necrotic tissue (dark brown/olive blight lesion)
+        else if (r > 40 && g > 30 && b < 110 && r >= g && (r - g) < 45 && (r + g) > (2.2 * b)) {
           necroticLesionPixels++;
         }
 
-        // C. Biometric Human Skin Tone Filter (Selfie / Face / Hand detection)
+        // C. Biometric Human Skin Tone Filter
         if (r > 95 && g > 40 && b > 20 && r > g && g > b && (r - g) > 12 && (r - b) > 20) {
           humanSkinPixels++;
         }
@@ -1277,19 +1308,31 @@
         if (r < 30 && g < 30 && b < 30) {
           darkVoidPixels++;
         }
+
+        // E. Flash Glare / Overexposure (white wash out)
+        if (r > 225 && g > 225 && b > 225) {
+          glarePixels++;
+        }
+
+        // F. Neutral/grey indoor surface (table, wall, floor)
+        if (Math.abs(r - g) < 18 && Math.abs(g - b) < 18 && Math.abs(r - b) < 22) {
+          neutralPixels++;
+        }
       }
 
       const greenRatio = greenChlorophyllPixels / totalPixels;
       const skinRatio = humanSkinPixels / totalPixels;
       const voidRatio = darkVoidPixels / totalPixels;
+      const glareRatio = glarePixels / totalPixels;
+      const neutralRatio = neutralPixels / totalPixels;
       const totalFoliarRatio = (greenChlorophyllPixels + necroticLesionPixels) / totalPixels;
 
-      // 1. Reject Human Face / Selfie / Hand
+      // Filter 1: Reject Human Face / Hand / Skin
       if (skinRatio > 0.12 && greenRatio < 0.08) {
         return {
           crop: "Invalid",
           disease: "No Leaf Detected",
-          pathogen: "Non-Botanical Subject: Human face / skin detected in frame",
+          pathogen: "Non-Botanical Subject: Human skin / hand detected in frame",
           confidence: "0.0",
           status: "UNCERTAIN",
           organic: "KRISHI-DRISHTI is strictly calibrated for Solanaceae foliar pathology.",
@@ -1298,7 +1341,7 @@
         };
       }
 
-      // 2. Reject Lens Cap / Complete Darkness
+      // Filter 2: Reject Lens Cap / Complete Darkness
       if (voidRatio > 0.75) {
         return {
           crop: "Invalid",
@@ -1312,8 +1355,22 @@
         };
       }
 
-      // 3. Reject Ambient Surfaces, Backgrounds & Non-Plant Objects (requires minimum chlorophyll)
-      if (greenRatio < 0.06 || totalFoliarRatio < 0.12) {
+      // Filter 3: Reject Severe Overexposure / Flash Glare
+      if (glareRatio > 0.30) {
+        return {
+          crop: "Invalid",
+          disease: "No Leaf Detected",
+          pathogen: "Optical Flash Glare / Frame overexposed by reflection",
+          confidence: "0.0",
+          status: "UNCERTAIN",
+          organic: "Avoid aiming directly at reflective surfaces or point-blank white objects.",
+          chemical: "Maintain 8-10cm shroud distance and re-scan.",
+          entropy: "0.00"
+        };
+      }
+
+      // Filter 4: Reject Non-Plant Ambient Surfaces & Backgrounds
+      if (totalFoliarRatio < 0.15 || (neutralRatio > 0.50 && greenRatio < 0.15)) {
         return {
           crop: "Invalid",
           disease: "No Leaf Detected",
