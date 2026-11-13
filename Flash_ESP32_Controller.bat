@@ -7,7 +7,7 @@ echo   KRISHI-DRISHTI :: 1-CLICK ESP32 DEV-CONTROLLER FLASHER
 echo ======================================================================
 echo.
 
-set PORT=COM7
+set PORT=COM5
 if not "%~1"=="" set PORT=%~1
 
 set ESPTOOL="C:\Users\DELL\AppData\Local\Arduino15\packages\esp32\tools\esptool_py\5.3.1\esptool.exe"
