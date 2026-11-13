@@ -231,20 +231,25 @@ void renderPage2_Diagnosis() {
   if (hasDiagnosis) {
     display.setTextSize(1);
     display.setCursor(0, 12);
-    display.printf("Crop : %s", diagCrop.c_str());
+    display.printf("Crop: %s", diagCrop.c_str());
 
     display.setCursor(0, 22);
-    display.printf("Diag : %s", diagDisease.c_str());
+    // Sanitize disease string so it never overflows line 2 (18 chars max)
+    String cleanDiag = diagDisease;
+    cleanDiag.replace(" (Suspected / Ambiguous)", "");
+    cleanDiag.replace(" (Suspected)", "");
+    if (cleanDiag.length() > 14) cleanDiag = cleanDiag.substring(0, 14);
+    display.printf("Diag: %s", cleanDiag.c_str());
 
     display.setCursor(0, 32);
     if (diagStatus == "UNCERTAIN") {
-      display.print("Conf : LOW / AMBIGUOUS");
+      display.printf("Conf: %.1f%% (Low)", diagConfidence);
       display.setCursor(0, 42);
-      display.print("Stat : RETAKE PHOTO");
+      display.print("Stat: RETAKE PHOTO");
     } else {
-      display.printf("Conf : %.1f%%", diagConfidence);
+      display.printf("Conf: %.1f%%", diagConfidence);
       display.setCursor(0, 42);
-      display.printf("Stat : %s", diagStatus.c_str());
+      display.printf("Stat: %s", diagStatus.c_str());
     }
   } else {
     display.setTextSize(1);
