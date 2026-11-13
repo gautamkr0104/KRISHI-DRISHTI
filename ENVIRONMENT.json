@@ -1,0 +1,105 @@
+{
+  "project": "KRISHI-DRISHTI",
+  "version": "2.3.0",
+  "description": "Offline Solanaceae Foliar Disease Screening Wand & Edge AI Assistant",
+  "authoritative_bom_cost_inr": 1480,
+  "cbse_exhibition_team": {
+    "team_id": "T26706431",
+    "registered_sub_theme": "Artificial Intelligence (AI) for Better Life",
+    "school": "Udaan International School, Begusarai, Bihar",
+    "students": [
+      {
+        "name": "Gautam Kumar",
+        "class": "Class IX",
+        "gender": "Male"
+      },
+      {
+        "name": "Abhinav Kumar",
+        "class": "Class IX",
+        "gender": "Male"
+      }
+    ],
+    "mentor": {
+      "name": "Soni Kumari",
+      "designation": "PGT Science",
+      "mobile": "9102812661",
+      "email": "ksoni251090@gmail.com"
+    },
+    "submission_date": "2026-11-12"
+  },
+  "toolchains": {
+    "python": {
+      "executable": "C:\\Users\\DELL\\krishi_pdf_env\\Scripts\\python.exe",
+      "pip": "C:\\Users\\DELL\\krishi_pdf_env\\Scripts\\pip.exe",
+      "virtualenv_path": "C:\\Users\\DELL\\krishi_pdf_env",
+      "installed_key_packages": [
+        "ai-edge-litert (tflite-runtime)",
+        "numpy",
+        "pillow",
+        "pymupdf (fitz)",
+        "python-docx",
+        "python-pptx",
+        "reportlab",
+        "pyserial"
+      ]
+    },
+    "esp32_arduino": {
+      "esptool_exe": "C:\\Users\\DELL\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\esptool_py\\5.3.1\\esptool.exe",
+      "xtensa_gxx_compiler": "C:\\Users\\DELL\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\esp-x32\\2601\\bin\\xtensa-esp32-elf-g++.exe",
+      "arduino15_root": "C:\\Users\\DELL\\AppData\\Local\\Arduino15",
+      "default_serial_port": "COM7",
+      "default_baud_rate": 115200,
+      "flash_mode": "dio",
+      "flash_freq": "40m (Camera) / 40m (Controller)",
+      "flash_size": "4MB"
+    },
+    "git": {
+      "repository_root": "C:\\Users\\DELL\\Downloads\\KRISHI-DRISHTI",
+      "remote_origin": "https://github.com/gautamkr0104/KRISHI-DRISHTI.git",
+      "branch": "main"
+    }
+  },
+  "hardware_specifications": {
+    "node_a_camera_wand": {
+      "board": "AI-Thinker ESP32-CAM",
+      "sensor": "OV2640 installed (OV5640 auto-detect in firmware)",
+      "optical_shroud": "3D-printed 8 cm cylindrical shroud with matte acrylic diffuser",
+      "storage": "MicroSD 1-bit SD_MMC DMA mode",
+      "flash_led_gpio": 4,
+      "wifi_mode": "SoftAP (SSID: KRISHI-DRISHTI, Gateway: http://192.168.4.1)"
+    },
+    "node_b_controller": {
+      "board": "ESP32 DevKit V1 (30-pin)",
+      "display": "SSD1306 0.96 inch I2C OLED (SDA: GPIO 21, SCL: GPIO 22)",
+      "environmental_sensor": "DHT11 (DATA: GPIO 18, 3.3V power)",
+      "scan_trigger_button": "GPIO 27 (Active LOW with internal pull-up)",
+      "next_ui_button": "GPIO 26 (Active LOW with internal pull-up)"
+    },
+    "node_c_edge_coprocessor": {
+      "runtime": "Local offline browser WebAssembly via SoftAP (or Termux Python Daemon)",
+      "model_architecture": "MobileNetV3-Small INT8 / Float16 Quantized (2.01 MB)",
+      "input_resolution": [
+        128,
+        128,
+        3
+      ],
+      "gating_rules": {
+        "min_confidence": 0.5,
+        "max_shannon_entropy": 1.45,
+        "min_foliar_ratio": 0.12,
+        "max_dark_fraction": 0.45,
+        "rh_late_blight_suppression_pct": 85.0
+      }
+    }
+  },
+  "directory_structure": {
+    "firmware": "C++ Arduino firmware for Camera and Controller nodes",
+    "ai_engine": "MobileNetV3 model, TFLite weights, WASM runtime, training scripts",
+    "tests": "Test suite, hardware captures, holdouts, validation manifest",
+    "docs": "Markdown technical specifications, schematics, survey reports",
+    "uploading_documents": "Official submission PDFs, Word docs, presentation deck, and release ZIPs",
+    "releases": "Compiled firmware packages and SD-card bundle",
+    "templates": "Official CBSE submission templates",
+    "scratch": "Utility maintenance and verification automation scripts"
+  }
+}
