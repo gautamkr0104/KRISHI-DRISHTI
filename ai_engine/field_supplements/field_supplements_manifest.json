@@ -1,0 +1,150 @@
+{
+ "purpose": "Round-3 outdoor-domain supplement set: hand-verified real field photos (healthy outdoor Solanaceae foliage + outdoor blight lesions). Fixes the zero-outdoor-Potato-healthy gap found in the internet-image audit.",
+ "added": "2026-11-14",
+ "images": [
+  {
+   "file": "Potato___healthy__da4e600b3341.jpg",
+   "class": "Potato___healthy",
+   "source": "File:194 - PEI Potatoes.JPG",
+   "sha256": "da4e600b334168459eb801944e09ccc39316e1da60061e87cbc7c2e0ea3dec5c",
+   "bytes": 204657,
+   "verified": "GM",
+   "license": "Wikimedia Commons (see source page)"
+  },
+  {
+   "file": "Potato___healthy__7dec86a73f9d.jpg",
+   "class": "Potato___healthy",
+   "source": "File:Aardappelveld bij Heusden.jpg",
+   "sha256": "7dec86a73f9d8ae7f0b4ed1d749ad0719e9d9b82b8cd0e207cbd96cc6392aeb4",
+   "bytes": 395412,
+   "verified": "GM",
+   "license": "Wikimedia Commons (see source page)"
+  },
+  {
+   "file": "Potato___healthy__b202f452f70d.jpg",
+   "class": "Potato___healthy",
+   "source": "File:Bjare Peninsula Cultivation.jpg",
+   "sha256": "b202f452f70d044110ecaab18ea6d6ff4757e81bd0e015c7d5edaff6b33dea98",
+   "bytes": 485066,
+   "verified": "GM",
+   "license": "Wikimedia Commons (see source page)"
+  },
+  {
+   "file": "Potato___healthy__a18379bbee02.jpg",
+   "class": "Potato___healthy",
+   "source": "File:Berezhany- (65).jpg",
+   "sha256": "a18379bbee02501fbc9578838196e243ad73d236cad7fa108884b78121d5d7fd",
+   "bytes": 460440,
+   "verified": "GM",
+   "license": "Wikimedia Commons (see source page)"
+  },
+  {
+   "file": "Potato___healthy__c148690497a3.jpg",
+   "class": "Potato___healthy",
+   "source": "File:Bozk\u00f6y'de bir patates tarlas\u0131.JPG",
+   "sha256": "c148690497a3a246efd59d49d98a9480ded730e6481491141ad14ff30af5422f",
+   "bytes": 277024,
+   "verified": "GM",
+   "license": "Wikimedia Commons (see source page)"
+  },
+  {
+   "file": "Potato___healthy__d4f44d40a3af.jpg",
+   "class": "Potato___healthy",
+   "source": "File:-2018-09-04 Flowering potato plant, Trimingham, Norfolk.JPG",
+   "sha256": "d4f44d40a3af664537fbc5b932e747f7adfb461d05a678b91abe982c784736e8",
+   "bytes": 190233,
+   "verified": "GM",
+   "license": "Wikimedia Commons (see source page)"
+  },
+  {
+   "file": "Potato___healthy__6388db5e429a.jpg",
+   "class": "Potato___healthy",
+   "source": "File:Potato plantations in Phobjikha.jpg",
+   "sha256": "6388db5e429aa9e25e1e26a0b867a9b04d3f865d3ac30b2e8db99c346e1905e7",
+   "bytes": 688329,
+   "verified": "GM",
+   "license": "Wikimedia Commons (see source page)"
+  },
+  {
+   "file": "Potato___healthy__bafb223a00d7.jpg",
+   "class": "Potato___healthy",
+   "source": "File:Maris Piper side view.jpg",
+   "sha256": "bafb223a00d7c4b4bb7dfe9d3aa5fe933e034536c975e0f588c20f3560433ba8",
+   "bytes": 462126,
+   "verified": "GM",
+   "license": "Wikimedia Commons (see source page)"
+  },
+  {
+   "file": "Potato___healthy__71b8ffdb32fd.jpg",
+   "class": "Potato___healthy",
+   "source": "File:Potato Flower on the field.jpg",
+   "sha256": "71b8ffdb32fdf4447e7aed84c0fee2e2779ae0c6fd149625f721e08b33f9ca45",
+   "bytes": 116924,
+   "verified": "GM",
+   "license": "Wikimedia Commons (see source page)"
+  },
+  {
+   "file": "Potato___healthy__b199c0921650.jpg",
+   "class": "Potato___healthy",
+   "source": "File:Potato leaves.jpg",
+   "sha256": "b199c092165066d8a6de2b3fd1239b18d492806f705e1827bfb6cac5826a9734",
+   "bytes": 115981,
+   "verified": "GM",
+   "license": "Wikimedia Commons (see source page)"
+  },
+  {
+   "file": "Potato___healthy__115b2d70f761.jpg",
+   "class": "Potato___healthy",
+   "source": "File:Potato plant.jpg",
+   "sha256": "115b2d70f7619965ccf66e81637fbb34a8907618d6d1921789c5dc2199439e43",
+   "bytes": 381108,
+   "verified": "GM",
+   "license": "Wikimedia Commons (see source page)"
+  },
+  {
+   "file": "Potato___healthy__dc3f68f38dc1.jpg",
+   "class": "Potato___healthy",
+   "source": "File:Potato plants.jpg",
+   "sha256": "dc3f68f38dc1a029378f1e12831f725e548c34d1569b04a77fb898ba39c196da",
+   "bytes": 293356,
+   "verified": "GM",
+   "license": "Wikimedia Commons (see source page)"
+  },
+  {
+   "file": "Potato___Early_blight__8e1641575891.jpg",
+   "class": "Potato___Early_blight",
+   "source": "File:Alternaria solani 01.JPG",
+   "sha256": "8e16415758915e4407f5cce32a989334fad3c79c28dd0cb4ef1d27dc66911a2a",
+   "bytes": 380661,
+   "verified": "GM",
+   "license": "Wikimedia Commons (see source page)"
+  },
+  {
+   "file": "Potato___Early_blight__d67342f19fa1.jpg",
+   "class": "Potato___Early_blight",
+   "source": "File:Alternaria solani IMG 1661.jpg",
+   "sha256": "d67342f19fa1e8fadc060c2e1e658c5f7df484601e36adc4056e94769675bfb6",
+   "bytes": 305675,
+   "verified": "GM",
+   "license": "Wikimedia Commons (see source page)"
+  },
+  {
+   "file": "Tomato___Early_blight__7d34b9d74e2b.jpg",
+   "class": "Tomato___Early_blight",
+   "source": "File:Alternaria solani a1 (2).jpg",
+   "sha256": "7d34b9d74e2b2a428bf482b335c7ee708a2a83cc82e771ecbe80811631135944",
+   "bytes": 272942,
+   "verified": "GM",
+   "license": "Wikimedia Commons (see source page)"
+  },
+  {
+   "file": "Tomato___healthy__81097b9027e7.jpg",
+   "class": "Tomato___healthy",
+   "source": "File:Tomato Support 5843173257.jpg",
+   "sha256": "81097b9027e770a32903c0d5bba5ce1655a7609813ce584aba2993682f6fa0a9",
+   "bytes": 600805,
+   "verified": "GM",
+   "license": "Wikimedia Commons (see source page)"
+  }
+ ]
+}

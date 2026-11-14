@@ -38,6 +38,10 @@ MIN_FOLIAR_RATIO = 0.21          # Reject images with virtually no leaf tissue (
                                  # round-2 calibrated: sits above face_selfie (0.204), below valid PV specimens (0.233+)
 MIN_DECISION_MARGIN = 0.12       # Minimum top1-top2 probability margin (rejects ambiguous / OOD species)
 MAX_DARK_FRACTION = 0.35         # Rejects frames with >35% peripheral dark void (unshielded night flash / off-center leaf)
+MIN_EDGE_ENERGY = 3.2            # Mean Sobel edge energy on the 128x128 view. Real leaves carry venation/lesion
+                                 # edge structure (>=3.98 on all 60 benchmark specimens, >=4.0 on all valid SD scans);
+                                 # flat green surfaces (chart paper, walls) sit at <=2.60. Closes the round-3
+                                 # gate hole where crumpled/curved green paper was accepted as Healthy/Infected.
 
 def load_labels(labels_path):
     with open(labels_path, "r", encoding="utf-8") as f:
@@ -81,10 +85,22 @@ class KrishiAIDaemon:
         # Check peripheral dark void fraction (unshielded night flash / off-center leaf)
         dark_fraction = float(np.mean((r < 35) & (g < 35) & (b < 35)))
         if dark_fraction > MAX_DARK_FRACTION:
+            self._reject_reason = "dark"
             return None, foliar_ratio
-            
+
         if foliar_ratio < MIN_FOLIAR_RATIO:
+            self._reject_reason = "foliar"
             return None, foliar_ratio
+
+        # Edge-energy texture gate (rejects flat green surfaces: chart paper, walls, plastic)
+        gray = arr.mean(axis=2)
+        gx = np.abs(np.diff(gray, axis=1))[:-1, :]
+        gy = np.abs(np.diff(gray, axis=0))[:, :-1]
+        edge_energy = float(np.mean(np.hypot(gx, gy)))
+        if edge_energy < MIN_EDGE_ENERGY:
+            self._reject_reason = "texture"
+            return None, foliar_ratio
+        self._reject_reason = None
         
         if self.input_dtype == np.uint8:
             # Unsigned 8-bit quantized inputs: range [0, 255]
@@ -128,6 +144,18 @@ class KrishiAIDaemon:
                     "status": "UNCERTAIN",
                     "organic": "Center camera wand shroud directly over leaf surface",
                     "chemical": "Ensure optical shroud blocks peripheral background",
+                    "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
+                    "probabilities": []
+                }
+            if getattr(self, "_reject_reason", None) == "texture":
+                return {
+                    "crop": "Unknown",
+                    "disease": "Flat Surface / No Leaf Texture",
+                    "pathogen": "Green surface lacks leaf venation structure (paper, wall, or plastic)",
+                    "confidence": 0.0,
+                    "status": "UNCERTAIN",
+                    "organic": "Aim camera at an actual leaf with visible veins and surface texture",
+                    "chemical": "No spray action: no leaf tissue verified in frame",
                     "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
                     "probabilities": []
                 }
