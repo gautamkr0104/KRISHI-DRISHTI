@@ -28,7 +28,7 @@ Instead of relying on cloud APIs or expensive 5G connectivity, KRISHI-DRISHTI us
 |  ESP32 DevKit V1                            5MP OV5640 Sensor + Flash    |
 |  SSD1306 OLED Display                       8GB MicroSD Storage (SD_MMC) |
 |  DHT11 Canopy Sensor                        SoftAP: 192.168.4.1          |
-|  2 Active-Low Buttons                                 ||                 |
+|  1 Active-Low Button (GPIO 27)                        ||                 |
 |         ^                                             || (Local Wi-Fi)   |
 |         ||                                            \/                 |
 |         +=========== Diagnosis Payload ========= [ Pocket AI Engine ]   |
@@ -111,7 +111,7 @@ KRISHI-DRISHTI/
 | **SSD1306 0.96" OLED** | 128×64 I2C diagnostic display | ~₹150.00 | Local Electronics |
 | **DHT11 Sensor Module** | Canopy temperature & relative humidity (GPIO 18) | ₹57.00 | Standard Electronics Distributor |
 | **MicroSD Card (8GB)** | Local storage for UXGA leaf scans | ~₹175.00 | Standard Class 10 card |
-| **Pushbuttons (x2)** | `[SCAN]` (GPIO 27) and `[NEXT]` (GPIO 26) | ~₹10.00 | Local Electronics |
+| **Pushbutton (x1)** | Multifunction `[SCAN/PAGE]` on GPIO 27 | ~₹5.00 | Local Electronics |
 | **Total Hardware Cost** | **Complete System Triad** | **₹1,480 INR ($18 USD)** | **Ultra-Low Cost Compliant** |
 
 ---
@@ -189,7 +189,7 @@ g++ -Wall -Wextra -Werror -std=c++11 tests/test_microclimate_tracker.cpp firmwar
    - Pin Connections:
      - SSD1306 OLED: `SDA -> GPIO 21`, `SCL -> GPIO 22`, `VCC -> 3V3`, `GND -> GND`
      - DHT11 Sensor: `DATA -> GPIO 18`, `VCC -> 3V3`, `GND -> GND`
-     - Buttons: `SCAN -> GPIO 27 to GND`, `NEXT -> GPIO 26 to GND` (Active-Low internal pull-up)
+     - Button: `GPIO 27 to GND` (Active-Low internal pull-up, Tap = Next/Scan, Hold = Force Scan)
 3. Open [`firmware/KRISHI_DRISHTI_Controller/KRISHI_DRISHTI_Controller.ino`](firmware/KRISHI_DRISHTI_Controller/KRISHI_DRISHTI_Controller.ino) and click **Upload**.
 
 ### Step 2: Flash the Camera Unit (AI-Thinker ESP32-CAM)

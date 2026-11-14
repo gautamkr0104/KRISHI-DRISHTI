@@ -31,12 +31,13 @@ IMAGE_SIZE = (128, 128)
 DEFAULT_CAMERA_IP = "192.168.4.1"
 DEFAULT_POLL_INTERVAL = 1.0
 
-# Uncertainty Rejection Thresholds
+# Uncertainty Rejection Thresholds (round-2 calibrated on 44 real ESP32-CAM SD scans)
 MIN_CONFIDENCE_THRESHOLD = 0.50  # 50% minimum top-1 probability
-MAX_ENTROPY_THRESHOLD = 1.45     # Maximum Shannon entropy for decisive classification
-MIN_FOLIAR_RATIO = 0.12          # Reject images with virtually no leaf tissue
+MAX_ENTROPY_THRESHOLD = 1.20     # Maximum Shannon entropy for decisive classification
+MIN_FOLIAR_RATIO = 0.21          # Reject images with virtually no leaf tissue (faces/palms/vignettes/ceilings);
+                                 # round-2 calibrated: sits above face_selfie (0.204), below valid PV specimens (0.233+)
 MIN_DECISION_MARGIN = 0.12       # Minimum top1-top2 probability margin (rejects ambiguous / OOD species)
-MAX_DARK_FRACTION = 0.45         # Rejects frames with >45% peripheral dark void (unshielded night flash / off-center leaf)
+MAX_DARK_FRACTION = 0.35         # Rejects frames with >35% peripheral dark void (unshielded night flash / off-center leaf)
 
 def load_labels(labels_path):
     with open(labels_path, "r", encoding="utf-8") as f:

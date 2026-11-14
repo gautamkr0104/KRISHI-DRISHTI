@@ -8,8 +8,7 @@
 | **SSD1306 OLED SCL** | **GPIO 22** | I2C Clock Line |
 | **SSD1306 OLED VCC** | **3V3** or **VIN** | Power Supply (3.3V or 5V from USB) |
 | **SSD1306 OLED GND** | **GND** | Ground |
-| **[SCAN] Pushbutton** | **GPIO 27** | Terminal 1 to GPIO 27, Terminal 2 to GND (`INPUT_PULLUP`) |
-| **[NEXT] Pushbutton** | **GPIO 26** | Terminal 1 to GPIO 26, Terminal 2 to GND (`INPUT_PULLUP`) |
+| **[MULTIFUNCTION] Pushbutton** | **GPIO 27** | Terminal 1 to GPIO 27, Terminal 2 to GND (`INPUT_PULLUP`). Unified 1-Button UI: Short tap = Next screen (or scan on home); Long hold (>=800ms) = Trigger Scan from anywhere. |
 | **DHT11 Data Pin** | **GPIO 18** | Digital Telemetry Pin (with 10k pull-up or 3-pin module) |
 | **DHT11 VCC & GND** | **3V3 & GND** | Sensor Power |
 

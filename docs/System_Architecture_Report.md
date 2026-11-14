@@ -14,7 +14,7 @@ Foliar plant blights—specifically Late Blight (*Phytophthora infestans*, an oo
 
 **KRISHI-DRISHTI** is a low-cost (< ₹1,500 INR / $18 USD), 100% offline-first agritech system comprising:
 1. **A Camera Unit:** An AI-Thinker ESP32-CAM with an OV5640 5MP sensor, 8GB MicroSD (SD_MMC 1-bit mode), and high-intensity LED flash.
-2. **A Handheld Controller Wand:** An ESP32 DevKit V1 with an SSD1306 OLED display, active-low SCAN/NEXT buttons, and canopy microclimate telemetry (DHT11 on GPIO 18).
+2. **A Handheld Controller Wand:** An ESP32 DevKit V1 with an SSD1306 OLED display, active-low multifunction button (GPIO 27), and canopy microclimate telemetry (DHT11 on GPIO 18).
 3. **A Universal Headless Edge AI Co-Processor:** Any standard smartphone (Android or iOS / iPhone / any manufacturer) or pocket tablet running an offline MobileNetV3 WebAssembly neural engine in the farmer's pocket without cell service, internet data, or app store installation. (Empirically benchmarked on low-end hardware down to an entry-level Samsung Galaxy A03 / Cortex-A55).
 
 *Scientific Scope:* The device provides immediate, non-invasive **field screening indications and agronomic triage**, intended to guide timely preventative action rather than replace destructive laboratory PCR/ELISA confirmation.

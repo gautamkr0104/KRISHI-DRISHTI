@@ -1887,13 +1887,13 @@ bool initialiseCamera() {
   config.pin_sccb_scl = SIOC_GPIO_NUM;
   config.pin_pwdn     = PWDN_GPIO_NUM;
   config.pin_reset    = RESET_GPIO_NUM;
-  config.xclk_freq_hz = 20000000;
+  config.xclk_freq_hz = 16000000; // 16MHz XCLK reduces DMA pressure, eliminates FB-OVF
   config.pixel_format = PIXFORMAT_JPEG;
   if (psramAvailable) {
-    config.frame_size   = FRAMESIZE_UXGA;  // 1600 x 1200
+    config.frame_size   = FRAMESIZE_SXGA;  // 1280 x 1024 - reliable with PSRAM, no FB-OVF
     config.jpeg_quality = 10;
-    config.fb_count     = 2;
-    config.grab_mode    = CAMERA_GRAB_LATEST;
+    config.fb_count     = 1;              // 1 buffer prevents DMA overflow (FB-OVF)
+    config.grab_mode    = CAMERA_GRAB_WHEN_EMPTY; // Safer than GRAB_LATEST on marginal PSRAM
     config.fb_location  = CAMERA_FB_IN_PSRAM;
   } else {
     Serial.println("[CAM WARN] No PSRAM detected. Falling back to SVGA (800x600)");
