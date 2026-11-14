@@ -1,0 +1,431 @@
+{
+  "manifest_version": "3.1-round2",
+  "generated_at": "2026-11-13T21:23:22Z",
+  "base_model": "krishi_drishti_base.keras (v3 Colab full-corpus run)",
+  "round2_tflite_sha256": "119b7bae091ab6809923c4de1fb858228927dbb60e59d968c7748021654a53f4",
+  "round2_tflite_size_bytes": 2123856,
+  "temperature": 0.84,
+  "hardware_scans_trained": 26,
+  "hardware_label_distribution": {
+    "Tomato___Late_blight": 13,
+    "Potato___Early_blight": 3,
+    "Tomato___healthy": 6,
+    "Potato___Late_blight": 4
+  },
+  "gate_sweep_best": {
+    "conf": 0.6,
+    "entropy": 1.2,
+    "margin": 0.08
+  },
+  "gate_sweep_full_ood_reject_candidates": [],
+  "pv_valid_accuracy_after_round2": 0.9835,
+  "scan_rows": [
+    {
+      "scan": 1,
+      "kind": "floor_furniture_flare",
+      "pred": "Tomato___healthy",
+      "conf": 0.8494,
+      "margin": 0.7234,
+      "entropy": 0.5095,
+      "expected": null
+    },
+    {
+      "scan": 2,
+      "kind": "screen_pseudo",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.9845,
+      "margin": 0.9792,
+      "entropy": 0.1017,
+      "expected": "Tomato___Late_blight"
+    },
+    {
+      "scan": 3,
+      "kind": "face_selfie",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.9438,
+      "margin": 0.905,
+      "entropy": 0.2711,
+      "expected": null
+    },
+    {
+      "scan": 4,
+      "kind": "palm_overexposed",
+      "pred": "Tomato___healthy",
+      "conf": 0.6972,
+      "margin": 0.4608,
+      "entropy": 0.8385,
+      "expected": null
+    },
+    {
+      "scan": 5,
+      "kind": "palm_overexposed",
+      "pred": "Tomato___healthy",
+      "conf": 0.5843,
+      "margin": 0.3818,
+      "entropy": 1.0606,
+      "expected": null
+    },
+    {
+      "scan": 6,
+      "kind": "palm_clear",
+      "pred": "Tomato___healthy",
+      "conf": 0.4956,
+      "margin": 0.0632,
+      "entropy": 0.9268,
+      "expected": null
+    },
+    {
+      "scan": 7,
+      "kind": "palm_clear",
+      "pred": "Tomato___healthy",
+      "conf": 0.6607,
+      "margin": 0.3653,
+      "entropy": 0.7936,
+      "expected": null
+    },
+    {
+      "scan": 8,
+      "kind": "screen_pseudo",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.9808,
+      "margin": 0.9683,
+      "entropy": 0.1157,
+      "expected": "Tomato___Late_blight"
+    },
+    {
+      "scan": 9,
+      "kind": "screen_pseudo",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.9792,
+      "margin": 0.9658,
+      "entropy": 0.1241,
+      "expected": "Tomato___Late_blight"
+    },
+    {
+      "scan": 10,
+      "kind": "screen_pseudo",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.9794,
+      "margin": 0.9714,
+      "entropy": 0.1285,
+      "expected": "Tomato___Late_blight"
+    },
+    {
+      "scan": 11,
+      "kind": "face_washed_out",
+      "pred": "Tomato___healthy",
+      "conf": 0.9991,
+      "margin": 0.9986,
+      "entropy": 0.008,
+      "expected": null
+    },
+    {
+      "scan": 12,
+      "kind": "face_lowlight_grainy",
+      "pred": "Tomato___healthy",
+      "conf": 0.5323,
+      "margin": 0.0708,
+      "entropy": 0.7263,
+      "expected": null
+    },
+    {
+      "scan": 13,
+      "kind": "screen_pseudo",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.9826,
+      "margin": 0.9691,
+      "entropy": 0.1011,
+      "expected": "Tomato___Late_blight"
+    },
+    {
+      "scan": 14,
+      "kind": "screen_pseudo",
+      "pred": "Potato___Early_blight",
+      "conf": 0.9962,
+      "margin": 0.9946,
+      "entropy": 0.03,
+      "expected": "Potato___Early_blight"
+    },
+    {
+      "scan": 15,
+      "kind": "screen_pseudo",
+      "pred": "Tomato___healthy",
+      "conf": 0.9973,
+      "margin": 0.9958,
+      "entropy": 0.0211,
+      "expected": "Tomato___healthy"
+    },
+    {
+      "scan": 16,
+      "kind": "screen_pseudo",
+      "pred": "Tomato___healthy",
+      "conf": 0.9984,
+      "margin": 0.9973,
+      "entropy": 0.0132,
+      "expected": "Tomato___healthy"
+    },
+    {
+      "scan": 17,
+      "kind": "screen_pseudo",
+      "pred": "Potato___Early_blight",
+      "conf": 0.9856,
+      "margin": 0.9737,
+      "entropy": 0.0845,
+      "expected": "Potato___Early_blight"
+    },
+    {
+      "scan": 18,
+      "kind": "blank_pink_vignette",
+      "pred": "Tomato___healthy",
+      "conf": 0.9104,
+      "margin": 0.8231,
+      "entropy": 0.3148,
+      "expected": null
+    },
+    {
+      "scan": 19,
+      "kind": "blank_pink_vignette_ghost",
+      "pred": "Tomato___healthy",
+      "conf": 0.9992,
+      "margin": 0.9984,
+      "entropy": 0.0066,
+      "expected": null
+    },
+    {
+      "scan": 20,
+      "kind": "screen_pseudo",
+      "pred": "Tomato___healthy",
+      "conf": 0.9983,
+      "margin": 0.9977,
+      "entropy": 0.0148,
+      "expected": "Tomato___healthy"
+    },
+    {
+      "scan": 21,
+      "kind": "screen_pseudo",
+      "pred": "Potato___Early_blight",
+      "conf": 0.9994,
+      "margin": 0.9992,
+      "entropy": 0.0056,
+      "expected": "Potato___Early_blight"
+    },
+    {
+      "scan": 22,
+      "kind": "screen_pseudo",
+      "pred": "Potato___Late_blight",
+      "conf": 0.9787,
+      "margin": 0.9617,
+      "entropy": 0.1186,
+      "expected": "Potato___Late_blight"
+    },
+    {
+      "scan": 23,
+      "kind": "screen_pseudo",
+      "pred": "Potato___Late_blight",
+      "conf": 0.9638,
+      "margin": 0.9302,
+      "entropy": 0.1678,
+      "expected": "Potato___Late_blight"
+    },
+    {
+      "scan": 24,
+      "kind": "screen_pseudo",
+      "pred": "Potato___Late_blight",
+      "conf": 0.9712,
+      "margin": 0.9446,
+      "entropy": 0.1412,
+      "expected": "Potato___Late_blight"
+    },
+    {
+      "scan": 25,
+      "kind": "screen_pseudo",
+      "pred": "Potato___Late_blight",
+      "conf": 0.9966,
+      "margin": 0.9951,
+      "entropy": 0.0277,
+      "expected": "Potato___Late_blight"
+    },
+    {
+      "scan": 26,
+      "kind": "face_upside_down",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.5287,
+      "margin": 0.0669,
+      "entropy": 0.7459,
+      "expected": null
+    },
+    {
+      "scan": 27,
+      "kind": "screen_pseudo",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.9883,
+      "margin": 0.9839,
+      "entropy": 0.0792,
+      "expected": "Tomato___Late_blight"
+    },
+    {
+      "scan": 28,
+      "kind": "screen_pseudo",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.9849,
+      "margin": 0.9753,
+      "entropy": 0.0941,
+      "expected": "Tomato___Late_blight"
+    },
+    {
+      "scan": 29,
+      "kind": "screen_pseudo",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.9885,
+      "margin": 0.9844,
+      "entropy": 0.0783,
+      "expected": "Tomato___Late_blight"
+    },
+    {
+      "scan": 30,
+      "kind": "screen_pseudo",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.9913,
+      "margin": 0.9855,
+      "entropy": 0.0593,
+      "expected": "Tomato___Late_blight"
+    },
+    {
+      "scan": 31,
+      "kind": "screen_pseudo",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.993,
+      "margin": 0.9884,
+      "entropy": 0.0494,
+      "expected": "Tomato___Late_blight"
+    },
+    {
+      "scan": 32,
+      "kind": "dark_indoor_ceiling",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.9361,
+      "margin": 0.8902,
+      "entropy": 0.2906,
+      "expected": null
+    },
+    {
+      "scan": 33,
+      "kind": "screen_pseudo",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.9834,
+      "margin": 0.9735,
+      "entropy": 0.1025,
+      "expected": "Tomato___Late_blight"
+    },
+    {
+      "scan": 34,
+      "kind": "screen_pseudo",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.9744,
+      "margin": 0.9596,
+      "entropy": 0.1486,
+      "expected": "Tomato___Late_blight"
+    },
+    {
+      "scan": 35,
+      "kind": "real_plant_ground_with_foot_background",
+      "pred": "Tomato___healthy",
+      "conf": 0.9578,
+      "margin": 0.9386,
+      "entropy": 0.2234,
+      "expected": null
+    },
+    {
+      "scan": 36,
+      "kind": "ceiling_fan",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.5251,
+      "margin": 0.0569,
+      "entropy": 0.735,
+      "expected": null
+    },
+    {
+      "scan": 37,
+      "kind": "ceiling_fan_pink",
+      "pred": "Tomato___healthy",
+      "conf": 0.5188,
+      "margin": 0.0389,
+      "entropy": 0.7027,
+      "expected": null
+    },
+    {
+      "scan": 38,
+      "kind": "direct_forced_healthy",
+      "pred": "Tomato___healthy",
+      "conf": 0.9962,
+      "margin": 0.994,
+      "entropy": 0.0289,
+      "expected": "Tomato___healthy"
+    },
+    {
+      "scan": 39,
+      "kind": "direct_forced_healthy",
+      "pred": "Tomato___healthy",
+      "conf": 0.9895,
+      "margin": 0.9835,
+      "entropy": 0.0693,
+      "expected": "Tomato___healthy"
+    },
+    {
+      "scan": 40,
+      "kind": "blank_pink_vignette",
+      "pred": "Tomato___healthy",
+      "conf": 0.9929,
+      "margin": 0.9863,
+      "entropy": 0.0444,
+      "expected": null
+    },
+    {
+      "scan": 41,
+      "kind": "blank_pink_vignette",
+      "pred": "Tomato___healthy",
+      "conf": 0.9931,
+      "margin": 0.9867,
+      "entropy": 0.0437,
+      "expected": null
+    },
+    {
+      "scan": 42,
+      "kind": "discard_haze",
+      "pred": "Tomato___healthy",
+      "conf": 0.9995,
+      "margin": 0.9992,
+      "entropy": 0.0046,
+      "expected": null
+    },
+    {
+      "scan": 43,
+      "kind": "direct_forced_healthy",
+      "pred": "Tomato___healthy",
+      "conf": 0.9981,
+      "margin": 0.9972,
+      "entropy": 0.0161,
+      "expected": "Tomato___healthy"
+    },
+    {
+      "scan": 44,
+      "kind": "direct_pseudo_44",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.9947,
+      "margin": 0.9926,
+      "entropy": 0.0393,
+      "expected": "Tomato___Late_blight"
+    }
+  ],
+  "wall_time_seconds": 1396.4,
+  "io_contract": "Float32 [1,128,128,3] raw [0,255] -> [1,6] softmax (unchanged)",
+  "final_daemon_gate_constants": {
+    "MIN_CONFIDENCE_THRESHOLD": 0.5,
+    "MAX_ENTROPY_THRESHOLD": 1.2,
+    "MIN_FOLIAR_RATIO": 0.21,
+    "MIN_DECISION_MARGIN": 0.12,
+    "MAX_DARK_FRACTION": 0.35,
+    "calibrated_on": "44 ESP32-CAM SD scans + 60 PV specimen benchmark",
+    "result": "16/16 non-leaf rejected, 21/22 screen scans accepted, scan 42 discarded, benchmark 59/60 strict (100% on accepted)"
+  }
+}

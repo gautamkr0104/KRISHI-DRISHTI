@@ -31,7 +31,7 @@ C:\Users\DELL\krishi_pdf_env\Scripts\python.exe scratch/build_and_sync_all.py
 
 ## Architecture & Pinouts
 - **Camera Wand (Node A):** AI-Thinker ESP32-CAM, OV2640, 8 cm shroud, Flash LED on GPIO 4, MicroSD 1-bit SD_MMC, SoftAP @ `192.168.4.1`
-- **Controller (Node B):** ESP32 DevKit V1, SSD1306 OLED (GPIO 21/22), DHT11 (GPIO 18), Buttons on GPIO 27 (Scan) & GPIO 26 (Next)
+- **Controller (Node B):** ESP32 DevKit V1, SSD1306 OLED (GPIO 21/22), DHT11 (GPIO 18), Multifunction Button on GPIO 27 (Tap=Next/Scan, Hold=Force Scan)
 - **Edge AI (Node C):** MobileNetV3 Float16 (2.01 MB), input 128x128x3, Shannon Entropy gate ($H > 1.45$), Microclimate cross-gate (Late Blight spray suppressed when RH < 85%)
 
 ## Critical Rules

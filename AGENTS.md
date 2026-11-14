@@ -67,7 +67,7 @@ KRISHI-DRISHTI operates as a distributed 3-node edge architecture:
 [ Node B: ESP32 Dev Controller ]
   - SSD1306 OLED (I2C)
   - DHT11 Temp/Humidity
-  - SCAN & NEXT Buttons
+  - Multifunction SCAN/PAGE Button (GPIO 27)
 ```
 
 ### Node A: Camera Wand (`firmware/KRISHI_DRISHTI_Camera/`)

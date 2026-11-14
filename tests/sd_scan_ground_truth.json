@@ -1,0 +1,55 @@
+{
+  "source": "Gemini vision triage (user-approved), 2026-11-13",
+  "scan_dir": "E:/",
+  "total": 44,
+  "categories": {
+    "screen_leaf_diseased": {
+      "description": "Photographs of a laptop screen showing diseased leaves (moire, bezel, flash glare)",
+      "scans": [2, 8, 9, 10, 13, 14, 15, 16, 17, 20, 21, 22, 23, 24, 25, 27, 28, 29, 30, 31, 33, 34],
+      "symptom_groups": {
+        "blight_lesion": [2, 8, 13, 14, 17, 20, 21, 22, 23, 24, 25],
+        "yellowing_spotted": [9, 10, 15, 16],
+        "curl_necrotic": [27, 28, 29, 30, 31, 33, 34]
+      }
+    },
+    "direct_leaf": {
+      "description": "Real detached leaves photographed directly (the intended hardware use case)",
+      "scans": {
+        "38": "healthy_smooth_oval",
+        "39": "healthy_washed_out_glare",
+        "42": "leaf_but_heavily_washed_out_DISCARD",
+        "43": "healthy_minor_tear",
+        "44": "yellowing_chlorosis_serrated"
+      }
+    },
+    "non_leaf_noise": {
+      "description": "Faces, palms, ceilings, blank sensor-artifact frames — OOD rejection calibration targets",
+      "scans": {
+        "1": "floor_furniture_flare",
+        "3": "face_selfie",
+        "4": "palm_overexposed",
+        "5": "palm_overexposed",
+        "6": "palm_clear",
+        "7": "palm_clear",
+        "11": "face_washed_out",
+        "12": "face_lowlight_grainy",
+        "18": "blank_pink_vignette",
+        "19": "blank_pink_vignette_ghost",
+        "26": "face_upside_down",
+        "32": "dark_indoor_ceiling",
+        "36": "ceiling_fan",
+        "37": "ceiling_fan_pink",
+        "40": "blank_pink_vignette",
+        "41": "blank_pink_vignette"
+      }
+    },
+    "mixed_outdoor": {
+      "scans": { "35": "real_plant_ground_with_foot_background" }
+    }
+  },
+  "notes": [
+    "Old model failure modes confirmed: scans 4-7 (palms) previously accepted as 'Late Blight' 54-79% confidence; scan 44 (real yellow leaf) previously called 'Tomato Healthy 92.6%'.",
+    "Screen captures carry moire/bezel/glare artifacts; decision pending on accept-vs-reject for screen-scan workflow.",
+    "scan_000042 is a real leaf but unrecoverable (heavy haze) - discard from training, keep as calibration stress case."
+  ]
+}
