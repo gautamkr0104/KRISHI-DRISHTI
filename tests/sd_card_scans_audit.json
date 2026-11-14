@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-14T08:36:29Z",
+  "timestamp": "2026-11-14T19:06:35Z",
   "model": "krishi_drishti_model.tflite (pre-v3)",
   "results": [
     {
@@ -16,17 +16,17 @@
       "scan": "scan_000002.jpg",
       "crop": "Tomato",
       "disease": "Late Blight",
-      "confidence_pct": 98.5,
+      "confidence_pct": 99.7,
       "status": "INFECTED",
       "entropy": null,
       "margin": null,
       "probabilities": [
-        0.9845,
-        0.0023,
-        0.0053,
-        0.0046,
-        0.003,
-        0.0003
+        0.9971,
+        0.0007,
+        0.0003,
+        0.0008,
+        0.0006,
+        0.0004
       ]
     },
     {
@@ -83,51 +83,51 @@
       "scan": "scan_000008.jpg",
       "crop": "Tomato",
       "disease": "Late Blight",
-      "confidence_pct": 98.1,
+      "confidence_pct": 95.1,
       "status": "INFECTED",
       "entropy": null,
       "margin": null,
       "probabilities": [
-        0.9808,
-        0.0013,
-        0.0031,
-        0.0016,
-        0.0125,
-        0.0007
+        0.951,
+        0.001,
+        0.0077,
+        0.029,
+        0.0108,
+        0.0004
       ]
     },
     {
       "scan": "scan_000009.jpg",
-      "crop": "Tomato",
+      "crop": "Potato",
       "disease": "Late Blight",
-      "confidence_pct": 97.9,
+      "confidence_pct": 92.3,
       "status": "INFECTED",
       "entropy": null,
       "margin": null,
       "probabilities": [
-        0.9792,
-        0.0014,
-        0.0014,
-        0.0034,
-        0.0134,
-        0.0011
+        0.0629,
+        0.0028,
+        0.0049,
+        0.9228,
+        0.0062,
+        0.0004
       ]
     },
     {
       "scan": "scan_000010.jpg",
       "crop": "Tomato",
       "disease": "Late Blight",
-      "confidence_pct": 97.9,
+      "confidence_pct": 80.7,
       "status": "INFECTED",
       "entropy": null,
       "margin": null,
       "probabilities": [
-        0.9794,
-        0.0019,
-        0.0034,
-        0.008,
-        0.0068,
-        0.0006
+        0.8074,
+        0.003,
+        0.0052,
+        0.1775,
+        0.0062,
+        0.0008
       ]
     },
     {
@@ -153,18 +153,18 @@
     {
       "scan": "scan_000013.jpg",
       "crop": "Tomato",
-      "disease": "Late Blight",
-      "confidence_pct": 98.3,
-      "status": "INFECTED",
+      "disease": "Healthy",
+      "confidence_pct": 98.6,
+      "status": "HEALTHY",
       "entropy": null,
       "margin": null,
       "probabilities": [
-        0.9826,
         0.0007,
-        0.0018,
-        0.0011,
-        0.0136,
-        0.0002
+        0.0005,
+        0.9855,
+        0.0023,
+        0.0106,
+        0.0004
       ]
     },
     {
@@ -177,9 +177,9 @@
       "margin": null,
       "probabilities": [
         0.0006,
-        0.0002,
-        0.0014,
-        0.0016,
+        0.0005,
+        0.0022,
+        0.0004,
         0.9962,
         0.0001
       ]
@@ -197,17 +197,17 @@
     {
       "scan": "scan_000016.jpg",
       "crop": "Tomato",
-      "disease": "Healthy",
-      "confidence_pct": 99.8,
-      "status": "HEALTHY",
+      "disease": "Early Blight",
+      "confidence_pct": 100.0,
+      "status": "WARNING",
       "entropy": null,
       "margin": null,
       "probabilities": [
-        0.0002,
-        0.0001,
-        0.9984,
         0.0,
-        0.0011,
+        0.9998,
+        0.0,
+        0.0,
+        0.0001,
         0.0001
       ]
     },
@@ -215,17 +215,17 @@
       "scan": "scan_000017.jpg",
       "crop": "Potato",
       "disease": "Early Blight",
-      "confidence_pct": 98.6,
+      "confidence_pct": 97.5,
       "status": "WARNING",
       "entropy": null,
       "margin": null,
       "probabilities": [
-        0.0003,
-        0.0004,
-        0.0015,
-        0.0119,
-        0.9856,
-        0.0002
+        0.0023,
+        0.0021,
+        0.0012,
+        0.018,
+        0.9747,
+        0.0017
       ]
     },
     {
@@ -258,44 +258,44 @@
       "margin": null,
       "probabilities": [
         0.0002,
-        0.0004,
-        0.9983,
-        0.0006,
         0.0003,
-        0.0001
+        0.9976,
+        0.0013,
+        0.0006,
+        0.0
       ]
     },
     {
       "scan": "scan_000021.jpg",
       "crop": "Potato",
-      "disease": "Early Blight",
-      "confidence_pct": 99.9,
-      "status": "WARNING",
+      "disease": "Late Blight",
+      "confidence_pct": 96.3,
+      "status": "INFECTED",
       "entropy": null,
       "margin": null,
       "probabilities": [
-        0.0002,
-        0.0,
-        0.0001,
-        0.0002,
-        0.9994,
-        0.0
+        0.0068,
+        0.0024,
+        0.0034,
+        0.9635,
+        0.023,
+        0.0008
       ]
     },
     {
       "scan": "scan_000022.jpg",
       "crop": "Potato",
       "disease": "Late Blight",
-      "confidence_pct": 97.9,
+      "confidence_pct": 99.0,
       "status": "INFECTED",
       "entropy": null,
       "margin": null,
       "probabilities": [
-        0.0025,
-        0.0013,
+        0.0002,
+        0.0006,
         0.0003,
-        0.9787,
-        0.017,
+        0.9902,
+        0.0084,
         0.0003
       ]
     },
@@ -303,34 +303,34 @@
       "scan": "scan_000023.jpg",
       "crop": "Potato",
       "disease": "Late Blight",
-      "confidence_pct": 96.4,
+      "confidence_pct": 98.8,
       "status": "INFECTED",
       "entropy": null,
       "margin": null,
       "probabilities": [
-        0.0005,
-        0.0011,
-        0.0003,
-        0.9638,
-        0.0337,
-        0.0006
+        0.0002,
+        0.0006,
+        0.0002,
+        0.9883,
+        0.0104,
+        0.0002
       ]
     },
     {
       "scan": "scan_000024.jpg",
       "crop": "Potato",
       "disease": "Late Blight",
-      "confidence_pct": 97.1,
+      "confidence_pct": 99.4,
       "status": "INFECTED",
       "entropy": null,
       "margin": null,
       "probabilities": [
-        0.0006,
-        0.0008,
-        0.0002,
-        0.9712,
-        0.0266,
-        0.0005
+        0.0001,
+        0.0003,
+        0.0003,
+        0.994,
+        0.0051,
+        0.0002
       ]
     },
     {
@@ -342,11 +342,11 @@
       "entropy": null,
       "margin": null,
       "probabilities": [
-        0.0006,
-        0.0005,
-        0.0007,
-        0.9966,
-        0.0015,
+        0.0013,
+        0.0002,
+        0.0008,
+        0.9968,
+        0.0008,
         0.0001
       ]
     },
@@ -364,33 +364,33 @@
       "scan": "scan_000027.jpg",
       "crop": "Tomato",
       "disease": "Late Blight",
-      "confidence_pct": 98.8,
+      "confidence_pct": 98.7,
       "status": "INFECTED",
       "entropy": null,
       "margin": null,
       "probabilities": [
-        0.9883,
-        0.0006,
-        0.0031,
-        0.0043,
-        0.0035,
-        0.0003
+        0.9866,
+        0.001,
+        0.0088,
+        0.0027,
+        0.0007,
+        0.0002
       ]
     },
     {
       "scan": "scan_000028.jpg",
       "crop": "Tomato",
       "disease": "Late Blight",
-      "confidence_pct": 98.5,
+      "confidence_pct": 95.9,
       "status": "INFECTED",
       "entropy": null,
       "margin": null,
       "probabilities": [
-        0.9849,
-        0.0005,
-        0.0096,
-        0.0033,
+        0.9595,
         0.0013,
+        0.0291,
+        0.0071,
+        0.0026,
         0.0004
       ]
     },
@@ -398,21 +398,38 @@
       "scan": "scan_000029.jpg",
       "crop": "Tomato",
       "disease": "Late Blight",
-      "confidence_pct": 98.9,
+      "confidence_pct": 96.5,
       "status": "INFECTED",
       "entropy": null,
       "margin": null,
       "probabilities": [
-        0.9885,
-        0.0007,
-        0.0039,
-        0.0041,
-        0.0023,
-        0.0004
+        0.9648,
+        0.0021,
+        0.0207,
+        0.0103,
+        0.0015,
+        0.0006
       ]
     },
     {
       "scan": "scan_000030.jpg",
+      "crop": "Tomato",
+      "disease": "Late Blight",
+      "confidence_pct": 99.2,
+      "status": "INFECTED",
+      "entropy": null,
+      "margin": null,
+      "probabilities": [
+        0.9918,
+        0.0007,
+        0.0015,
+        0.0051,
+        0.0003,
+        0.0005
+      ]
+    },
+    {
+      "scan": "scan_000031.jpg",
       "crop": "Tomato",
       "disease": "Late Blight",
       "confidence_pct": 99.1,
@@ -420,29 +437,12 @@
       "entropy": null,
       "margin": null,
       "probabilities": [
-        0.9913,
-        0.0003,
+        0.9907,
         0.0008,
-        0.0015,
-        0.0057,
-        0.0004
-      ]
-    },
-    {
-      "scan": "scan_000031.jpg",
-      "crop": "Tomato",
-      "disease": "Late Blight",
-      "confidence_pct": 99.3,
-      "status": "INFECTED",
-      "entropy": null,
-      "margin": null,
-      "probabilities": [
-        0.993,
-        0.0003,
-        0.0007,
-        0.0011,
-        0.0046,
-        0.0004
+        0.0023,
+        0.0042,
+        0.0008,
+        0.0011
       ]
     },
     {
@@ -459,51 +459,51 @@
       "scan": "scan_000033.jpg",
       "crop": "Tomato",
       "disease": "Late Blight",
-      "confidence_pct": 98.3,
+      "confidence_pct": 98.5,
       "status": "INFECTED",
       "entropy": null,
       "margin": null,
       "probabilities": [
-        0.9834,
-        0.0,
-        0.0021,
-        0.0099,
-        0.0035,
-        0.0011
+        0.9852,
+        0.0001,
+        0.0039,
+        0.0033,
+        0.0063,
+        0.0012
       ]
     },
     {
       "scan": "scan_000034.jpg",
       "crop": "Tomato",
-      "disease": "Late Blight",
-      "confidence_pct": 97.4,
-      "status": "INFECTED",
+      "disease": "Healthy",
+      "confidence_pct": 97.8,
+      "status": "HEALTHY",
       "entropy": null,
       "margin": null,
       "probabilities": [
-        0.9744,
-        0.0011,
-        0.0148,
-        0.0054,
-        0.0035,
-        0.0007
+        0.01,
+        0.0044,
+        0.978,
+        0.004,
+        0.0022,
+        0.0014
       ]
     },
     {
       "scan": "scan_000035.jpg",
       "crop": "Tomato",
       "disease": "Healthy",
-      "confidence_pct": 95.8,
+      "confidence_pct": 74.2,
       "status": "HEALTHY",
       "entropy": null,
       "margin": null,
       "probabilities": [
-        0.0171,
-        0.0015,
-        0.9578,
-        0.0025,
-        0.0192,
-        0.0019
+        0.0038,
+        0.004,
+        0.7419,
+        0.0279,
+        0.2176,
+        0.0047
       ]
     },
     {
@@ -535,11 +535,11 @@
       "entropy": null,
       "margin": null,
       "probabilities": [
-        0.0023,
+        0.0018,
+        0.0015,
+        0.996,
         0.0002,
-        0.9962,
-        0.0009,
-        0.0003,
+        0.0004,
         0.0001
       ]
     },
@@ -593,28 +593,28 @@
       "margin": null,
       "probabilities": [
         0.0008,
+        0.0003,
+        0.9984,
         0.0001,
-        0.9981,
-        0.0008,
-        0.0002,
-        0.0
+        0.0003,
+        0.0001
       ]
     },
     {
       "scan": "scan_000044.jpg",
       "crop": "Tomato",
       "disease": "Late Blight",
-      "confidence_pct": 99.5,
+      "confidence_pct": 99.2,
       "status": "INFECTED",
       "entropy": null,
       "margin": null,
       "probabilities": [
-        0.9947,
-        0.0001,
-        0.0022,
-        0.0011,
-        0.0017,
-        0.0001
+        0.9921,
+        0.0006,
+        0.0049,
+        0.0007,
+        0.0014,
+        0.0003
       ]
     }
   ]

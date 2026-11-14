@@ -1,0 +1,13 @@
+{
+  "id": "suhanikumari0104/krishi-v4-round3",
+  "title": "krishi v4 round3",
+  "code_file": "kaggle_run_v4.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": ["suhanikumari0104/krishi-plantdoc-stage", "vipoooool/new-plant-diseases-dataset"],
+  "competition_sources": [],
+  "kernel_sources": []
+}

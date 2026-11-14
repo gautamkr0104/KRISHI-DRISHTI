@@ -32,7 +32,7 @@ DEFAULT_CAMERA_IP = "192.168.4.1"
 DEFAULT_POLL_INTERVAL = 1.0
 
 # Uncertainty Rejection Thresholds (round-2 calibrated on 44 real ESP32-CAM SD scans)
-MIN_CONFIDENCE_THRESHOLD = 0.50  # 50% minimum top-1 probability
+MIN_CONFIDENCE_THRESHOLD = 0.50  # 50% minimum top-1 probability (frozen round-3 gate constant; validated 59/60 benchmark)
 MAX_ENTROPY_THRESHOLD = 1.20     # Maximum Shannon entropy for decisive classification
 MIN_FOLIAR_RATIO = 0.21          # Reject images with virtually no leaf tissue (faces/palms/vignettes/ceilings);
                                  # round-2 calibrated: sits above face_selfie (0.204), below valid PV specimens (0.233+)

@@ -1,16 +1,16 @@
 {
-  "manifest_version": "3.0",
+  "manifest_version": "4.0",
   "training_run_metadata": {
-    "training_start_time": "2026-11-13T19:39:37Z",
-    "training_completed_time": "2026-11-13T20:51:02Z",
-    "training_duration_seconds": 4202.52,
+    "training_start_time": "2026-11-14T11:26:22Z",
+    "training_completed_time": "2026-11-14T12:16:24Z",
+    "training_duration_seconds": 2901.76,
     "random_seed": 42,
-    "pipeline": "ai_engine/train_model_v3.py",
-    "status": "COMPLETED (v3 full-corpus zero-leakage run)"
+    "pipeline": "ai_engine/train_model_v4.py",
+    "status": "COMPLETED (v4 outdoor-domain zero-leakage run)"
   },
   "exported_model_artifact": {
     "model_file": "ai_engine/krishi_drishti_model.tflite",
-    "model_sha256": "97926aeb8bbb34fc2792b5161d29b03aac6d9e05b04fbba8e3e0e6175957efb7",
+    "model_sha256": "2866875706f8534b8c7182f50c8f7ec8c746cb6cdeb95357fb6a179ce115bf96",
     "model_size_bytes": 2123856,
     "model_size_mb": 2.03,
     "quantization": "Float16 post-training optimization, Float32 I/O",
@@ -27,7 +27,7 @@
     ]
   },
   "training_corpus_provenance": {
-    "plantvillage_source": "/kaggle/input/new-plant-diseases-dataset/new plant diseases dataset(augmented)/New Plant Diseases Dataset(Augmented)/train",
+    "plantvillage_source": "/kaggle/input/datasets/vipoooool/new-plant-diseases-dataset/new plant diseases dataset(augmented)/New Plant Diseases Dataset(Augmented)/train",
     "plantvillage_full_clean_corpus": true,
     "plantvillage_per_class_unique_counts": {
       "Tomato___Late_blight": 1845,
@@ -37,11 +37,110 @@
       "Potato___Early_blight": 1931,
       "Potato___healthy": 1803
     },
-    "plantvillage_passes": 7,
+    "plantvillage_passes": 6,
     "plantdoc_clean_train_unique": 370,
-    "plantdoc_passes": 15,
-    "total_training_records": 84930,
-    "unique_training_hashes": 11700,
+    "plantdoc_passes": 32,
+    "field_supplements": [
+      {
+        "file": "Potato___healthy__da4e600b3341.jpg",
+        "class": "Potato___healthy",
+        "sha256": "da4e600b334168459eb801944e09ccc39316e1da60061e87cbc7c2e0ea3dec5c",
+        "passes": 100
+      },
+      {
+        "file": "Potato___healthy__7dec86a73f9d.jpg",
+        "class": "Potato___healthy",
+        "sha256": "7dec86a73f9d8ae7f0b4ed1d749ad0719e9d9b82b8cd0e207cbd96cc6392aeb4",
+        "passes": 100
+      },
+      {
+        "file": "Potato___healthy__b202f452f70d.jpg",
+        "class": "Potato___healthy",
+        "sha256": "b202f452f70d044110ecaab18ea6d6ff4757e81bd0e015c7d5edaff6b33dea98",
+        "passes": 100
+      },
+      {
+        "file": "Potato___healthy__a18379bbee02.jpg",
+        "class": "Potato___healthy",
+        "sha256": "a18379bbee02501fbc9578838196e243ad73d236cad7fa108884b78121d5d7fd",
+        "passes": 100
+      },
+      {
+        "file": "Potato___healthy__c148690497a3.jpg",
+        "class": "Potato___healthy",
+        "sha256": "c148690497a3a246efd59d49d98a9480ded730e6481491141ad14ff30af5422f",
+        "passes": 100
+      },
+      {
+        "file": "Potato___healthy__d4f44d40a3af.jpg",
+        "class": "Potato___healthy",
+        "sha256": "d4f44d40a3af664537fbc5b932e747f7adfb461d05a678b91abe982c784736e8",
+        "passes": 100
+      },
+      {
+        "file": "Potato___healthy__6388db5e429a.jpg",
+        "class": "Potato___healthy",
+        "sha256": "6388db5e429aa9e25e1e26a0b867a9b04d3f865d3ac30b2e8db99c346e1905e7",
+        "passes": 100
+      },
+      {
+        "file": "Potato___healthy__bafb223a00d7.jpg",
+        "class": "Potato___healthy",
+        "sha256": "bafb223a00d7c4b4bb7dfe9d3aa5fe933e034536c975e0f588c20f3560433ba8",
+        "passes": 100
+      },
+      {
+        "file": "Potato___healthy__71b8ffdb32fd.jpg",
+        "class": "Potato___healthy",
+        "sha256": "71b8ffdb32fdf4447e7aed84c0fee2e2779ae0c6fd149625f721e08b33f9ca45",
+        "passes": 100
+      },
+      {
+        "file": "Potato___healthy__b199c0921650.jpg",
+        "class": "Potato___healthy",
+        "sha256": "b199c092165066d8a6de2b3fd1239b18d492806f705e1827bfb6cac5826a9734",
+        "passes": 100
+      },
+      {
+        "file": "Potato___healthy__115b2d70f761.jpg",
+        "class": "Potato___healthy",
+        "sha256": "115b2d70f7619965ccf66e81637fbb34a8907618d6d1921789c5dc2199439e43",
+        "passes": 100
+      },
+      {
+        "file": "Potato___healthy__dc3f68f38dc1.jpg",
+        "class": "Potato___healthy",
+        "sha256": "dc3f68f38dc1a029378f1e12831f725e548c34d1569b04a77fb898ba39c196da",
+        "passes": 100
+      },
+      {
+        "file": "Potato___Early_blight__8e1641575891.jpg",
+        "class": "Potato___Early_blight",
+        "sha256": "8e16415758915e4407f5cce32a989334fad3c79c28dd0cb4ef1d27dc66911a2a",
+        "passes": 100
+      },
+      {
+        "file": "Potato___Early_blight__d67342f19fa1.jpg",
+        "class": "Potato___Early_blight",
+        "sha256": "d67342f19fa1e8fadc060c2e1e658c5f7df484601e36adc4056e94769675bfb6",
+        "passes": 100
+      },
+      {
+        "file": "Tomato___Early_blight__7d34b9d74e2b.jpg",
+        "class": "Tomato___Early_blight",
+        "sha256": "7d34b9d74e2b2a428bf482b335c7ee708a2a83cc82e771ecbe80811631135944",
+        "passes": 100
+      },
+      {
+        "file": "Tomato___healthy__81097b9027e7.jpg",
+        "class": "Tomato___healthy",
+        "sha256": "81097b9027e770a32903c0d5bba5ce1655a7609813ce584aba2993682f6fa0a9",
+        "passes": 100
+      }
+    ],
+    "supplement_passes": 100,
+    "total_training_records": 81480,
+    "unique_training_hashes": 11716,
     "augmentation_note": "Records are multiple augmented passes over unique clean files; augmentation runs in the tf.data pipeline (randomized per pass), not in the exported model graph."
   },
   "cryptographic_and_perceptual_exclusion_audit": {
@@ -207,26 +306,37 @@
     "phase_1_epochs": 2,
     "phase_1_lr": 0.001,
     "phase_2_epochs": 4,
-    "phase_2_lr_initial": 0.0003,
+    "phase_2_lr_initial": 0.0002,
     "phase_2_schedule": "CosineDecay to 2% of initial",
-    "unfrozen_backbone_layers": 40,
+    "unfrozen_backbone_layers": 60,
     "label_smoothing": 0.08,
     "class_weight_boost": {
       "Tomato___Late_blight": 1.35,
       "Potato___Late_blight": 1.1
     },
     "sample_weights_normalized": {
-      "Tomato___Late_blight": 1.413,
-      "Tomato___Early_blight": 1.028,
-      "Tomato___healthy": 1.0471,
-      "Potato___Late_blight": 1.1106,
+      "Tomato___Late_blight": 1.4328,
+      "Tomato___Early_blight": 1.0587,
+      "Tomato___healthy": 1.106,
+      "Potato___Late_blight": 1.1385,
       "Potato___Early_blight": 1.0,
-      "Potato___healthy": 1.1756
+      "Potato___healthy": 1.215
     },
     "regularization": "L2(3e-5) dense + Dropout(0.25, 0.20) + label smoothing"
   },
   "canopy_augmentation_policy": {
     "location": "tf.data pipeline (NOT in exported graph)",
+    "multi_scale_rrc": {
+      "description": "Random-resized-crop per record: random area fraction + aspect jitter, then resize to 128x128",
+      "min_area_fraction_pv": 0.55,
+      "min_area_fraction_plantdoc": 0.4,
+      "min_area_fraction_supplements": 0.35,
+      "aspect_jitter": [
+        0.8,
+        1.25
+      ],
+      "purpose": "scale-invariance across shroud close-ups and whole-plant/field framings (outdoor domain gap)"
+    },
     "per_image": [
       "hue +/-0.05",
       "saturation 0.65-1.60",
@@ -245,30 +355,30 @@
   },
   "calibration": {
     "method": "Temperature scaling fitted on PV validation NLL",
-    "temperature": 0.48,
+    "temperature": 0.52,
     "bake": "final Dense kernel & bias divided by T (argmax-preserving)",
-    "validation_accuracy_pre": 0.987719298245614,
-    "validation_accuracy_post": 0.987719298245614
+    "validation_accuracy_pre": 0.9870175438596491,
+    "validation_accuracy_post": 0.9870175438596491
   },
   "validation_metrics": {
-    "dataset": "/kaggle/input/new-plant-diseases-dataset/new plant diseases dataset(augmented)/New Plant Diseases Dataset(Augmented)/valid",
-    "accuracy": 0.9877,
-    "macro_f1": 0.9876,
+    "dataset": "/kaggle/input/datasets/vipoooool/new-plant-diseases-dataset/new plant diseases dataset(augmented)/New Plant Diseases Dataset(Augmented)/valid",
+    "accuracy": 0.987,
+    "macro_f1": 0.9869,
     "confusion_matrix": [
       [
-        444,
+        447,
+        6,
         3,
-        5,
-        11,
+        7,
         0,
         0
       ],
       [
-        7,
-        468,
-        5,
+        13,
+        464,
+        2,
         0,
-        0,
+        1,
         0
       ],
       [
@@ -283,16 +393,16 @@
         1,
         0,
         0,
-        482,
+        483,
         0,
-        2
+        1
       ],
       [
         0,
         0,
-        0,
-        0,
-        485,
+        1,
+        2,
+        482,
         0
       ],
       [
@@ -300,64 +410,64 @@
         0,
         0,
         0,
-        1,
-        455
+        0,
+        456
       ]
     ],
     "per_class_metrics": {
       "Tomato___Late_blight": {
-        "precision": 0.9823,
-        "recall": 0.959,
-        "f1_score": 0.9705,
+        "precision": 0.9696,
+        "recall": 0.9654,
+        "f1_score": 0.9675,
         "support": 463
       },
       "Tomato___Early_blight": {
-        "precision": 0.9936,
-        "recall": 0.975,
-        "f1_score": 0.9842,
+        "precision": 0.9872,
+        "recall": 0.9667,
+        "f1_score": 0.9768,
         "support": 480
       },
       "Tomato___healthy": {
-        "precision": 0.9796,
+        "precision": 0.9877,
         "recall": 1.0,
-        "f1_score": 0.9897,
+        "f1_score": 0.9938,
         "support": 481
       },
       "Potato___Late_blight": {
-        "precision": 0.9777,
-        "recall": 0.9938,
-        "f1_score": 0.9857,
+        "precision": 0.9817,
+        "recall": 0.9959,
+        "f1_score": 0.9887,
         "support": 485
       },
       "Potato___Early_blight": {
         "precision": 0.9979,
-        "recall": 1.0,
-        "f1_score": 0.999,
+        "recall": 0.9938,
+        "f1_score": 0.9959,
         "support": 485
       },
       "Potato___healthy": {
-        "precision": 0.9956,
-        "recall": 0.9978,
-        "f1_score": 0.9967,
+        "precision": 0.9978,
+        "recall": 1.0,
+        "f1_score": 0.9989,
         "support": 456
       }
     }
   },
   "plantdoc_heldout_metrics": {
     "total_evaluated": 93,
-    "raw_correct": 49,
-    "raw_accuracy_pct": 52.69,
+    "raw_correct": 54,
+    "raw_accuracy_pct": 58.06,
     "accepted_frames": 86,
-    "accepted_correct": 47,
-    "accepted_accuracy_pct": 54.65,
+    "accepted_correct": 51,
+    "accepted_accuracy_pct": 59.3,
     "gated_uncertain": 7,
     "gated_pct": 7.53,
     "per_class": {
-      "Tomato___Late_blight": "14/22 raw, 14 accepted-correct",
-      "Tomato___Early_blight": "8/17 raw, 8 accepted-correct",
-      "Tomato___healthy": "6/12 raw, 6 accepted-correct",
-      "Potato___Late_blight": "11/20 raw, 11 accepted-correct",
-      "Potato___Early_blight": "10/22 raw, 8 accepted-correct"
+      "Tomato___Late_blight": "16/22 raw, 15 accepted-correct",
+      "Tomato___Early_blight": "6/17 raw, 6 accepted-correct",
+      "Tomato___healthy": "9/12 raw, 9 accepted-correct",
+      "Potato___Late_blight": "14/20 raw, 14 accepted-correct",
+      "Potato___Early_blight": "9/22 raw, 7 accepted-correct"
     }
   },
   "tflite_keras_parity_96_images": true,
@@ -1143,6 +1253,7 @@
     "1143b91dd64744950cda2f7d53ed69b5e17a04d87b59fd66204ea8f83bdcd0d2",
     "1146802ff74c97a511dedcb6bf204d3029e13734bb2d0fcc9a44bce50d2311f2",
     "115011eb7b18fe407d19f3d18bc15ec7c6d6e031575ce91f2464743452889a88",
+    "115b2d70f7619965ccf66e81637fbb34a8907618d6d1921789c5dc2199439e43",
     "115f774cc4aedfe8f3f64bf64c0b3d0219623d7bb548ae63fef9e95bb58fc47d",
     "11687be09be0a9d3b37a5ad843094ea46feb05269b1845af4484bb87e3de0cee",
     "1171b11e330855ff7c89aeec1dd20314599bfdc37998ff378848e5af5813de55",
@@ -4921,6 +5032,7 @@
     "637f2eb1af0ac6fae281a2debc4c9151ed4b705bfefc18780893d33cd4cca162",
     "6383d0e5498f21b328739cffefe26160e442a91aca9c203cd003ede2953a1ee1",
     "63868f86455bfc9151d89ee45a05de93792bde839cb21042cd014d1d14dfefab",
+    "6388db5e429aa9e25e1e26a0b867a9b04d3f865d3ac30b2e8db99c346e1905e7",
     "638ae01afb2dfb0876ce9773044c026d9a54772aa46787fe7a5dd26bfdf1e91d",
     "638b94272747abf0a926d687df490301a380ee614dd760f60ba5ad100576347f",
     "63933bd151986760d60a737045dc7f1129b6763ed309f9786c49e0bce6c61c72",
@@ -5560,6 +5672,7 @@
     "71a8d54e9461ea4b19b5e1860208225fc0266c2c90bfdff74627cb9fc879452e",
     "71abce762a7d0984b667e9c827c6f001a78b6b3927d0c6f8e2f2b3a243553288",
     "71abfe80d00a67ce0dcdf127fb8fdd03046e9f39ece5493baa47139841c5fa9b",
+    "71b8ffdb32fdf4447e7aed84c0fee2e2779ae0c6fd149625f721e08b33f9ca45",
     "71ba09a56a1b5d1836a11360c0f8c1e858ccdb8b3cc79e44ca13c33dda93b284",
     "71bd29d68af91decfc31362984aff218a47f3bdf6ab766527f9ec11dc6797498",
     "71c479452a8d8a1d0e431e17871413346ff460213cce993bb227c983543b2483",
@@ -6051,6 +6164,7 @@
     "7d20c25ba9d38f18c7f6b0c208b3aec64263eaae0f1250950cd6fa81704bd5a4",
     "7d2b45ab5b13bdfc22e9cbe8739df668c785a2be9e6e7e02f8cb29a9f38a8752",
     "7d2c6ff32e668d4ef17543ad89fe004b3f919c7ee6588415974cc593aa8924c3",
+    "7d34b9d74e2b2a428bf482b335c7ee708a2a83cc82e771ecbe80811631135944",
     "7d411fe25b0f43490e488bbed9dc918d0c3a32895d4caa14a0f0650d51b83913",
     "7d458252ea87cb3c06428c815d87747925eb6147d4b8b83dc57d44dc6e27e9d1",
     "7d5ae68eebda38f3eac24d6f5d5a6a5d9f176c5eb080531e9349dce156aa2fde",
@@ -6091,6 +6205,7 @@
     "7de0b1c3e3370686798d0748c84ec9cad71ec837b7fc49e8629a235fa4dc44d8",
     "7de4d88e344f8f72f5b21472721f7c4df25deb57039a83e18ebe45c93a62955b",
     "7de8b5cb0015dbc0df4fa2ee5cfca2b1a3588aa28e0493aa5d1f676bd42cb1fd",
+    "7dec86a73f9d8ae7f0b4ed1d749ad0719e9d9b82b8cd0e207cbd96cc6392aeb4",
     "7df202f4398d2bc3c6399711efe00c960a695e2163f3c70333523b841f7278e3",
     "7dfbe7d3df25a448b4468390465da195cc9d450c074a272ae29e7576dd90d2dd",
     "7e0bac47fc44016b79280281d8cc9cea780b4f827034cce279618dccb8533c38",
@@ -6222,6 +6337,7 @@
     "80ed8f50531cc61fed7ae181660ebe0f292df84f0f3a727cde67668f7a8f7ee3",
     "80fc7980475feaafac99d93200d858db06fe4b039da7264b9df6cef8a26d9efa",
     "81026b0007bc1d0aa83d6b7bfffde15304f076b148952b9b44ca92a01f93397a",
+    "81097b9027e770a32903c0d5bba5ce1655a7609813ce584aba2993682f6fa0a9",
     "810af52cee6b3cead320229b5f6371d0888bdfac5633d620923dc2a7ad10159b",
     "810b2ab7e6dd46b3b9f9f837e38b05eb2dc8c0f79ebba08f0774a225321d3eb2",
     "81137212adf558d2280e1d5e6c6e4e21ea0955beb907839f6d6c6ac7c7288fec",
@@ -6804,6 +6920,7 @@
     "8e069349cd61ba012a21db51a2b775921e1210c3a1daadfab387b0c0556d729c",
     "8e0c110cb93b0d12395035082bd2a98bc04e7dec94400e9d635f98d47fa7e151",
     "8e11962b025e5a924b3bdc0b987da18eff29badce3df1902c50ffc5bbe3e6c18",
+    "8e16415758915e4407f5cce32a989334fad3c79c28dd0cb4ef1d27dc66911a2a",
     "8e16b1f59ab72d59810ec64e956b05bf56ebd32aba8ec26295906ad56a8bc637",
     "8e16df1ac4be4582da8e60ca0fa088c794f92358fab4d883f2131ebc84abe87d",
     "8e170e43eae88815bad66b12d1a5c5b7df4ef7670611e0405a5fadeebc7a438f",
@@ -7712,6 +7829,7 @@
     "a172307634bd04cc18a5a82892fa6465ceb66093f6b0086f906b70603e2fe963",
     "a17499965a6e78b259d12c59ea6185f69c75e5d2afa540f98dc61a6a43d81f77",
     "a17522188226cce4f4177eb7fafbd0e34a2f77069657028e6602b4764a194266",
+    "a18379bbee02501fbc9578838196e243ad73d236cad7fa108884b78121d5d7fd",
     "a1846105f0a3e2f104dfe9fce2039a57c90447e229a11f5b1248405403d8abd0",
     "a18584f321bd6c2b6742bf25b4257535efa1f6d40df211762513d03e67602315",
     "a1941d9d0c26099cbe7880b18ae47ad9541d9e7d7bd44936875ee2842c3e4dfb",
@@ -8462,6 +8580,7 @@
     "b187838ed6aec287526f1a6a0d61b94a6f17c06d04781dab56cfaa862d2e2591",
     "b188fa4eaffed8fcac3508fabb60b8ad2e77003578ea5b2f1a524e9d266d33e2",
     "b18f03034cfd9f296dc27e21c663949b8e9e8201b53f26a55ee640138fba9c77",
+    "b199c092165066d8a6de2b3fd1239b18d492806f705e1827bfb6cac5826a9734",
     "b19b479c3bfed8d643f661476af90238a9292442cc27f4e7e431f1f3aff27105",
     "b1a2a7646e2bd2075a5649074bce143d2d8eaaf618c730d4f12df38b2e458ac8",
     "b1a535570b0fc53a6dd6fa05d4facd6dbf3fd6782ce40cea8fc22013b3fb9200",
@@ -8483,6 +8602,7 @@
     "b1f01b12088a782a1da9c24327141d13c0d864fde4933f7d68b17ce9fa35d550",
     "b1f05921191310b3057b7fb77f6dbe07bb4513ceb1b857f73b42cf196b1bf52d",
     "b1fde8c114cce91272a3aac1da071828a93a1ad9902376c6582d3ea5f5b7a63b",
+    "b202f452f70d044110ecaab18ea6d6ff4757e81bd0e015c7d5edaff6b33dea98",
     "b2050a7bc89cc1d82719883be0b4592f79e0ebd1080d84d7625aee4c42f488e9",
     "b20709bd60ceaa85c0083491652dea94b577c7849f2659130914dbc093bd24c0",
     "b2128c57468899a9cff26bcb52b85a10a12527b012e8f72df7208d466d1c6ae4",
@@ -8885,6 +9005,7 @@
     "bade7f715eb30dda75694c6f193d1b015086a4acac162859f875f097463f8783",
     "bae043e56ca398f77ebcf27cf4c9ab0154428cbf76d3933e505ae81aea1c0296",
     "baf835e1260ad5f4251566cbc55ce48d794dc2b8aacac2eded0c7098185fe870",
+    "bafb223a00d7c4b4bb7dfe9d3aa5fe933e034536c975e0f588c20f3560433ba8",
     "bafb24097d84721591c47757d62e3670dcb965bdf88a256b08410461e5bf4714",
     "bb05df38ee5f29c37a90cd0a0f46fe89f052cca154bbeb189bee79205abf51ea",
     "bb08a72c795174ed1682af1a25d5cb1ac22d8b0338c954a244cfd721a96e9b69",
@@ -9176,6 +9297,7 @@
     "c13f6af92378db3b6f19b37205e9399ce0857d05dc10668c3821374758d750ee",
     "c13fc411a63eaf28d0af0b22352a4bfd7f49855b7bb084928830a959fc2b3e9e",
     "c141d562d53c9bed969c73d9b50b4248cd71e37adfd202c4e1516581cf7d0522",
+    "c148690497a3a246efd59d49d98a9480ded730e6481491141ad14ff30af5422f",
     "c14d5bfd9f14068c03488762c764bcf3a02bc6bf23545d8a0df959bc5894a4ae",
     "c14e43e33e13255314f2e78350692abe1e8129b982429e32cc3da0a1248dc84b",
     "c14ec7cbf154e1817ac3f7a29c794c5b48becd4fecfe5ab69b2c8cfac0762cfb",
@@ -10050,6 +10172,7 @@
     "d4e4cfb9807fc6f42053ba35cf90d9b80666b0d2e87b4b14a890b1d447274a0c",
     "d4e88abaf4392f8ddb4dc19d4eb10f82ce80b2705e2c88b108ce2ce0bd4f8dc1",
     "d4f2f65b00a00ea4bca6b874a0151f2c3ad32e3a61d1523ae15133a31a61c1ab",
+    "d4f44d40a3af664537fbc5b932e747f7adfb461d05a678b91abe982c784736e8",
     "d4f4631133010a4695990ec962ed1e90ac5c75d7e8f71eca25a33e02bb062d43",
     "d4fe2255b249b47e8df5eeac4d5c01c60ebe8b16619c6fd37c42b5727732bdbc",
     "d5157ed418acf17af0eb971c28c7b35c3e10033f722a0c060a98adb60716e7ce",
@@ -10117,6 +10240,7 @@
     "d65859fadadfc0ef39433ff2bce1155d222c543edb7e604655a25f97dd333657",
     "d66ef069fb7a898e9bb7b7677a7135bd2ddc4c9cce1397467eff34df8ddc8e0b",
     "d66f89cb5f9b65944248441e3fda6ba3011d04133a7e6f90e58f6cab571c58cc",
+    "d67342f19fa1e8fadc060c2e1e658c5f7df484601e36adc4056e94769675bfb6",
     "d673a20f93ee7bd964a8ed41baf437f279e86a49afbd13bbf296f0b1d9f58825",
     "d67ae30118bf3aa07243d3f0ee908a5791dd9805c2d667827e9a72f2355a3a5a",
     "d67eebb2122537b797be9e0b6bd1e6b9f4a462ac509a8b38bb28e362d273accc",
@@ -10308,6 +10432,7 @@
     "da42cce083631eb2635f7c6c6e068a40ad4ec8bafa5eb36a493c79f657d9fa62",
     "da49363064c712f80fcc0413c1f5d5733db6b901a416aa44d7da0695075c5e2b",
     "da4a446de024e4c11118b31b0b1d3ed6b2766f30296bd384562104bc4b3282d4",
+    "da4e600b334168459eb801944e09ccc39316e1da60061e87cbc7c2e0ea3dec5c",
     "da5954d5d7e48140fac159580d0c9d0c41c12fa492fb2ab0b8417cba8804a9db",
     "da5c87e8ddf769a82c50c7327f3122572322ef7c203bbda7bc96dba33fbdc755",
     "da60c075ebd3297cb03067550c2f6d812502b147a73e89138e51855fdf9c4ea4",
@@ -10388,6 +10513,7 @@
     "dc33933a82279c23ab148db6870505bba0ee79e4226d966de33c6850706c4483",
     "dc3640a0fb1692200399c77824fc5f607302c9248b19c6336bd141fb341d64bf",
     "dc37d132faf96f38f40b6aeef03ed7fbd950c6076dbd755868c66bb4721dc03d",
+    "dc3f68f38dc1a029378f1e12831f725e548c34d1569b04a77fb898ba39c196da",
     "dc42c2d4348d7dc6aa2bc6dc77b37ea2dc22a5a6c4698b15b3dcc12cfb592ef7",
     "dc46c6ae247405b8162ea3c99993ca1143a7958833ac6e6be1e7fe275036ff24",
     "dc470d689a86ec2c0632f47b863f8dbc04911cb23579d4a06ade72436596142f",
