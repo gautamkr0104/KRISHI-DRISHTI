@@ -306,8 +306,14 @@ def main():
     # ---------------------------------------------------------------- #
     # 2. Full clean PlantVillage Solanaceae corpus (no subsampling)     #
     # ---------------------------------------------------------------- #
-    pv_train_dir = Path(r"C:\Users\DELL\.cache\kagglehub\datasets\vipoooool\new-plant-diseases-dataset\versions\2"
-                        r"\New Plant Diseases Dataset(Augmented)\New Plant Diseases Dataset(Augmented)\train")
+    pv_train_dir = None
+    env_pv = os.environ.get("KRISHI_PV_TRAIN_DIR")
+    if env_pv and Path(env_pv).exists():
+        pv_train_dir = Path(env_pv)
+        print(f"[+] Using KRISHI_PV_TRAIN_DIR from environment: {pv_train_dir}")
+    if pv_train_dir is None:
+        pv_train_dir = Path(r"C:\Users\DELL\.cache\kagglehub\datasets\vipoooool\new-plant-diseases-dataset\versions\2"
+                            r"\New Plant Diseases Dataset(Augmented)\New Plant Diseases Dataset(Augmented)\train")
     if not pv_train_dir.exists():
         pv_train_dir = REPO_ROOT / "ai_engine" / "PlantVillage_Train"
     if not pv_train_dir.exists():
