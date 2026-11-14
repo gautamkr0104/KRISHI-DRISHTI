@@ -1,0 +1,416 @@
+{
+ "purpose": "Round-3 v7 web-domain supplement set: 41 operator-verified Bing/Edge web photos of diseased/healthy tomato+potato leaves. Zero-leakage verified: sha256+dHash clean vs benchmark-60, field, samples, PlantDoc holdout, AND vs the held-out 102-image webtest100 evaluation set (which is NEVER trained on).",
+ "added": "2026-11-14",
+ "images": [
+  {
+   "file": "web7_Tomato___Early_blight__00.jpg",
+   "class": "Tomato___Early_blight",
+   "source": "https://l450v.alamy.com/450v/2c6pjcn/tomato-early-blight-fungus-alternaria-solani-2c6pjcn.jpg",
+   "query": "alternaria solani tomato leaf target spots",
+   "sha256": "319f05596333ced8ce71ee463e3f09789ce4905518d9f5a82428752219efccfd",
+   "bytes": 36422,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Tomato___Late_blight__00.jpg",
+   "class": "Tomato___Late_blight",
+   "source": "https://c8.alamy.com/comp/AT9YAX/tomato-late-blight-phytophthora-infestans-necrosis-sporulation-on-AT9YAX.jpg",
+   "query": "tomato late blight leaf",
+   "sha256": "14bb80dd726732c88d84c2b8accf7c476f3e31e070c048b3066f8ac1cefab5ba",
+   "bytes": 343223,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Tomato___Early_blight__01.jpg",
+   "class": "Tomato___Early_blight",
+   "source": "https://thegardeningcook.com/wp-content/uploads/2023/04/early-blight-tomato-leaf-1080x646.jpg",
+   "query": "tomato early blight concentric rings leaf",
+   "sha256": "7fc925f48e280896978ddfa79ddc87928e72552352158f3efc700077c51966fd",
+   "bytes": 175810,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Potato___Late_blight__00.jpg",
+   "class": "Potato___Late_blight",
+   "source": "https://scitechdaily.com/images/Late-Blight-Disease-of-Potato-scaled.jpg",
+   "query": "potato late blight leaf",
+   "sha256": "639237447d38be5beabac96b787fd3cec657140385a96f65c769f13cfb461f3f",
+   "bytes": 1106054,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Potato___healthy__00.jpg",
+   "class": "Potato___healthy",
+   "source": "https://media.istockphoto.com/id/1768423047/photo/green-potato-plants-on-the-ground-in-the-garden-isolated.jpg?s=612x612&w=0&k=20&c=vCJ23kO1fTROUdUIJHfGxS_mVIkggf_BtAyE2PILYhU=",
+   "query": "healthy potato plant leaves",
+   "sha256": "952691d4f7d28a63fb2e65d78fe0afe993aceff3cd211cd29c200479bec283ee",
+   "bytes": 97390,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Potato___Late_blight__01.jpg",
+   "class": "Potato___Late_blight",
+   "source": "https://www.agriculture.gov.au/sites/default/files/images/factsheet-potato-late-blight2.png",
+   "query": "potato late blight leaf",
+   "sha256": "268fccc1d434155dbed91168d9eeefd5190ca0f5bf9535ff2ec161220510ec8c",
+   "bytes": 29110,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Potato___healthy__01.jpg",
+   "class": "Potato___healthy",
+   "source": "https://static.vecteezy.com/system/resources/previews/050/679/748/large_2x/healthy-potato-plants-growing-in-rich-soil-during-the-summer-season-in-a-rural-garden-photo.jpg",
+   "query": "healthy potato plant leaves",
+   "sha256": "8b3e340d7e39b37d71ed92e8be4436ea7cfc6c969ac1530de8b3eea625962693",
+   "bytes": 1222011,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Potato___healthy__03.jpg",
+   "class": "Potato___healthy",
+   "source": "https://static.vecteezy.com/system/resources/previews/074/002/989/large_2x/healthy-potato-plants-thrive-in-a-vibrant-field-showcasing-their-rich-green-leaves-and-healthy-growth-in-fertile-soil-photo.jpg",
+   "query": "healthy potato plant leaves",
+   "sha256": "4a15109b050c46cb0b1532c4d787f9107c9cb77d22092201993f8d9c5644f9d2",
+   "bytes": 640572,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Tomato___Late_blight__01.jpg",
+   "class": "Tomato___Late_blight",
+   "source": "https://www.epicgardening.com/wp-content/uploads/2023/06/late-blight-disease-on-tomato.jpeg",
+   "query": "tomato late blight leaf",
+   "sha256": "8e6f1664052783e189d033660b88fbdf5891c13f349defb4afe3e9f21a5219e6",
+   "bytes": 222885,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Tomato___Late_blight__02.jpg",
+   "class": "Tomato___Late_blight",
+   "source": "http://www.extension.umd.edu/sites/extension.umd.edu/files/styles/optimized/public/2021-03/hgic_veg_disease_LateBlight_leaf_400.jpg?itok=oi7xleYT",
+   "query": "tomato late blight leaf",
+   "sha256": "6add37f9b15ce9d33efd1f2e09b8a677ca7fd1b949c9b0e19197dd01e6be0044",
+   "bytes": 18235,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Potato___Early_blight__01.jpg",
+   "class": "Potato___Early_blight",
+   "source": "https://projectbluearchive.blob.core.windows.net/media/Default/Potatoes/Disease and defects/Alternaria Leaf resized.jpg",
+   "query": "alternaria solani potato leaf lesions",
+   "sha256": "b9d17561429ad39c6f72469a91ed6f70f1f6676d46e953d46dacc3b0d19bca8d",
+   "bytes": 24909,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Tomato___Early_blight__05.jpg",
+   "class": "Tomato___Early_blight",
+   "source": "https://gd.eppo.int/media/data/taxon/A/ALTESO/pics/1024x0/10725.jpg",
+   "query": "alternaria solani tomato leaf target spots",
+   "sha256": "bee56b46fe9f39a109b2c35a3e8519b59d8d6e1b750573d6e980c6be6d2ce9a8",
+   "bytes": 159927,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Tomato___Late_blight__04.jpg",
+   "class": "Tomato___Late_blight",
+   "source": "https://media.istockphoto.com/id/2190568139/photo/diseases-of-tomato-late-blight-manifestations-of-late-blight-on-tomato-leaves-fungal-disease.jpg?s=1024x1024&w=is&k=20&c=-qBL06gO4wRK3xUHH8N54JHjdKonW6-RYH1ZbzpBCV8=",
+   "query": "phytophthora infestans tomato leaf symptoms",
+   "sha256": "3e9154420942fa5eaf14b91d98e77962184e934ba826acfe6a80ba9ae1d2e6e9",
+   "bytes": 119029,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Tomato___healthy__01.jpg",
+   "class": "Tomato___healthy",
+   "source": "https://static.vecteezy.com/system/resources/thumbnails/011/846/790/small_2x/green-leaf-of-tomato-plant-isolated-on-white-photo.jpg",
+   "query": "healthy tomato leaf closeup",
+   "sha256": "9cd518a0752bd6b2b4c81d419e892ac7d9db8acd4e5683c3cf5b9567adf2cd3b",
+   "bytes": 174638,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Potato___Late_blight__02.jpg",
+   "class": "Potato___Late_blight",
+   "source": "https://thumbs.dreamstime.com/b/identifying-late-blight-phytophthora-infestans-tomato-potato-plants-closeup-view-disease-symptoms-crop-close-up-364708719.jpg?w=768",
+   "query": "potato late blight leaf",
+   "sha256": "e55944c1138d3c0757db246556a412121257be589a17c2b5cf89015fd73eee02",
+   "bytes": 141882,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Tomato___healthy__02.jpg",
+   "class": "Tomato___healthy",
+   "source": "https://c8.alamy.com/comp/EC8MYY/tomato-leaf-closeup-isolated-on-white-EC8MYY.jpg",
+   "query": "healthy tomato leaf closeup",
+   "sha256": "535f00238283b9dca7ce0e80b44b299316581101c8b3b379486647cf63f2cdf6",
+   "bytes": 175854,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Potato___Early_blight__04.jpg",
+   "class": "Potato___Early_blight",
+   "source": "https://www.shutterstock.com/image-photo/potato-brown-spot-symptoms-on-600nw-1608071041.jpg",
+   "query": "alternaria solani potato leaf lesions",
+   "sha256": "de4e2a69c6372b4340658647b0da3fca17183e50a2473ac0c2f527e608af0242",
+   "bytes": 140494,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Tomato___Early_blight__06.jpg",
+   "class": "Tomato___Early_blight",
+   "source": "https://content.ces.ncsu.edu/media/images/IMG_1301.JPG",
+   "query": "tomato early blight leaf",
+   "sha256": "666952525563774b9dfd2744eb35fc1b40eef648b55f1afca1ae3eac56ff147d",
+   "bytes": 58550,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Tomato___healthy__03.jpg",
+   "class": "Tomato___healthy",
+   "source": "https://suzannerbanks.blog/wp-content/uploads/2013/01/tomato-leaf.jpg",
+   "query": "healthy tomato leaf closeup",
+   "sha256": "8015b03ff806b146ed0e39f0825a59bb81857963d35f87a95708c252c4f182ad",
+   "bytes": 123669,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Potato___healthy__05.jpg",
+   "class": "Potato___healthy",
+   "source": "https://media.gettyimages.com/id/2162295607/photo/healthy-potato-plants-growing-in-fertile-soil-on-a-farm.jpg?s=612x612&w=gi&k=20&c=mu5s7Vr_MZj0D-ImWnskZeynHXa3tbkKViTRJruRb3A=",
+   "query": "healthy potato plant leaves",
+   "sha256": "651f1357f5082258f384c1d73f0af32bde0ec4672a7ba9b701ff909331e3244f",
+   "bytes": 98396,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Potato___Early_blight__05.jpg",
+   "class": "Potato___Early_blight",
+   "source": "https://media.gettyimages.com/id/586884353/photo/agriculture-potato-early-blight-leaf-symptoms-on-a-potato-leaf-caused-by-alternaria-solani.jpg?s=612x612&w=gi&k=20&c=F5kwYmd_gP3pLaPiJV1NQ9uj5WQXYNFbzTDdECNAMz4=",
+   "query": "alternaria solani potato leaf lesions",
+   "sha256": "00a07e351674bf47a33f468aff7a85a776413ba4359fa91f5bbec4e10d05ad58",
+   "bytes": 101074,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Tomato___healthy__04.jpg",
+   "class": "Tomato___healthy",
+   "source": "https://toagriculture.com/wp-content/uploads/2024/02/healthy-tomato-plant.jpg",
+   "query": "healthy tomato plant foliage",
+   "sha256": "c9ffb78a31a723ec9e17d9e474afaf506d3b213d65d6b9632eeaf444c9ba824c",
+   "bytes": 82626,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Potato___healthy__07.jpg",
+   "class": "Potato___healthy",
+   "source": "https://c8.alamy.com/comp/2G8T18W/healthy-young-potato-plant-in-an-organic-garden-young-potato-plant-growing-on-the-soil-rows-of-young-potato-plants-on-the-field-2G8T18W.jpg",
+   "query": "healthy potato plant leaves",
+   "sha256": "1ff15b262ba0854a7bfd3786863b91875fa0ee33c48a9d5cbf6a2b1e8bdce577",
+   "bytes": 291894,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Tomato___Late_blight__06.jpg",
+   "class": "Tomato___Late_blight",
+   "source": "https://www.caffini.com/img/cms/peronospora_pomodoro_1.jpg",
+   "query": "tomato late blight leaf",
+   "sha256": "e5b5744040a8c2ef063a87be4fbd3a5465b041071e471528ad071bf82f127fa8",
+   "bytes": 435622,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Potato___Early_blight__07.jpg",
+   "class": "Potato___Early_blight",
+   "source": "https://thumbs.dreamstime.com/b/potato-leaf-attacked-alternaria-solani-specific-symptom-alternariosis-solanion-cultivated-solanum-tuberosum-116012482.jpg?w=360",
+   "query": "alternaria solani potato leaf lesions",
+   "sha256": "4bd7f2e20917758b3787c5642a35bbcf61112d4113ac573ed1790bba8feec0f7",
+   "bytes": 29279,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Potato___healthy__09.jpg",
+   "class": "Potato___healthy",
+   "source": "https://c8.alamy.com/comp/2BP8D00/close-up-beautiful-potato-leaf-background-texture-plant-2BP8D00.jpg",
+   "query": "healthy potato leaf closeup",
+   "sha256": "158af5f25ea4ea6bc3f82218fd97b598baf0ae80ed78b9e904c96bfb9b7f9c72",
+   "bytes": 267413,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Potato___healthy__10.jpg",
+   "class": "Potato___healthy",
+   "source": "https://l450v.alamy.com/450v/2bp8d00/close-up-beautiful-potato-leaf-background-texture-plant-2bp8d00.jpg",
+   "query": "healthy potato leaf closeup",
+   "sha256": "80fc800db9ef3407be4c00661e30dcb3ea252c734839c855ffc076005f976272",
+   "bytes": 50674,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Tomato___healthy__05.jpg",
+   "class": "Tomato___healthy",
+   "source": "https://thumbs.dreamstime.com/b/close-up-vibrant-green-tomato-plant-leaves-new-growth-healthy-new-growth-thriving-tomato-plant-392510109.jpg",
+   "query": "healthy tomato leaf closeup",
+   "sha256": "91bdcd4a5011f31c871d7ac08c33f3ffbe617e63d96fc38fbb0de407d1055bcb",
+   "bytes": 101769,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Tomato___Late_blight__07.jpg",
+   "class": "Tomato___Late_blight",
+   "source": "https://ag.purdue.edu/department/arge/swpap/_media/early-blight-of-tomato-4-original.jpg",
+   "query": "tomato late blight leaf lesions",
+   "sha256": "652187431188f90fff45a9fc30ce291764948119e30d252d416f8d81003246b8",
+   "bytes": 90659,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Potato___Early_blight__09.jpg",
+   "class": "Potato___Early_blight",
+   "source": "https://l450v.alamy.com/450v/x96efd/potato-early-blight-alternaria-alternata-lesion-on-a-potato-leaf-x96efd.jpg",
+   "query": "alternaria solani potato leaf lesions",
+   "sha256": "b13f474273781c8ebb13024bd007eb13893721dd9167456244b0e5b17faf92e6",
+   "bytes": 35492,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Tomato___healthy__07.jpg",
+   "class": "Tomato___healthy",
+   "source": "https://www.ruralsprout.com/wp-content/uploads/2024/06/1-Tomato-Leaf.jpg.webp",
+   "query": "healthy tomato plant foliage",
+   "sha256": "be6f732126754d64215babdcf8b90c6979e0f9c94a816bdfed79e70f34f248d9",
+   "bytes": 249083,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Potato___Late_blight__05.jpg",
+   "class": "Potato___Late_blight",
+   "source": "https://media.potatopro.com/late-blight-leafs-1200.jpg?width=1200&height=743&crop=smart&mode=crop",
+   "query": "potato late blight leaf",
+   "sha256": "4ae9df537d4d615b298193da0f858303115f3feedaec7a1ce22c750e4030af12",
+   "bytes": 153715,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Potato___Early_blight__12.jpg",
+   "class": "Potato___Early_blight",
+   "source": "https://img.freepik.com/premium-photo/potato-early-blight-leaf-symptoms-by-alternaria-solani-alberta_269655-33495.jpg",
+   "query": "alternaria solani potato leaf lesions",
+   "sha256": "7cf892a2d27b2b27392d4b49d25eb093effaa085cd575eb92c0c230dca6b6c78",
+   "bytes": 90909,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Potato___healthy__12.jpg",
+   "class": "Potato___healthy",
+   "source": "https://www.eatlikenoone.com/wp-content/uploads/2011/05/Red-Pontiac-18-Days-4.jpg",
+   "query": "healthy potato plant leaves",
+   "sha256": "77ac7eeb801fc2b704f5e274df33c9ce2f6b8ac428cb7d6d859de247660d6b24",
+   "bytes": 657913,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Potato___Late_blight__06.jpg",
+   "class": "Potato___Late_blight",
+   "source": "https://cropscience.bayer.co.uk/media/104571123/late-blight-on-foliage.jpg",
+   "query": "potato late blight leaf",
+   "sha256": "f2fddd42f6466b6ba0a69888e9c21b3f598cb0374c75061cab682a0243781ccf",
+   "bytes": 245543,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Tomato___Late_blight__08.jpg",
+   "class": "Tomato___Late_blight",
+   "source": "https://ag.purdue.edu/department/arge/swpap/_media/early-blight-of-tomato-5-original.jpg",
+   "query": "tomato late blight leaf",
+   "sha256": "fc20acbee99e0211304737b50c60fdc43a8809733c1d0cd93486ebb395257d6e",
+   "bytes": 76913,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Potato___Late_blight__11.jpg",
+   "class": "Potato___Late_blight",
+   "source": "https://assets.syngenta.ca/images/pest/125/ca2020_late_blight_potato_damage3.jpg",
+   "query": "potato late blight leaf",
+   "sha256": "739ba0f3abfe06267c6cd711b2d3bc965e0ff4d9b94a321d6544eab6475ee734",
+   "bytes": 66568,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Tomato___healthy__10.jpg",
+   "class": "Tomato___healthy",
+   "source": "https://handmadefarmhouse.com/wp-content/uploads/2023/07/IMG_2535.jpg",
+   "query": "healthy tomato plant foliage",
+   "sha256": "936de572b88f7acd6dc2978183ab3bc9b24c84e2e23e4d2812246fb694c64a73",
+   "bytes": 483408,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Tomato___Late_blight__10.jpg",
+   "class": "Tomato___Late_blight",
+   "source": "https://content.peat-cloud.com/w400/tomato-late-blight-tomato-1556463954.jpg",
+   "query": "tomato late blight leaf",
+   "sha256": "c324d60a0f31dee09433b08cc9dc066e9cb228c66d05709670a648fbeae038a6",
+   "bytes": 53662,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Tomato___Late_blight__11.jpg",
+   "class": "Tomato___Late_blight",
+   "source": "https://ag.purdue.edu/department/arge/swpap/_media/late-blight-of-tomato-5.jpg",
+   "query": "tomato late blight leaf lesions",
+   "sha256": "47e941665561a069b8eae805d9c7e09b88f56a21781adfd82c8ecd409c8cca87",
+   "bytes": 48008,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  },
+  {
+   "file": "web7_Tomato___Late_blight__13.jpg",
+   "class": "Tomato___Late_blight",
+   "source": "https://ag.purdue.edu/department/arge/swpap/_media/early-blight-of-tomato-6.jpg",
+   "query": "tomato late blight leaf",
+   "sha256": "ecce4cbfb2b039bbe1996043e653a757a1d80c0304c44a57f3f80f469a026d9b",
+   "bytes": 79866,
+   "verified": "GM (contact-sheet visual review, 2 passes, 84->44 filtered)",
+   "license": "public web image (Bing-indexed); internal training use"
+  }
+ ]
+}
