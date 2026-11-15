@@ -1,0 +1,432 @@
+{
+  "manifest_version": "5.0-round5-webtest-burned",
+  "generated_at": "2026-11-15T07:35:57Z",
+  "owner_decision": "Train on ALL 102 webtest100 images (2026-11-15). webtest100 is INVALIDATED as a held-out test; a fresh 100-image set will be harvested after this fine-tune.",
+  "base_model": "krishi_drishti_base.keras (raw v7, b0c6c39a... lineage)",
+  "trained_on": {
+    "webtest100_burned": 102,
+    "web_supplements": 41,
+    "audited_scans": 25,
+    "pv_replay_per_class": 60
+  },
+  "round5_tflite_sha256": "5de439ef2b10c954c4d5c132d5f00a53e3e262c70e3585bcf9077d10f76f628a",
+  "round5_tflite_size_bytes": 2123856,
+  "temperature": 0.86,
+  "guard": {
+    "held_out_benchmark_floor_raw": 58,
+    "final_benchmark_raw": 58,
+    "pv_valid_accuracy": 0.9786,
+    "pv_floor": 0.978,
+    "best_epoch": 4
+  },
+  "final_metrics": {
+    "benchmark60_raw_agreement": 58,
+    "webtest100_raw_MEMORIZED_INVALID": 68,
+    "audited_scan_agreement": 23
+  },
+  "gate_sweep_best": {
+    "conf": 0.65,
+    "entropy": 1.2,
+    "margin": 0.08
+  },
+  "scan_rows": [
+    {
+      "scan": 2,
+      "kind": "visual_audit_verified",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.9936,
+      "margin": 0.9917,
+      "entropy": 0.0483,
+      "expected": "Tomato___Late_blight"
+    },
+    {
+      "scan": 8,
+      "kind": "visual_audit_verified",
+      "pred": "Tomato___Early_blight",
+      "conf": 0.8063,
+      "margin": 0.6192,
+      "entropy": 0.5294,
+      "expected": "Tomato___Early_blight"
+    },
+    {
+      "scan": 9,
+      "kind": "visual_audit_verified",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.7085,
+      "margin": 0.4289,
+      "entropy": 0.661,
+      "expected": "Tomato___Early_blight"
+    },
+    {
+      "scan": 10,
+      "kind": "visual_audit_verified",
+      "pred": "Tomato___Early_blight",
+      "conf": 0.5337,
+      "margin": 0.0796,
+      "entropy": 0.7639,
+      "expected": "Tomato___Early_blight"
+    },
+    {
+      "scan": 13,
+      "kind": "visual_audit_verified",
+      "pred": "Tomato___Early_blight",
+      "conf": 0.9692,
+      "margin": 0.9535,
+      "entropy": 0.1732,
+      "expected": "Tomato___Early_blight"
+    },
+    {
+      "scan": 14,
+      "kind": "visual_audit_verified",
+      "pred": "Tomato___Early_blight",
+      "conf": 0.9896,
+      "margin": 0.9849,
+      "entropy": 0.0681,
+      "expected": "Tomato___Early_blight"
+    },
+    {
+      "scan": 15,
+      "kind": "visual_audit_verified",
+      "pred": "Tomato___Early_blight",
+      "conf": 0.9506,
+      "margin": 0.9179,
+      "entropy": 0.2459,
+      "expected": "Tomato___Late_blight"
+    },
+    {
+      "scan": 17,
+      "kind": "visual_audit_verified",
+      "pred": "Tomato___Early_blight",
+      "conf": 0.742,
+      "margin": 0.6041,
+      "entropy": 0.8436,
+      "expected": "Tomato___Early_blight"
+    },
+    {
+      "scan": 20,
+      "kind": "visual_audit_verified",
+      "pred": "Tomato___Early_blight",
+      "conf": 0.7934,
+      "margin": 0.6373,
+      "entropy": 0.6701,
+      "expected": "Tomato___Early_blight"
+    },
+    {
+      "scan": 21,
+      "kind": "visual_audit_verified",
+      "pred": "Tomato___Early_blight",
+      "conf": 0.6729,
+      "margin": 0.5186,
+      "entropy": 1.011,
+      "expected": "Tomato___Early_blight"
+    },
+    {
+      "scan": 22,
+      "kind": "visual_audit_verified",
+      "pred": "Tomato___Early_blight",
+      "conf": 0.4369,
+      "margin": 0.1963,
+      "entropy": 1.4326,
+      "expected": "Tomato___Early_blight"
+    },
+    {
+      "scan": 23,
+      "kind": "visual_audit_verified",
+      "pred": "Tomato___Early_blight",
+      "conf": 0.7911,
+      "margin": 0.6761,
+      "entropy": 0.7571,
+      "expected": "Tomato___Early_blight"
+    },
+    {
+      "scan": 24,
+      "kind": "visual_audit_verified",
+      "pred": "Tomato___Early_blight",
+      "conf": 0.5931,
+      "margin": 0.3315,
+      "entropy": 1.1107,
+      "expected": "Tomato___Early_blight"
+    },
+    {
+      "scan": 25,
+      "kind": "visual_audit_verified",
+      "pred": "Tomato___Early_blight",
+      "conf": 0.4693,
+      "margin": 0.1089,
+      "entropy": 1.139,
+      "expected": "Tomato___Early_blight"
+    },
+    {
+      "scan": 27,
+      "kind": "visual_audit_verified",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.6171,
+      "margin": 0.3533,
+      "entropy": 0.9881,
+      "expected": "Tomato___Late_blight"
+    },
+    {
+      "scan": 28,
+      "kind": "visual_audit_verified",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.8666,
+      "margin": 0.7693,
+      "entropy": 0.5138,
+      "expected": "Tomato___Late_blight"
+    },
+    {
+      "scan": 29,
+      "kind": "visual_audit_verified",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.8692,
+      "margin": 0.7724,
+      "entropy": 0.5029,
+      "expected": "Tomato___Late_blight"
+    },
+    {
+      "scan": 30,
+      "kind": "visual_audit_verified",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.9421,
+      "margin": 0.8941,
+      "entropy": 0.2514,
+      "expected": "Tomato___Late_blight"
+    },
+    {
+      "scan": 31,
+      "kind": "visual_audit_verified",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.8316,
+      "margin": 0.6735,
+      "entropy": 0.4979,
+      "expected": "Tomato___Late_blight"
+    },
+    {
+      "scan": 33,
+      "kind": "visual_audit_verified",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.996,
+      "margin": 0.9946,
+      "entropy": 0.0324,
+      "expected": "Tomato___Late_blight"
+    },
+    {
+      "scan": 34,
+      "kind": "visual_audit_verified",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.8326,
+      "margin": 0.7639,
+      "entropy": 0.6896,
+      "expected": "Tomato___Late_blight"
+    },
+    {
+      "scan": 35,
+      "kind": "visual_audit_verified",
+      "pred": "Tomato___healthy",
+      "conf": 0.9758,
+      "margin": 0.9592,
+      "entropy": 0.138,
+      "expected": "Tomato___healthy"
+    },
+    {
+      "scan": 38,
+      "kind": "visual_audit_verified",
+      "pred": "Tomato___healthy",
+      "conf": 0.9862,
+      "margin": 0.9745,
+      "entropy": 0.081,
+      "expected": "Tomato___healthy"
+    },
+    {
+      "scan": 39,
+      "kind": "visual_audit_verified",
+      "pred": "Tomato___healthy",
+      "conf": 0.9783,
+      "margin": 0.9597,
+      "entropy": 0.1162,
+      "expected": "Tomato___healthy"
+    },
+    {
+      "scan": 43,
+      "kind": "visual_audit_verified",
+      "pred": "Tomato___healthy",
+      "conf": 0.9873,
+      "margin": 0.9781,
+      "entropy": 0.0797,
+      "expected": "Tomato___healthy"
+    },
+    {
+      "scan": 1,
+      "kind": "non_leaf",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.7868,
+      "margin": 0.6619,
+      "entropy": 0.7522,
+      "expected": null
+    },
+    {
+      "scan": 3,
+      "kind": "non_leaf",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.3898,
+      "margin": 0.0647,
+      "entropy": 1.3263,
+      "expected": null
+    },
+    {
+      "scan": 4,
+      "kind": "non_leaf",
+      "pred": "Tomato___healthy",
+      "conf": 0.9779,
+      "margin": 0.9685,
+      "entropy": 0.1363,
+      "expected": null
+    },
+    {
+      "scan": 5,
+      "kind": "non_leaf",
+      "pred": "Tomato___Late_blight",
+      "conf": 0.474,
+      "margin": 0.0019,
+      "entropy": 0.9091,
+      "expected": null
+    },
+    {
+      "scan": 6,
+      "kind": "non_leaf",
+      "pred": "Tomato___healthy",
+      "conf": 0.6138,
+      "margin": 0.3054,
+      "entropy": 0.9494,
+      "expected": null
+    },
+    {
+      "scan": 7,
+      "kind": "non_leaf",
+      "pred": "Potato___Early_blight",
+      "conf": 0.5853,
+      "margin": 0.2973,
+      "entropy": 1.0605,
+      "expected": null
+    },
+    {
+      "scan": 11,
+      "kind": "non_leaf",
+      "pred": "Tomato___healthy",
+      "conf": 0.9628,
+      "margin": 0.9331,
+      "entropy": 0.1839,
+      "expected": null
+    },
+    {
+      "scan": 12,
+      "kind": "non_leaf",
+      "pred": "Tomato___Early_blight",
+      "conf": 0.6432,
+      "margin": 0.4444,
+      "entropy": 0.9645,
+      "expected": null
+    },
+    {
+      "scan": 16,
+      "kind": "excluded_uncertain",
+      "pred": "Tomato___Early_blight",
+      "conf": 0.9937,
+      "margin": 0.9914,
+      "entropy": 0.0473,
+      "expected": null
+    },
+    {
+      "scan": 18,
+      "kind": "non_leaf",
+      "pred": "Tomato___healthy",
+      "conf": 0.9206,
+      "margin": 0.8866,
+      "entropy": 0.3839,
+      "expected": null
+    },
+    {
+      "scan": 19,
+      "kind": "non_leaf",
+      "pred": "Tomato___healthy",
+      "conf": 0.9966,
+      "margin": 0.9948,
+      "entropy": 0.027,
+      "expected": null
+    },
+    {
+      "scan": 26,
+      "kind": "non_leaf",
+      "pred": "Tomato___healthy",
+      "conf": 0.4689,
+      "margin": 0.1451,
+      "entropy": 1.1779,
+      "expected": null
+    },
+    {
+      "scan": 32,
+      "kind": "non_leaf",
+      "pred": "Tomato___Early_blight",
+      "conf": 0.6794,
+      "margin": 0.5508,
+      "entropy": 1.069,
+      "expected": null
+    },
+    {
+      "scan": 36,
+      "kind": "non_leaf",
+      "pred": "Tomato___healthy",
+      "conf": 0.9488,
+      "margin": 0.9203,
+      "entropy": 0.254,
+      "expected": null
+    },
+    {
+      "scan": 37,
+      "kind": "non_leaf",
+      "pred": "Tomato___healthy",
+      "conf": 0.8643,
+      "margin": 0.7431,
+      "entropy": 0.4574,
+      "expected": null
+    },
+    {
+      "scan": 40,
+      "kind": "non_leaf",
+      "pred": "Tomato___healthy",
+      "conf": 0.5848,
+      "margin": 0.3458,
+      "entropy": 1.1111,
+      "expected": null
+    },
+    {
+      "scan": 41,
+      "kind": "non_leaf",
+      "pred": "Tomato___healthy",
+      "conf": 0.6171,
+      "margin": 0.4025,
+      "entropy": 1.0715,
+      "expected": null
+    },
+    {
+      "scan": 42,
+      "kind": "excluded_uncertain",
+      "pred": "Tomato___healthy",
+      "conf": 0.9988,
+      "margin": 0.9983,
+      "entropy": 0.0104,
+      "expected": null
+    },
+    {
+      "scan": 44,
+      "kind": "excluded_uncertain",
+      "pred": "Tomato___healthy",
+      "conf": 0.7184,
+      "margin": 0.4742,
+      "entropy": 0.7454,
+      "expected": null
+    }
+  ],
+  "wall_time_seconds": 1272.3,
+  "io_contract": "Float32 [1,128,128,3] raw [0,255] -> [1,6] softmax (unchanged)"
+}
