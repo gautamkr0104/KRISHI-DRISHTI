@@ -1,0 +1,58 @@
+{
+ "mega_500 fresh suite (prev production model)": {
+  "k": 442,
+  "n": 480,
+  "pct": 92.1,
+  "ci_lo": 89.3,
+  "ci_hi": 94.2
+ },
+ "mega_500 fresh suite (daemon accepted)": {
+  "k": 474,
+  "n": 478,
+  "pct": 99.2,
+  "ci_lo": 97.9,
+  "ci_hi": 99.7
+ },
+ "comprehensive_300 unseen (prev model, ID)": {
+  "k": 112,
+  "n": 120,
+  "pct": 93.3,
+  "ci_lo": 87.4,
+  "ci_hi": 96.6
+ },
+ "60-specimen curated benchmark (v7 raw)": {
+  "k": 57,
+  "n": 60,
+  "pct": 95.0,
+  "ci_lo": 86.3,
+  "ci_hi": 98.3
+ },
+ "webtest100 raw argmax (v7 raw)": {
+  "k": 56,
+  "n": 102,
+  "pct": 54.9,
+  "ci_lo": 45.2,
+  "ci_hi": 64.2
+ },
+ "webtest100 daemon accepted-correct (v7)": {
+  "k": 46,
+  "n": 82,
+  "pct": 56.1,
+  "ci_lo": 45.3,
+  "ci_hi": 66.3
+ },
+ "webtest100 raw argmax (round-3 v4)": {
+  "k": 44,
+  "n": 102,
+  "pct": 43.1,
+  "ci_lo": 33.9,
+  "ci_hi": 52.8
+ },
+ "webtest100 daemon accepted-correct (r3)": {
+  "k": 33,
+  "n": 79,
+  "pct": 41.8,
+  "ci_lo": 31.5,
+  "ci_hi": 52.8
+ }
+}
