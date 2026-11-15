@@ -210,9 +210,14 @@ def zoom_out_small_leaf(img, y, w):
         canvas += tf.random.uniform([128, 128, 3], -14.0, 14.0)
         oy = tf.random.uniform([], 0, 128 - nh + 1, dtype=tf.int32)
         ox = tf.random.uniform([], 0, 128 - nw + 1, dtype=tf.int32)
+        # paste the shrunken leaf at (oy, ox): pad BOTH the crop and its mask
+        # up to the full 128x128 canvas, then composite (small*mask directly
+        # is invalid: shapes [nh,nw,3] vs [128,128,1] -> cond/mul graph error).
+        small_padded = tf.pad(small, [[oy, 128 - nh - oy], [ox, 128 - nw - ox], [0, 0]])
         ones = tf.ones([nh, nw, 1])
         mask = tf.pad(ones, [[oy, 128 - nh - oy], [ox, 128 - nw - ox], [0, 0]])
-        return tf.clip_by_value(canvas * (1.0 - mask) + small * mask, 0.0, 255.0)
+        out = tf.clip_by_value(canvas * (1.0 - mask) + small_padded * mask, 0.0, 255.0)
+        return tf.ensure_shape(out, img.shape)
 
     img = tf.cond(roll < 0.25, _zoom_out, lambda: img)
     return img, y, w
