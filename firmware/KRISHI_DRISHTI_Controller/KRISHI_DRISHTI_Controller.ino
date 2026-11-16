@@ -1,6 +1,6 @@
 /*
   ==============================================================================
-  KRISHI-DRISHTI (Krishi-Drishti) - Farmer-Friendly Controller Wand Firmware v2.3
+  KRISHI-DRISHTI (Krishi-Drishti) - Farmer-Friendly Controller Wand Firmware v2.4
   Target Hardware: ESP32 DevKit V1 + SSD1306 OLED (128x64 I2C) + DHT11
   Networking: Connects as Wi-Fi Station to SoftAP "KRISHI-DRISHTI" @ 192.168.4.1
   Author: Gautam Kumar / KRISHI-DRISHTI Project
@@ -110,6 +110,7 @@ MicroclimateTracker microclimateTracker(6.0f);
 // Wi-Fi Status Tracking
 bool wifiConnected = false;
 unsigned long lastWifiCheckMs = 0;
+int wifiRetryCount = 0;   // consecutive failed reconnect attempts (escalation counter)
 
 // Button Debounce & Hold Detection
 bool prevScan = HIGH;
@@ -327,7 +328,7 @@ void renderPage4_Status() {
 
   display.setTextSize(1);
   display.setCursor(0, 12);
-  display.print("Firmware: v2.3 Simple");
+  display.print("Firmware: v2.4 Simple");
 
   display.setCursor(0, 22);
   display.print("WiFi    : ");
@@ -384,6 +385,7 @@ void ensureWiFiConnected() {
   if (WiFi.status() == WL_CONNECTED) {
     if (!wifiConnected) {
       wifiConnected = true;
+      wifiRetryCount = 0;
       Serial.println("[WIFI] Connected to Camera SoftAP: KRISHI-DRISHTI! IP: " + WiFi.localIP().toString());
       renderActivePage();
     }
@@ -396,11 +398,27 @@ void ensureWiFiConnected() {
     renderActivePage();
   }
 
-  // Non-blocking reconnect: check every 8s without thrashing the Wi-Fi driver
+  // Non-blocking reconnect: check every 8s without thrashing the Wi-Fi driver.
+  // After 3 failed reconnect attempts the association state can be wedged
+  // (radio never joined since boot), so escalate to a full state-machine
+  // restart instead of retrying reconnect() forever.
   if (lastWifiCheckMs == 0 || millis() - lastWifiCheckMs > 8000) {
     lastWifiCheckMs = millis();
-    Serial.println("[WIFI] Seeking Camera SoftAP: KRISHI-DRISHTI...");
-    WiFi.reconnect();
+    wifiRetryCount++;
+    if (wifiRetryCount >= 3) {
+      Serial.println("[WIFI] Reconnect failed 3x - restarting Wi-Fi state machine...");
+      WiFi.disconnect(false);
+      WiFi.mode(WIFI_OFF);
+      delay(100);
+      WiFi.mode(WIFI_STA);
+      WiFi.setTxPower(WIFI_POWER_8_5dBm); // same brownout-safe power cap as boot
+      WiFi.config(WAND_STATIC_IP, WAND_GATEWAY, WAND_SUBNET, WAND_DNS);
+      WiFi.begin(AP_SSID, AP_PASS);
+      wifiRetryCount = 0;
+    } else {
+      Serial.println("[WIFI] Seeking Camera SoftAP: KRISHI-DRISHTI...");
+      WiFi.reconnect();
+    }
   }
 }
 
@@ -657,7 +675,7 @@ void setup() {
   delay(150);
 
   Serial.println("\n========================================");
-  Serial.println("  KRISHI-DRISHTI :: Controller Wand v2.3");
+  Serial.println("  KRISHI-DRISHTI :: Controller Wand v2.4");
   Serial.println("  Farmer-Friendly Edge Telemetry Core");
   Serial.println("========================================");
   Serial.flush();
@@ -701,7 +719,7 @@ void setup() {
     display.print("Plant Health Wand");
 
     display.setCursor(19, 36);
-    display.print("Smart Wand v2.3");
+    display.print("Smart Wand v2.4");
 
     display.setCursor(10, 49);
     display.print("Linking to Cam...");
@@ -723,9 +741,11 @@ void setup() {
   Serial.println("[INIT] Step 3: DHT11 Sensor..."); Serial.flush();
   dht.begin();
 
-  // 6. Non-blocking quick link check for splash banner
+  // 6. Non-blocking quick link check for splash banner (SoftAP beacon +
+  //     association usually completes in 1-2 s; give the radio a fair window
+  //     so the banner reflects reality instead of always showing STANDBY)
   unsigned long startLinkMs = millis();
-  while (WiFi.status() != WL_CONNECTED && (millis() - startLinkMs < 1500)) {
+  while (WiFi.status() != WL_CONNECTED && (millis() - startLinkMs < 6000)) {
     delay(50);
     yield();
   }

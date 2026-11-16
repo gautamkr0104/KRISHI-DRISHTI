@@ -1,6 +1,6 @@
 /*
   ==============================================================================
-  KRISHI-DRISHTI (कृषि-दृष्टि) - Official Camera Unit Firmware v2.2
+  KRISHI-DRISHTI (कृषि-दृष्टि) - Official Camera Unit Firmware v2.4
   Target Hardware: AI-Thinker ESP32-CAM (ESP-32S) + ESP32-CAM-MB Programmer Shield
   Optics: OV5640 / OV2640 Dual-Support Auto-Detection (UXGA 1600x1200)
   Storage: Onboard MicroSD in SD_MMC 1-Bit Mode (DMA Accelerated)
@@ -75,8 +75,7 @@ String diagChemical = "No chemical intervention needed";
 // --------------------------------------------------
 // EMBEDDED EDGE AI SERVER DAEMON (SERVED AT /)
 // --------------------------------------------------
-const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html><!DOCTYPE html>
-<html lang="en">
+const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -2352,11 +2351,18 @@ void setup() {
   Serial.begin(115200);
   setCpuFrequencyMhz(240); // 240MHz performance lock
 
+  // Keep the task watchdog (TG1) out of the boot path: RF calibration during
+  // radio bringup can stall the loop long enough to trip TG1WDT_SYS_RESET on
+  // marginal USB power. The app loop below is cooperative; a hardware hang
+  // still resets via the ROM watchdog, so safety is preserved.
+  disableCore1WDT();
+  disableLoopWDT();
+
   pinMode(FLASH_LED_PIN, OUTPUT);
   digitalWrite(FLASH_LED_PIN, LOW);
 
   Serial.println("\n========================================");
-  Serial.println("  KRISHI-DRISHTI :: ESP32-CAM v2.2");
+  Serial.println("  KRISHI-DRISHTI :: ESP32-CAM v2.4");
   Serial.println("  Offline-First Edge Agritech Platform");
   Serial.println("========================================");
 

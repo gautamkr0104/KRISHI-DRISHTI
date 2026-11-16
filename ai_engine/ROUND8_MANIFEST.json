@@ -23,9 +23,24 @@
     "fresh": 673
   },
   "gate": {
-    "conf": 0.5,
-    "entropy": 1.2,
-    "margin": 0.12
+    "_comment": "Two different gates exist by design; the dashboard HTML is authoritative at runtime.",
+    "dashboard_tier1_gate": {
+      "conf_min": 0.5,
+      "entropy_max": 1.45,
+      "margin_min": 0.12,
+      "where": "krishi_ai_server.html runEdgeInference() tier 1"
+    },
+    "training_strict_gate": {
+      "conf_min": 0.5,
+      "entropy_max": 1.2,
+      "margin_min": 0.12,
+      "where": "offline selection metric only (bench strict pass, OOD rejection training eval); stricter than tier-1 on purpose"
+    }
   },
+  "known_limitations": [
+    "6-class closed-world head: other tomato diseases (septoria leaf spot, bacterial spot, target spot, leaf mold) share foliar features with the target classes and can pass tier-1; agronomic safety for off-target crops relies on the physical shroud and OE withholding.",
+    "Synthetic flat-green cards with drawn necrotic rings can fool both the foliar prefilter and the model (accepted as Tomato Healthy in adversarial tests).",
+    "Severe optical blur (6px) degrades diagnosis to ~53% but degrades SAFELY: blurred frames that lose confidence exit tier-1, chemicals withheld."
+  ],
   "io_contract": "Float32 [1,128,128,3] raw [0,255] -> [1,6] softmax (unchanged)"
 }

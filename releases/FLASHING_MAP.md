@@ -1,4 +1,4 @@
-# KRISHI-DRISHTI v2.3 EDGE :: Firmware Binary Flashing Map
+# KRISHI-DRISHTI v2.4 EDGE :: Firmware Binary Flashing Map
 
 This guide outlines the exact memory offsets and flashing commands for both the **ESP32-CAM** optical gateway and the **ESP32 Controller Wand**.
 
@@ -85,3 +85,5 @@ esptool.py --chip esp32 --port COM_PORT --baud 460800 --before default_reset --a
 4. Insert the card into the ESP32-CAM slot. The camera will automatically detect the card in under 1 second on boot!
 
 > **Model build:** `krishi_drishti_model.tflite` sha256 prefix `f48fc157cfe31c5b` (round-8 internet-hardened OE, 2026-11-17). Previous build: `a05ded79e3f78895` (round-7), archived as `krishi_drishti_model_round7_prev.tflite`.
+>
+> **v2.4 firmware changes:** camera — boot watchdog (TG1) kept out of the radio-bringup path, double `<!DOCTYPE>` removed from the embedded dashboard; wand — Wi-Fi recovery escalates to a full state-machine restart after 3 failed reconnect attempts, splash link window 1.5s → 6s.
