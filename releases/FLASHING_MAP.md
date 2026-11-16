@@ -83,3 +83,5 @@ esptool.py --chip esp32 --port COM_PORT --baud 460800 --before default_reset --a
    └── scans\
    ```
 4. Insert the card into the ESP32-CAM slot. The camera will automatically detect the card in under 1 second on boot!
+
+> **Model build:** `krishi_drishti_model.tflite` sha256 prefix `f48fc157cfe31c5b` (round-8 internet-hardened OE, 2026-11-17). Previous build: `a05ded79e3f78895` (round-7), archived as `krishi_drishti_model_round7_prev.tflite`.

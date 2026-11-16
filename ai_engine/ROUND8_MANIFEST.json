@@ -1,0 +1,31 @@
+{
+  "manifest_version": "8.3-round8d-scan-rescue",
+  "generated_at": "2026-11-16T19:11:36Z",
+  "base": "round-7 head lineage, backbone frozen, T=0.46 baked kept",
+  "new_tflite_sha256": "f48fc157cfe31c5be979b9912433b7d7cf776f3b8743b4717de1c9b2dc5408f1",
+  "harvest": {
+    "ood_sources": 320,
+    "pos_kept_after_agreement": 30
+  },
+  "best_epoch": 8,
+  "final_metrics": {
+    "pv": 0.9884,
+    "bench": 59,
+    "strict": 59,
+    "scan": 25,
+    "scan_gate": 25,
+    "scan_fails": [],
+    "src_rej": 1200,
+    "src_total": 1396,
+    "must_rej": 84,
+    "must_total": 84,
+    "must_fails": [],
+    "fresh": 673
+  },
+  "gate": {
+    "conf": 0.5,
+    "entropy": 1.2,
+    "margin": 0.12
+  },
+  "io_contract": "Float32 [1,128,128,3] raw [0,255] -> [1,6] softmax (unchanged)"
+}
