@@ -13,9 +13,9 @@
   <style>
     :root {
       --bg: #0e1210;
-      --surface: rgba(21, 26, 23, 0.74);
-      --surface-2: rgba(26, 32, 29, 0.86);
-      --inset: rgba(11, 15, 13, 0.82);
+      --surface: rgba(21, 26, 23, 0.55);
+      --surface-2: rgba(30, 38, 34, 0.62);
+      --inset: rgba(12, 17, 14, 0.55);
       --line: #262d29;
       --line-strong: #333c36;
 
@@ -38,8 +38,12 @@
 
       --radius: 8px;
       --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.02);
-      --glass-blur: 14px;
-      --glass-blur-soft: 8px;
+      --glass-blur: 18px;
+      --glass-blur-soft: 12px;
+      --glass-edge:
+        inset 0 1px 0 rgba(255, 255, 255, 0.09),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+        0 8px 28px rgba(0, 0, 0, 0.30);
     }
 
     /* glass fallback: engines without backdrop-filter get the original solid surfaces */
@@ -73,9 +77,10 @@
       z-index: -1;
       pointer-events: none;
       background:
-        radial-gradient(560px 380px at 12% -6%, rgba(70, 167, 88, 0.09), transparent 70%),
-        radial-gradient(640px 420px at 96% 12%, rgba(76, 195, 138, 0.06), transparent 70%),
-        radial-gradient(720px 520px at 50% 118%, rgba(27, 94, 44, 0.10), transparent 72%);
+        radial-gradient(680px 460px at 10% -8%, rgba(70, 167, 88, 0.30), transparent 68%),
+        radial-gradient(760px 520px at 100% 6%, rgba(76, 195, 138, 0.22), transparent 68%),
+        radial-gradient(900px 640px at 46% 118%, rgba(39, 122, 60, 0.26), transparent 70%),
+        radial-gradient(420px 300px at 78% 78%, rgba(24, 82, 44, 0.20), transparent 72%);
     }
 
     .shell {
@@ -130,11 +135,12 @@
       letter-spacing: 0.05em;
       color: var(--faint);
       background: var(--surface);
-      -webkit-backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.15);
-      backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.15);
-      border: 1px solid var(--line);
+      -webkit-backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.4);
+      backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.4);
+      border: 1px solid rgba(255, 255, 255, 0.09);
       border-radius: 6px;
       padding: 6px 12px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
     }
 
     .server-state .dot {
@@ -153,11 +159,11 @@
       display: grid;
       grid-template-columns: repeat(6, 1fr);
       background: var(--surface);
-      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
-      backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
-      border: 1px solid var(--line-strong);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
+      backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
+      border: 1px solid rgba(255, 255, 255, 0.09);
       border-radius: var(--radius);
-      box-shadow: var(--shadow);
+      box-shadow: var(--glass-edge);
       overflow: hidden;
     }
 
@@ -233,11 +239,11 @@
 
     .panel {
       background: var(--surface);
-      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
-      backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
-      border: 1px solid var(--line-strong);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
+      backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
+      border: 1px solid rgba(255, 255, 255, 0.09);
       border-radius: var(--radius);
-      box-shadow: var(--shadow);
+      box-shadow: var(--glass-edge);
       min-width: 0;
       overflow: hidden;
     }
@@ -326,15 +332,17 @@
       font: 600 12.5px var(--font-sans);
       color: var(--ink);
       background: var(--surface-2);
-      border: 1px solid var(--line-strong);
+      -webkit-backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.4);
+      backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.4);
+      border: 1px solid rgba(255, 255, 255, 0.10);
       border-radius: 6px;
       cursor: pointer;
       transition: background-color 120ms ease, border-color 120ms ease;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
     }
 
-    .btn:hover { background: #212823; border-color: #404a44; }
-    .btn:active { background: #1c221f; }
+    .btn:hover { background: rgba(38, 47, 42, 0.72); border-color: rgba(255, 255, 255, 0.16); }
+    .btn:active { background: rgba(28, 34, 31, 0.72); }
 
     .btn:focus-visible {
       outline: 2px solid var(--accent);
@@ -393,12 +401,13 @@
 
     /* ---------- diagnosis ---------- */
     .diag-rows {
-      border: 1px solid var(--line);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 6px;
       overflow: hidden;
       background: var(--inset);
-      -webkit-backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.1);
-      backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.1);
+      -webkit-backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.4);
+      backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.4);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
     }
 
     .diag-row {
@@ -412,8 +421,8 @@
 
     .diag-row .k {
       padding: 5px 10px;
-      background: #111613;
-      border-right: 1px solid var(--line);
+      background: rgba(17, 22, 19, 0.60);
+      border-right: 1px solid rgba(255, 255, 255, 0.07);
       font-family: var(--font-mono);
       font-size: 10px;
       font-weight: 600;
@@ -482,13 +491,14 @@
       align-items: flex-start;
       justify-content: space-between;
       gap: 12px;
-      border: 1px solid var(--line);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 6px;
       background: var(--inset);
-      -webkit-backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.1);
-      backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.1);
+      -webkit-backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.4);
+      backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.4);
       padding: 9px 12px;
       margin-top: 10px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
     }
 
     .hardware .hw-title {
@@ -517,8 +527,8 @@
       overflow-y: auto;
       padding: 8px 12px;
       background: var(--inset);
-      -webkit-backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.1);
-      backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.1);
+      -webkit-backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.4);
+      backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.4);
       font-family: var(--font-mono);
       font-size: 11px;
       line-height: 1.55;
