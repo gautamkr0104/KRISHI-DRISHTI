@@ -154,10 +154,14 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html><!DOCTYPE html
       z-index: -1;
       pointer-events: none;
       background:
-        radial-gradient(680px 460px at 10% -8%, rgba(70, 167, 88, 0.30), transparent 68%),
-        radial-gradient(760px 520px at 100% 6%, rgba(76, 195, 138, 0.22), transparent 68%),
-        radial-gradient(900px 640px at 46% 118%, rgba(39, 122, 60, 0.26), transparent 70%),
-        radial-gradient(420px 300px at 78% 78%, rgba(24, 82, 44, 0.20), transparent 72%);
+        radial-gradient(640px 440px at 12% -6%, rgba(70, 167, 88, 0.38), transparent 66%),
+        radial-gradient(720px 480px at 92% 2%, rgba(76, 195, 138, 0.30), transparent 66%),
+        radial-gradient(560px 420px at -4% 42%, rgba(43, 110, 60, 0.34), transparent 68%),
+        radial-gradient(600px 460px at 104% 52%, rgba(58, 150, 74, 0.28), transparent 68%),
+        radial-gradient(760px 520px at 24% 108%, rgba(39, 122, 60, 0.34), transparent 68%),
+        radial-gradient(680px 500px at 78% 104%, rgba(24, 82, 44, 0.30), transparent 70%),
+        radial-gradient(520px 360px at 50% 44%, rgba(52, 138, 66, 0.20), transparent 72%),
+        radial-gradient(380px 260px at 66% 76%, rgba(76, 195, 138, 0.16), transparent 72%);
     }
 
     .shell {
