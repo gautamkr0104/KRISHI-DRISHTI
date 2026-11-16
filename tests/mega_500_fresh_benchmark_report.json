@@ -1,0 +1,18 @@
+{
+  "Round 1 (Baseline v1)": {
+    "id_raw_acc": 92.91666666666667,
+    "id_accepted_acc": 100.0,
+    "id_uncertain": 17,
+    "ood_rej_pct": 10.416666666666668,
+    "ood_gated": 25,
+    "stress_uncertain": 7
+  },
+  "Production New Model": {
+    "id_raw_acc": 92.08333333333333,
+    "id_accepted_acc": 99.54954954954955,
+    "id_uncertain": 18,
+    "ood_rej_pct": 14.166666666666666,
+    "ood_gated": 34,
+    "stress_uncertain": 9
+  }
+}

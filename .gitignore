@@ -28,6 +28,7 @@ Desktop.ini
 
 scratch/
 tests/internet_test_images/
+ai_engine/_web10k_feature_cache/
 
 *.bak
 

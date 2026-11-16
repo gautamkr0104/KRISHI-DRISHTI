@@ -1,0 +1,21 @@
+{
+  "decided_at": "2026-11-16T06:01:03Z",
+  "previous_model_sha16": "5de439ef2b10c954",
+  "new_model_sha16": "397cba9daf0f38a3",
+  "heldout_web_pool": {
+    "size": 1200,
+    "pre": 480,
+    "post": 666
+  },
+  "benchmark_strict": {
+    "pre": 57,
+    "post": 58
+  },
+  "ood_rejected": {
+    "pre": 6,
+    "post": 6
+  },
+  "scans_agreement": 25,
+  "ship": true,
+  "sd_updated": true
+}

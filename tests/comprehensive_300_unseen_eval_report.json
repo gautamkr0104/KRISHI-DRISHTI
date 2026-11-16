@@ -1,0 +1,36 @@
+{
+  "Round 1 (Baseline v1)": {
+    "model_name": "Round 1 (Baseline v1)",
+    "id_raw_acc": 95.83333333333334,
+    "id_accepted_acc": 99.13793103448276,
+    "id_exact": 115,
+    "id_total": 120,
+    "id_gated": 4,
+    "ood_crop_rej_pct": 10.0,
+    "ood_crop_rejected": 10,
+    "ood_crop_total": 100,
+    "ood_dis_rej_pct": 8.0,
+    "ood_dis_rejected": 4,
+    "ood_dis_total": 50,
+    "nf_rej_pct": 77.77777777777779,
+    "nf_rejected": 21,
+    "nf_total": 27
+  },
+  "Production New Model": {
+    "model_name": "Production New Model",
+    "id_raw_acc": 93.33333333333333,
+    "id_accepted_acc": 97.3913043478261,
+    "id_exact": 112,
+    "id_total": 120,
+    "id_gated": 5,
+    "ood_crop_rej_pct": 19.0,
+    "ood_crop_rejected": 19,
+    "ood_crop_total": 100,
+    "ood_dis_rej_pct": 4.0,
+    "ood_dis_rejected": 2,
+    "ood_dis_total": 50,
+    "nf_rej_pct": 81.48148148148148,
+    "nf_rejected": 22,
+    "nf_total": 27
+  }
+}

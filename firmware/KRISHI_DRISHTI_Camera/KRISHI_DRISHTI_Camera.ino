@@ -75,865 +75,705 @@ String diagChemical = "No chemical intervention needed";
 // --------------------------------------------------
 // EMBEDDED EDGE AI SERVER DAEMON (SERVED AT /)
 // --------------------------------------------------
-const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
+const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html><!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>KRISHI-DRISHTI :: Edge AI Co-Processor</title>
-  
-  <!-- Bundled Offline TensorFlow.js & TFLite WASM Runtimes -->
-  <script src="/vendor/tf.min.js"></script>
-  <script src="/vendor/tf-tflite.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0e1210">
+  <title>KRISHI-DRISHTI</title>
+
+  <!-- Bundled offline TensorFlow.js and TFLite WASM runtimes -->
+  <script src="/vendor/tf.min.js" onerror="if (window.log) log('Failed to load /vendor/tf.min.js', 'err');"></script>
+  <script src="/vendor/tf-tflite.min.js" onerror="if (window.log) log('Failed to load /vendor/tf-tflite.min.js', 'err');"></script>
 
   <style>
     :root {
-      --bg-base: #070B0E;
-      --bg-surface: #0E141B;
-      --bg-surface-elevated: #141D26;
-      --bg-surface-glass: rgba(16, 24, 34, 0.85);
-      --border-subtle: rgba(255, 255, 255, 0.07);
-      --border-focus: rgba(16, 185, 129, 0.4);
-      
-      --accent-emerald: #10B981;
-      --accent-emerald-dim: rgba(16, 185, 129, 0.15);
-      --accent-teal: #14B8A6;
-      --accent-amber: #F59E0B;
-      --accent-amber-dim: rgba(245, 158, 11, 0.15);
-      --accent-rose: #F43F5E;
-      --accent-rose-dim: rgba(244, 63, 94, 0.15);
-      --accent-cyan: #06B6D4;
-      
-      --text-main: #F1F5F9;
-      --text-muted: #94A3B8;
-      --text-dim: #64748B;
-      
+      --bg: #0e1210;
+      --surface: rgba(21, 26, 23, 0.74);
+      --surface-2: rgba(26, 32, 29, 0.86);
+      --inset: rgba(11, 15, 13, 0.82);
+      --line: #262d29;
+      --line-strong: #333c36;
+
+      --ink: #e9e7e0;
+      --muted: #a3a89f;
+      --faint: #6e756d;
+
+      --accent: #46a758;
+      --accent-strong: #3e9450;
+      --accent-soft: rgba(70, 167, 88, 0.14);
+
+      --ok: #4cc38a;
+      --bad: #e5484d;
+      --warn: #f0a13e;
+      --mid: #8d99a6;
+      --bar: #3e9b52;
+
       --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --radius-sm: 8px;
-      --radius-md: 14px;
-      --radius-lg: 20px;
-      --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+
+      --radius: 8px;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.02);
+      --glass-blur: 14px;
+      --glass-blur-soft: 8px;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
+    /* glass fallback: engines without backdrop-filter get the original solid surfaces */
+    @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+      :root {
+        --surface: #151a17;
+        --surface-2: #1a201d;
+        --inset: #0b0f0d;
+      }
     }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    ::selection { background: rgba(70, 167, 88, 0.35); }
 
     body {
-      background-color: var(--bg-base);
-      background-image: 
-        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(20, 184, 166, 0.06) 0px, transparent 50%);
-      background-attachment: fixed;
-      color: var(--text-main);
+      background: var(--bg);
+      color: var(--ink);
       font-family: var(--font-sans);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 14px;
-    }
-
-    .app-shell {
-      width: 100%;
-      max-width: 1180px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    /* TOP BRAND NAVIGATION BAR */
-    .top-navbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: var(--bg-surface-glass);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 12px 18px;
-      box-shadow: var(--shadow-glass);
-    }
-
-    .brand-group {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand-icon {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #10B981, #059669);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-    }
-
-    .brand-meta {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .brand-title-wrap {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .brand-name {
-      font-size: 17px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: #FFFFFF;
-    }
-
-    .version-pill {
-      font-size: 10px;
-      font-weight: 600;
-      text-transform: uppercase;
-      padding: 2px 7px;
-      border-radius: 6px;
-      background: var(--accent-emerald-dim);
-      color: var(--accent-emerald);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      font-family: var(--font-mono);
-    }
-
-    .brand-desc {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .status-pill {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-      transition: all 0.3s ease;
-      font-family: var(--font-mono);
-    }
-
-    .status-pill.pill-running {
-      background: var(--accent-emerald-dim);
-      color: var(--accent-emerald);
-      border: 1px solid rgba(16, 185, 129, 0.4);
-    }
-
-    .status-pill.pill-stopped {
-      background: rgba(148, 163, 184, 0.1);
-      color: var(--text-muted);
-      border: 1px solid var(--border-subtle);
-    }
-
-    .pulsing-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background-color: currentColor;
-      box-shadow: 0 0 8px currentColor;
-      animation: pulse 1.8s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.8); }
-    }
-
-    /* TELEMETRY METRICS 6-GRID */
-    .metrics-bar {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 10px;
-    }
-
-    @media (max-width: 640px) {
-      .metrics-bar {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-      }
-      .metric-card {
-        padding: 8px 10px;
-      }
-      .metric-header {
-        font-size: 10px;
-      }
-      .metric-value {
-        font-size: 13px;
-      }
-      .brand-desc {
-        display: none;
-      }
-      .brand-name {
-        font-size: 16px;
-      }
-      .hardware-card {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 8px;
-      }
-      .btn-hw-check {
-        width: 100%;
-        text-align: center;
-      }
-      .btn-secondary {
-        padding: 9px 8px;
-        font-size: 11px;
-      }
-    }
-
-    .metric-card {
-      background: var(--bg-surface-glass);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-sm);
-      padding: 10px 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      transition: border-color 0.2s;
-    }
-
-    .metric-card:hover {
-      border-color: var(--border-focus);
-    }
-
-    .metric-header {
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--text-dim);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .metric-value {
       font-size: 14px;
-      font-weight: 700;
-      font-family: var(--font-mono);
-      color: var(--text-main);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -webkit-text-size-adjust: 100%;
     }
 
-    /* MAIN 2-COLUMN WORKSPACE */
-    .workspace-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 14px;
+    /* ambient backdrop: gives the glass panels something to blur (palette hues only) */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        radial-gradient(560px 380px at 12% -6%, rgba(70, 167, 88, 0.09), transparent 70%),
+        radial-gradient(640px 420px at 96% 12%, rgba(76, 195, 138, 0.06), transparent 70%),
+        radial-gradient(720px 520px at 50% 118%, rgba(27, 94, 44, 0.10), transparent 72%);
     }
 
-    @media (min-width: 900px) {
-      .workspace-grid {
-        grid-template-columns: 420px 1fr;
-      }
+    .shell {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 14px 16px 18px;
     }
 
-    /* CARD CONTAINER */
-    .glass-panel {
-      background: var(--bg-surface-glass);
-      backdrop-filter: blur(16px);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 16px;
-      box-shadow: var(--shadow-glass);
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .panel-header {
+    /* ---------- header ---------- */
+    .masthead {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid var(--border-subtle);
+      flex-wrap: wrap;
+      gap: 10px 16px;
       padding-bottom: 10px;
     }
 
-    .panel-title {
-      font-size: 13px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    .brand { display: flex; align-items: center; gap: 12px; }
 
-    .panel-badge {
-      font-size: 10px;
-      font-family: var(--font-mono);
-      color: var(--text-dim);
-      background: var(--bg-surface-elevated);
-      padding: 2px 8px;
-      border-radius: 4px;
-    }
-
-    /* VIEWPORT / LEAF FRAME */
-    .viewfinder-wrap {
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      max-height: 380px;
-      background: #040709;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: var(--radius-md);
-      position: relative;
-      overflow: hidden;
+    .brand-mark {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: #17251c;
+      border: 1px solid #2c4132;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto;
+      color: #7ed09a;
+      flex: none;
     }
 
-    .viewfinder-grid-lines {
-      position: absolute;
-      inset: 0;
-      background-image: 
-        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-      background-size: 24px 24px;
-      pointer-events: none;
-    }
-
-    .viewfinder-crosshair {
-      position: absolute;
-      width: 48px;
-      height: 48px;
-      border: 1px dashed rgba(16, 185, 129, 0.3);
-      border-radius: 50%;
-      pointer-events: none;
-    }
-
-    .viewfinder-corners {
-      position: absolute;
-      inset: 16px;
-      pointer-events: none;
-    }
-    .viewfinder-corners::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; width: 14px; height: 14px;
-      border-top: 2px solid var(--accent-emerald);
-      border-left: 2px solid var(--accent-emerald);
-    }
-    .viewfinder-corners::after {
-      content: '';
-      position: absolute;
-      bottom: 0; right: 0; width: 14px; height: 14px;
-      border-bottom: 2px solid var(--accent-emerald);
-      border-right: 2px solid var(--accent-emerald);
-    }
-
-    .leaf-preview-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: none;
-      z-index: 2;
-    }
-
-    .leaf-placeholder {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      color: var(--text-dim);
-      font-size: 13px;
-      z-index: 1;
-    }
-
-    .leaf-placeholder svg {
-      width: 42px;
-      height: 42px;
-      stroke: currentColor;
-      opacity: 0.6;
-    }
-
-    /* ACTION BUTTONS & SAMPLES */
-    .action-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .btn-main {
-      grid-column: span 2;
-      padding: 13px 18px;
-      border-radius: var(--radius-sm);
-      border: none;
+    .brand h1 {
       font-size: 14px;
       font-weight: 700;
       letter-spacing: 0.02em;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      background: linear-gradient(135deg, #10B981, #059669);
-      color: #FFFFFF;
-      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
-      transition: all 0.2s ease;
     }
 
-    .btn-main:active {
-      transform: scale(0.98);
-    }
-
-    .btn-secondary {
-      padding: 10px 14px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border-subtle);
-      background: var(--bg-surface-elevated);
-      color: var(--text-main);
+    .brand .sub {
       font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    .server-state {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: background 0.2s;
-    }
-
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .sample-pill-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
       gap: 8px;
-    }
-
-    .btn-sample {
-      padding: 8px 10px;
-      border-radius: var(--radius-sm);
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      text-align: center;
-      border: 1px solid var(--border-subtle);
-      background: var(--bg-surface);
-      color: var(--text-muted);
-      transition: all 0.2s;
-    }
-
-    .btn-sample:hover {
-      border-color: var(--border-focus);
-      color: var(--text-main);
-    }
-
-    .btn-sample-blight {
-      border-color: rgba(245, 158, 11, 0.3);
-      color: #FCD34D;
-    }
-
-    .btn-sample-healthy {
-      border-color: rgba(16, 185, 129, 0.3);
-      color: #6EE7B7;
-    }
-
-    .btn-sample-upload {
-      border-color: rgba(6, 182, 212, 0.3);
-      color: #67E8F9;
-    }
-
-    /* RIGHT COLUMN: DIAGNOSTIC REPORT */
-    .diagnosis-hero-box {
-      background: linear-gradient(180deg, rgba(20, 29, 38, 0.9) 0%, rgba(14, 20, 27, 0.95) 100%);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .diag-title-row {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .diag-primary {
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: -0.01em;
-      color: #FFFFFF;
-      line-height: 1.2;
-    }
-
-    .diag-pathogen {
-      font-size: 13px;
-      font-style: italic;
-      color: var(--text-muted);
-    }
-
-    .diag-confidence {
-      font-size: 12px;
       font-family: var(--font-mono);
-      color: var(--accent-emerald);
-      background: var(--accent-emerald-dim);
-      padding: 4px 10px;
-      border-radius: 6px;
-      display: inline-block;
-      align-self: flex-start;
-      border: 1px solid rgba(16, 185, 129, 0.2);
-    }
-
-    /* PRESCRIPTION BOX */
-    .presc-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-sm);
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .rx-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
+      font-size: 11.5px;
       letter-spacing: 0.05em;
-      color: var(--accent-emerald);
+      color: var(--faint);
+      background: var(--surface);
+      -webkit-backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.15);
+      backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.15);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 6px 12px;
     }
 
-    .rx-section {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      border-left: 2px solid var(--accent-emerald);
-      padding-left: 10px;
+    .server-state .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--faint);
+      flex: none;
     }
 
-    .rx-subhead {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      color: var(--text-dim);
+    .server-state.running { color: var(--ok); border-color: rgba(76, 195, 138, 0.35); }
+    .server-state.running .dot { background: var(--ok); }
+
+    /* ---------- fact strip ---------- */
+    .facts {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      background: var(--surface);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
+      backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
     }
 
-    .rx-body {
-      font-size: 13px;
-      line-height: 1.5;
-      color: var(--text-main);
-    }
-
-    .rx-section-chem {
-      border-left-color: var(--accent-amber);
-    }
-
-    /* HARDWARE STATUS WIDGET */
-    .hardware-card {
-      border: 1px solid rgba(245, 158, 11, 0.25);
-      background: rgba(245, 158, 11, 0.04);
-      border-radius: var(--radius-sm);
-      padding: 12px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .hw-info {
+    .fact {
+      padding: 7px 12px 8px;
+      border-left: 1px solid var(--line);
+      min-width: 0;
       display: flex;
       flex-direction: column;
       gap: 2px;
     }
 
-    .hw-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-main);
+    .fact:first-child { border-left: none; }
+
+    .fact .k {
       display: flex;
       align-items: center;
       gap: 6px;
-    }
-
-    .hw-desc {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .btn-hw-check {
-      background: var(--bg-surface-elevated);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-main);
-      padding: 7px 12px;
-      border-radius: 6px;
-      font-size: 11px;
+      font-family: var(--font-mono);
+      font-size: 10px;
       font-weight: 600;
-      cursor: pointer;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--faint);
+    }
+
+    .fact .k svg { color: var(--faint); flex: none; }
+
+    .fact .v {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      color: var(--muted);
       white-space: nowrap;
-      transition: all 0.2s;
-    }
-
-    .btn-hw-check:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    /* ACTIVITY CONSOLE DRAWER */
-    .activity-container {
-      background: #05080A;
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
+      text-overflow: ellipsis;
     }
 
-    .activity-header {
-      padding: 10px 14px;
-      background: rgba(255, 255, 255, 0.02);
-      border-bottom: 1px solid var(--border-subtle);
+    .fact .v.good { color: var(--ok); }
+    .fact .v.bad { color: var(--bad); }
+    .fact .v.warn { color: var(--warn); }
+
+    /* ---------- layout ---------- */
+    .columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 10px;
+      align-items: start;
+    }
+
+    @media (max-width: 880px) {
+      .columns { grid-template-columns: 1fr; }
+      .facts { grid-template-columns: repeat(3, 1fr); }
+      .fact:nth-child(4) { border-left: none; }
+      .fact:nth-child(n+4) { border-top: 1px solid var(--line); }
+    }
+
+    @media (max-width: 560px) {
+      .facts { grid-template-columns: repeat(2, 1fr); }
+      .fact:nth-child(odd) { border-left: none; }
+      .fact:nth-child(n+3) { border-top: 1px solid var(--line); }
+      .shell { padding: 10px 10px 16px; }
+      .columns { gap: 10px; margin-top: 10px; }
+      .panel-body { padding: 10px; }
+      .image-ops { grid-template-columns: 1fr; }
+      .frame { width: 100%; height: 210px; margin: 0 auto; }
+      .btn { padding: 9px 14px; font-size: 13.5px; }
+      .btn-small { padding: 7px 11px; font-size: 12px; }
+      .diag-row { grid-template-columns: 96px 1fr; }
+      .terminal { height: 110px; }
+      .foot { font-size: 11px; }
+    }
+
+    .panel {
+      background: var(--surface);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
+      backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 12px;
+      border-bottom: 1px solid var(--line);
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .panel-head .right {
+      font-size: 10.5px;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      text-transform: none;
+      color: var(--faint);
+      font-family: var(--font-mono);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
+
+    .panel-body { padding: 12px; }
+
+    /* ---------- image area ---------- */
+    .frame {
+      position: relative;
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      background:
+        repeating-conic-gradient(#131715 0% 25%, #101412 0% 50%) 0 0 / 24px 24px;
+      height: 200px;
+      width: 267px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-dim);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      justify-content: center;
+      overflow: hidden;
     }
 
-    .terminal-feed {
-      height: 120px;
-      overflow-y: auto;
-      padding: 10px 14px;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      line-height: 1.6;
+    .frame::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 6px;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+      pointer-events: none;
+    }
+
+    .frame .placeholder {
+      color: var(--faint);
+      font-size: 12px;
+      text-align: center;
+      padding: 0 18px;
       display: flex;
       flex-direction: column;
-      gap: 3px;
-    }
-
-    .log-line {
-      display: flex;
+      align-items: center;
       gap: 8px;
     }
 
-    .log-t { color: var(--text-dim); }
-    .log-tag-ok { color: var(--accent-emerald); font-weight: 700; }
-    .log-tag-err { color: var(--accent-rose); font-weight: 700; }
-    .log-tag-ai { color: var(--accent-cyan); font-weight: 700; }
-    .log-tag-warn { color: var(--accent-amber); font-weight: 700; }
-    .log-tag-info { color: var(--text-muted); font-weight: 700; }
+    .frame .placeholder svg { color: #3a423c; }
 
-    /* FOOTER */
-    .app-footer {
-      text-align: center;
-      font-size: 11px;
-      color: var(--text-dim);
-      padding: 8px 0;
+    .frame img {
+      display: none;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
+
+    /* ---------- buttons ---------- */
+    .btn {
+      appearance: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 12px;
+      font: 600 12.5px var(--font-sans);
+      color: var(--ink);
+      background: var(--surface-2);
+      border: 1px solid var(--line-strong);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 120ms ease, border-color 120ms ease;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .btn:hover { background: #212823; border-color: #404a44; }
+    .btn:active { background: #1c221f; }
+
+    .btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .btn-primary {
+      background: #2b6e3c;
+      border-color: #35814a;
+      color: #f2fbf4;
+    }
+
+    .btn-primary:hover { background: #327d46; border-color: #3f9255; }
+    .btn-primary:active { background: #276136; }
+
+    .btn-paused {
+      background: #7d5416;
+      border-color: #8f6320;
+      color: #fdf6e9;
+    }
+
+    .btn-paused:hover { background: #8d5f19; }
+    .btn-paused:active { background: #6f4a13; }
+
+    .btn-small {
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: 500;
+      border-radius: 5px;
+    }
+
+    .image-ops {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .ops-col { min-width: 0; }
+
+    .controls { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 2px; }
+
+    .samples { margin-top: 10px; border-top: 1px solid var(--line); padding-top: 9px; }
+
+    .samples .label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--faint);
+      margin-bottom: 5px;
+    }
+
+    .sample-row { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 6px; }
+
+    /* ---------- diagnosis ---------- */
+    .diag-rows {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      overflow: hidden;
+      background: var(--inset);
+      -webkit-backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.1);
+      backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.1);
+    }
+
+    .diag-row {
+      display: grid;
+      grid-template-columns: 116px 1fr;
+      border-top: 1px solid var(--line);
+      font-size: 13.5px;
+    }
+
+    .diag-row:first-child { border-top: none; }
+
+    .diag-row .k {
+      padding: 5px 10px;
+      background: #111613;
+      border-right: 1px solid var(--line);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--faint);
+      display: flex;
+      align-items: center;
+    }
+
+    .diag-row .v {
+      padding: 5px 10px;
+      min-width: 0;
+      overflow-wrap: break-word;
+      color: var(--ink);
+      font-size: 12.5px;
+    }
+
+    .diag-row .v.dim { color: var(--muted); }
+    .diag-row .v.mono { font-family: var(--font-mono); font-size: 12.5px; }
+
+    .gate {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid;
+    }
+
+    .gate-infected  { color: var(--bad);  background: rgba(229, 72, 77, 0.12);  border-color: rgba(229, 72, 77, 0.4); }
+    .gate-warning   { color: var(--warn); background: rgba(240, 161, 62, 0.12); border-color: rgba(240, 161, 62, 0.4); }
+    .gate-healthy   { color: var(--ok);   background: rgba(76, 195, 138, 0.12); border-color: rgba(76, 195, 138, 0.4); }
+    .gate-uncertain { color: var(--mid);  background: rgba(141, 153, 166, 0.12); border-color: rgba(141, 153, 166, 0.4); }
+
+    /* ---------- advisory ---------- */
+    .advisory {
+      margin-top: 10px;
+      border-top: 1px solid var(--line);
+      padding-top: 9px;
+    }
+
+    .advisory h3 {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--faint);
+      margin-bottom: 4px;
+    }
+
+    .advisory p {
+      font-size: 12.5px;
+      color: var(--ink);
+      margin-bottom: 8px;
+      padding-left: 10px;
+      border-left: 2px solid var(--line-strong);
+    }
+
+    /* ---------- hardware ---------- */
+    .hardware {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--inset);
+      -webkit-backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.1);
+      backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.1);
+      padding: 9px 12px;
+      margin-top: 10px;
+    }
+
+    .hardware .hw-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .hardware .hw-title .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--faint); flex: none;
+    }
+
+    .hardware .hw-desc {
+      font-size: 12.5px;
+      color: var(--muted);
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+
+    /* ---------- log ---------- */
+    .terminal {
+      height: 118px;
+      overflow-y: auto;
+      padding: 8px 12px;
+      background: var(--inset);
+      -webkit-backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.1);
+      backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.1);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.55;
+    }
+
+    .terminal::-webkit-scrollbar { width: 10px; }
+    .terminal::-webkit-scrollbar-thumb { background: #2c332e; border-radius: 5px; border: 2px solid var(--inset); }
+
+    .log-line { display: flex; gap: 8px; align-items: baseline; }
+
+    .log-t { color: #525a53; flex: none; }
+
+    .log-tag { flex: none; font-weight: 700; font-size: 10px; letter-spacing: 0.06em; }
+    .log-tag-info { color: var(--muted); }
+    .log-tag-ok   { color: var(--ok); }
+    .log-tag-err  { color: var(--bad); }
+    .log-tag-ai   { color: #5aa9e6; }
+    .log-tag-warn { color: var(--warn); }
+
+    .log-line > span:last-child { color: #c9cdd2; }
+
+    /* ---------- footer removed ---------- */
   </style>
 </head>
 <body>
 
-  <div class="app-shell">
+  <div class="shell">
 
-    <!-- Brand Header -->
-    <header class="top-navbar">
-      <div class="brand-group">
-        <div class="brand-icon">🌱</div>
-        <div class="brand-meta">
-          <div class="brand-title-wrap">
-            <span class="brand-name">KRISHI-DRISHTI</span>
-            <span class="version-pill">v2.2 EDGE</span>
-          </div>
-          <span class="brand-desc">Offline Field Neural Co-Processor &bull; MobileNetV3</span>
+    <!-- Header -->
+    <header class="masthead">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+            <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+          </svg>
+        </div>
+        <div>
+          <h1>KRISHI-DRISHTI</h1>
+          <div class="sub">Leaf disease scanner for tomato and potato. Runs offline in this browser.</div>
         </div>
       </div>
-      <div id="statusPill" class="status-pill pill-stopped">
-        <span class="pulsing-dot"></span>
+      <div class="server-state stopped" id="statusPill">
+        <span class="dot"></span>
         <span id="statusText">STANDBY</span>
       </div>
     </header>
 
-    <!-- 6-Metric Telemetry Bar -->
-    <section class="metrics-bar">
-      <div class="metric-card">
-        <span class="metric-header">Cam Gateway</span>
-        <span class="metric-value" id="valCameraLink" style="color: var(--text-dim)">SEARCHING...</span>
+    <!-- Live facts -->
+    <section class="facts" aria-label="Status">
+      <div class="fact">
+        <span class="k"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Camera link</span>
+        <span class="v" id="valCameraLink">Not connected</span>
       </div>
-      <div class="metric-card">
-        <span class="metric-header">MicroSD Storage</span>
-        <span class="metric-value" id="valSdStatus" style="color: var(--accent-amber)">CHECKING...</span>
+      <div class="fact">
+        <span class="k"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M6 2h12v4H6z"/></svg>SD card</span>
+        <span class="v" id="valSdStatus">Checking</span>
       </div>
-      <div class="metric-card">
-        <span class="metric-header">Sensor Wand</span>
-        <span class="metric-value" id="valWandLink" style="color: var(--text-dim)">WAND OFF</span>
+      <div class="fact">
+        <span class="k"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a3 3 0 1 0-6 0v8a3 3 0 1 0 6 0V8Z"/><path d="M12 8a3 3 0 1 0-6 0v8a3 3 0 1 0 6 0V8Z"/></svg>Wand</span>
+        <span class="v" id="valWandLink">Off</span>
       </div>
-      <div class="metric-card">
-        <span class="metric-header">Neural Engine</span>
-        <span class="metric-value" id="valEngine" style="color: var(--accent-amber)">LOADING...</span>
+      <div class="fact">
+        <span class="k"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/></svg>Engine</span>
+        <span class="v" id="valEngine">Loading model</span>
       </div>
-      <div class="metric-card">
-        <span class="metric-header">Inference</span>
-        <span class="metric-value" id="valLatency">-- ms</span>
+      <div class="fact">
+        <span class="k"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Last latency</span>
+        <span class="v" id="valLatency">No scan yet</span>
       </div>
-      <div class="metric-card">
-        <span class="metric-header">Field Syncs</span>
-        <span class="metric-value" id="valScanCount">0</span>
+      <div class="fact">
+        <span class="k"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>Scans processed</span>
+        <span class="v" id="valScanCount">0</span>
       </div>
     </section>
 
-    <!-- Main Workspace (2-Column on Desktop, Stack on Mobile) -->
-    <div class="workspace-grid">
+    <div class="columns">
 
-      <!-- LEFT COLUMN: Optical Viewfinder & Action Controls -->
-      <div class="glass-panel">
-        <div class="panel-header">
-          <span class="panel-title">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-            Optical Leaf Viewfinder
-          </span>
-          <span class="panel-badge" id="scanTimestamp">AWAITING SCAN</span>
+      <!-- Left: image and controls -->
+      <section class="panel">
+        <div class="panel-head">
+          <span>Leaf image</span>
+          <span class="right" id="scanTimestamp">No scan</span>
         </div>
+        <div class="panel-body">
+          <div class="image-ops">
+            <div class="frame" id="leafThumbWrap">
+              <div class="placeholder" id="thumbPlaceholder">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+                  <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+                </svg>
+                <span>No scan yet. Connect to the wand Wi-Fi (KRISHI-DRISHTI), or load a sample or upload a photo.</span>
+              </div>
+              <img id="leafImg" alt="Captured leaf image" />
+            </div>
 
-        <div class="viewfinder-wrap" id="leafThumbWrap">
-          <div class="viewfinder-grid-lines"></div>
-          <div class="viewfinder-crosshair"></div>
-          <div class="viewfinder-corners"></div>
-          <div class="leaf-placeholder" id="thumbPlaceholder">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
-            <span>Waiting for Wand Shutter [SCAN]</span>
+            <div class="ops-col">
+              <div class="controls">
+                <button class="btn btn-primary" id="btnToggle" onclick="toggleServer()">Start scanning</button>
+                <button class="btn" onclick="pollMeshNow()">Check hardware</button>
+              </div>
+
+              <div class="samples">
+                <div class="label">Samples</div>
+                <div class="sample-row">
+                  <button class="btn btn-small" onclick="testRealLeaf('/sample_leaves/tomato_late_blight.jpg', 'Tomato late blight')">Tomato late blight</button>
+                  <button class="btn btn-small" onclick="testRealLeaf('/sample_leaves/tomato_early_blight.jpg', 'Tomato early blight')">Tomato early blight</button>
+                  <button class="btn btn-small" onclick="testRealLeaf('/sample_leaves/tomato_healthy.jpg', 'Tomato healthy')">Tomato healthy</button>
+                  <button class="btn btn-small" onclick="testRealLeaf('/sample_leaves/potato_late_blight.jpg', 'Potato late blight')">Potato late blight</button>
+                  <button class="btn btn-small" onclick="testRealLeaf('/sample_leaves/potato_early_blight.jpg', 'Potato early blight')">Potato early blight</button>
+                  <button class="btn btn-small" onclick="testRealLeaf('/sample_leaves/potato_healthy.jpg', 'Potato healthy')">Potato healthy</button>
+                </div>
+                <div class="label">Rejection cases</div>
+                <div class="sample-row">
+                  <button class="btn btn-small" onclick="testRealLeaf('/sample_leaves/test_edge_lens_cap.jpg', 'Lens cap')">Lens cap</button>
+                  <button class="btn btn-small" onclick="testRealLeaf('/sample_leaves/test_edge_ambient_surface.jpg', 'Ambient surface')">Ambient surface</button>
+                </div>
+                <div class="label">Own photo</div>
+                <div class="sample-row">
+                  <label class="btn btn-small">Upload photo
+                    <input type="file" id="leafFileInput" accept="image/*" style="display: none;" onchange="handleLeafUpload(event)">
+                  </label>
+                </div>
+              </div>
+            </div>
           </div>
-          <img id="leafImg" class="leaf-preview-img" alt="Leaf Scan" />
         </div>
+      </section>
 
-        <!-- Sample Palettes & Custom Upload -->
-        <div class="sample-pill-row">
-          <button class="btn-sample btn-sample-blight" onclick="testRealLeaf('/sample_leaves/late_blight_512.jpg', 'Real Tomato Late Blight')">
-            🍂 Blight
-          </button>
-          <button class="btn-sample btn-sample-healthy" onclick="testRealLeaf('/sample_leaves/healthy_512.jpg', 'Real Tomato Healthy')">
-            🌿 Healthy
-          </button>
-          <label class="btn-sample btn-sample-upload">
-            📷 Upload
-            <input type="file" id="leafFileInput" accept="image/*" style="display: none;" onchange="handleLeafUpload(event)">
-          </label>
+      <!-- Right: diagnosis -->
+      <section class="panel">
+        <div class="panel-head">
+          <span>Diagnosis</span>
+          <span class="right">krishi_drishti_model.tflite</span>
         </div>
+        <div class="panel-body">
 
-        <!-- Server Toggle & Demo Buttons -->
-        <div class="action-row">
-          <button class="btn-main" id="btnToggle" onclick="toggleServer()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            START AI INFERENCE SERVER
-          </button>
-          <button class="btn-secondary" onclick="simulateFieldScan()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-            DEMO SCAN
-          </button>
-          <button class="btn-secondary" onclick="pollMeshNow()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-            AUDIT HW
-          </button>
-        </div>
-      </div>
+          <div class="diag-rows">
+            <div class="diag-row"><span class="k">Result</span><span class="v" id="diagPrimary">No scan yet</span></div>
+            <div class="diag-row"><span class="k">Detail</span><span class="v dim" id="diagPathogen">Run a scan to see the diagnosis.</span></div>
+            <div class="diag-row"><span class="k">Verdict</span><span class="v" id="diagGate">None</span></div>
+            <div class="diag-row"><span class="k">Stats</span><span class="v mono"><span id="diagConf">-</span><span style="color: var(--faint);"> &middot; </span>H=<span id="diagEntropy">-</span></span></div>
+          </div>
 
-      <!-- RIGHT COLUMN: Edge AI Diagnosis & Agronomic Advisory -->
-      <div class="glass-panel">
-        <div class="panel-header">
-          <span class="panel-title">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-            Edge AI Diagnosis & Telemetry
-          </span>
-          <span class="panel-badge">Dual-Domain Solanaceae Core</span>
-        </div>
+          <div class="advisory">
+            <h3>Non-chemical steps</h3>
+            <p id="rxBio">Advisory appears here after a scan completes.</p>
+            <h3>Chemical (ICAR / KVK reference)</h3>
+            <p id="rxChem">Advisory appears here after a scan completes.</p>
+          </div>
 
-        <!-- Diagnosis Result Hero Card -->
-        <div class="diagnosis-hero-box">
-          <div class="diag-title-row">
+          <div class="hardware" id="sdAuditCard">
             <div>
-              <div class="diag-primary" id="diagPrimary">Waiting for Wand [SCAN]</div>
-              <div class="diag-pathogen" id="diagPathogen">Mesh SoftAP: KRISHI-DRISHTI (192.168.4.1)</div>
+              <div class="hw-title"><span class="dot" id="sdBadgeDot"></span><span id="sdTitleText">SD card: checking</span></div>
+              <div class="hw-desc" id="sdDetailText">Querying the camera slot on the wand gateway at 192.168.4.1.</div>
             </div>
-            <div class="diag-confidence" id="diagConfidence">Core: 2.01 MB TFLite</div>
+            <button class="btn btn-small" onclick="pollMeshNow()">Re-check</button>
           </div>
+
         </div>
-
-        <!-- Clinical Agronomic Advisory -->
-        <div class="presc-card" id="prescBox">
-          <div class="rx-badge">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            <span id="rxLabel">Agronomic Advisory & Treatment Protocol</span>
-          </div>
-
-          <div class="rx-section">
-            <span class="rx-subhead">Biological & Cultural Control</span>
-            <div class="rx-body" id="rxBio">Keep phone in pocket. When you press SCAN on the wand, results sync here and to the SSD1306 OLED automatically.</div>
-          </div>
-
-          <div class="rx-section rx-section-chem">
-            <span class="rx-subhead">Chemical Intervention (ICAR / KVK Guidelines)</span>
-            <div class="rx-body" id="rxChem" style="color: var(--text-muted)">Integrated Pest Management (IPM) guidelines apply. Suppressed if RH &lt; 85%.</div>
-          </div>
-        </div>
-
-        <!-- MicroSD Hardware Presence & Health Section -->
-        <div class="hardware-card" id="sdAuditCard">
-          <div class="hw-info">
-            <div class="hw-title">
-              <span class="pulsing-dot" id="sdBadgeDot" style="color: var(--accent-amber)"></span>
-              <span id="sdTitleText">MicroSD Card Slot: Checking...</span>
-            </div>
-            <div class="hw-desc" id="sdDetailText">
-              Querying camera slot for FAT32 filesystem and offline neural weights...
-            </div>
-          </div>
-          <button class="btn-hw-check" onclick="pollMeshNow()">RE-CHECK HARDWARE</button>
-        </div>
-
-        <!-- Collapsible System Log -->
-        <div class="activity-container">
-          <div class="activity-header">
-            <span>Edge System Activity Stream</span>
-            <span style="font-size: 10px; color: var(--accent-emerald);">Live Mesh Daemon</span>
-          </div>
-          <div class="terminal-feed" id="terminal">
-            <div class="log-line"><span class="log-t">[SYSTEM]</span> <span class="log-tag-info">INIT</span> KRISHI-DRISHTI Edge AI Server daemon loaded.</div>
-            <div class="log-line"><span class="log-t">[SYSTEM]</span> <span class="log-tag-info">MESH</span> SoftAP gateway target: http://192.168.4.1</div>
-          </div>
-        </div>
-
-      </div>
+      </section>
 
     </div>
 
-    <!-- Hidden Offscreen Canvas for Neural Pre-processing -->
-    <canvas id="offscreenCanvas" width="128" height="128" style="display: none;"></canvas>
-
-    <footer class="app-footer">
-      KRISHI-DRISHTI &bull; Autonomous Offline Edge AI Plant Telemetry &bull; Powered by MobileNetV3 Float16
-    </footer>
+    <!-- System log -->
+    <section class="panel" style="margin-top: 12px;">
+      <div class="panel-head"><span>System log</span><span class="right">newest last</span></div>
+      <div class="terminal" id="terminal">
+        <div class="log-line"><span class="log-t">[--:--:--]</span> <span class="log-tag log-tag-info">INFO</span> <span>Dashboard loaded. All inference runs locally in this browser; no data leaves the device.</span></div>
+        <div class="log-line"><span class="log-t">[--:--:--]</span> <span class="log-tag log-tag-info">INFO</span> <span>Wand gateway: http://192.168.4.1 (connect to the wand Wi-Fi to link hardware).</span></div>
+      </div>
+    </section>
 
   </div>
+
+  <!-- Hidden canvas for neural preprocessing -->
+  <canvas id="offscreenCanvas" width="128" height="128" style="display: none;"></canvas>
 
   <script>
     let isRunning = false;
@@ -952,7 +792,7 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
     const CAMERA_IMAGE_URL    = "http://192.168.4.1/image?id=";
     const CAMERA_DIAG_SET_URL = "http://192.168.4.1/api/diagnosis/set";
 
-    // STRICT CLASS ORDERING - 100% IDENTICAL 1:1 MATCH WITH labels.json & MODEL OUTPUT
+    // Strict class ordering, identical to labels.json and the model output
     const KB_CLASSES = [
       {
         id: 0,
@@ -979,9 +819,9 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
         name: "Tomato___healthy",
         crop: "Tomato",
         disease: "Healthy",
-        pathogen: "Optimal (Zero Pathogen)",
+        pathogen: "No pathogen detected",
         status: "HEALTHY",
-        organic: "Maintain drip irrigation schedule & balanced 19:19:19 NPK foliar nutrition.",
+        organic: "Maintain drip irrigation schedule and balanced 19:19:19 NPK foliar nutrition.",
         chemical: "No chemical fungicides required."
       },
       {
@@ -1009,9 +849,9 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
         name: "Potato___healthy",
         crop: "Potato",
         disease: "Healthy",
-        pathogen: "Optimal (Zero Pathogen)",
+        pathogen: "No pathogen detected",
         status: "HEALTHY",
-        organic: "Maintain uniform soil hilling to prevent tuber greening & solar exposure.",
+        organic: "Maintain uniform soil hilling to prevent tuber greening and solar exposure.",
         chemical: "No chemical intervention needed."
       }
     ];
@@ -1022,11 +862,11 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
       const d = document.createElement("div");
       d.className = "log-line";
       const timeStr = new Date().toLocaleTimeString();
-      let tagHtml = `<span class="log-tag-info">INFO</span>`;
-      if (type === "ok")   tagHtml = `<span class="log-tag-ok">SUCCESS</span>`;
-      if (type === "err")  tagHtml = `<span class="log-tag-err">ERROR</span>`;
-      if (type === "ai")   tagHtml = `<span class="log-tag-ai">NEURAL</span>`;
-      if (type === "warn") tagHtml = `<span class="log-tag-warn">WARN</span>`;
+      let tagHtml = `<span class="log-tag log-tag-info">INFO</span>`;
+      if (type === "ok")   tagHtml = `<span class="log-tag log-tag-ok">OK</span>`;
+      if (type === "err")  tagHtml = `<span class="log-tag log-tag-err">ERROR</span>`;
+      if (type === "ai")   tagHtml = `<span class="log-tag log-tag-ai">INFER</span>`;
+      if (type === "warn") tagHtml = `<span class="log-tag log-tag-warn">WARN</span>`;
       d.innerHTML = `<span class="log-t">[${timeStr}]</span> ${tagHtml} <span>${msg}</span>`;
       term.appendChild(d);
       term.scrollTop = term.scrollHeight;
@@ -1038,37 +878,48 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
 
       const engineEl = document.getElementById("valEngine");
       if (engineEl) {
-        engineEl.innerText = "INITIALIZING...";
-        engineEl.style.color = "var(--accent-amber)";
+        engineEl.innerText = "Loading model";
+        engineEl.className = "v warn";
       }
 
       try {
-        log("Booting bundled WASM TFLite co-processor engine...", "ai");
+        log("Loading TFLite WASM runtime...");
+
+        // Resolve TFLite API: try standalone global first, then tf namespace
+        let tfliteApi = null;
         if (typeof tflite !== 'undefined' && tflite.setWasmPath) {
-          tflite.setWasmPath('/vendor/');
+          tfliteApi = tflite;
+          tfliteApi.setWasmPath('/vendor/');
+        } else if (typeof tf !== 'undefined' && tf.tflite && tf.tflite.setWasmPath) {
+          tfliteApi = tf.tflite;
+          await tf.setBackend('wasm');
+          await tf.ready();
+          tfliteApi.setWasmPath('/vendor/');
+        } else {
+          throw new Error("TFLite runtime not loaded. Check /vendor/tf.min.js and /vendor/tf-tflite.min.js");
         }
 
         if (engineEl) {
-          engineEl.innerText = "LOADING MODEL...";
-          engineEl.style.color = "var(--accent-amber)";
+          engineEl.innerText = "Loading model";
+          engineEl.className = "v warn";
         }
 
-        tfliteModel = await tflite.loadTFLiteModel('/krishi_drishti_model.tflite');
+        tfliteModel = await tfliteApi.loadTFLiteModel('/krishi_drishti_model.tflite');
         modelReady = true;
         isModelLoading = false;
 
         if (engineEl) {
-          engineEl.innerText = "TFLITE ACTIVE";
-          engineEl.style.color = "var(--accent-emerald)";
+          engineEl.innerText = "Ready";
+          engineEl.className = "v good";
         }
-        log("MobileNetV3 Edge TFLite core loaded 100% offline.", "ok");
+        log("Model loaded. Ready for inference.", "ok");
       } catch (err) {
         isModelLoading = false;
         if (engineEl) {
-          engineEl.innerText = "AI OFFLINE";
-          engineEl.style.color = "var(--accent-rose)";
+          engineEl.innerText = "Unavailable";
+          engineEl.className = "v bad";
         }
-        log(`TFLite load error: ${err.message}. Retrying...`, "err");
+        log(`Model load failed: ${err.message}. Retrying...`, "err");
         if (retryCount < 3) {
           setTimeout(() => initTFLite(retryCount + 1), 3000);
         }
@@ -1124,17 +975,16 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
       startKeepAliveAudio();
 
       const pill = document.getElementById("statusPill");
-      if (pill) pill.className = "status-pill pill-running";
-      safeSetText("statusText", "INFERENCE ACTIVE");
+      if (pill) pill.className = "server-state running";
+      safeSetText("statusText", "SCANNING");
 
       const btn = document.getElementById("btnToggle");
       if (btn) {
-        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> PAUSE AI SERVER`;
-        btn.style.background = "linear-gradient(135deg, #F59E0B, #D97706)";
-        btn.style.boxShadow = "0 4px 14px rgba(245, 158, 11, 0.35)";
+        btn.textContent = "Pause scanning";
+        btn.className = "btn btn-paused";
       }
 
-      log("Edge AI Co-Processor started. Polling softAP mesh...", "ok");
+      log("Scanning started. Polling wand gateway every 600 ms.", "ok");
       pollInterval = setInterval(checkCameraForNewScan, 600);
     }
 
@@ -1151,26 +1001,25 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
       stopKeepAliveAudio();
 
       const pill = document.getElementById("statusPill");
-      if (pill) pill.className = "status-pill pill-stopped";
+      if (pill) pill.className = "server-state stopped";
       safeSetText("statusText", "STANDBY");
 
       const btn = document.getElementById("btnToggle");
       if (btn) {
-        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg> START AI INFERENCE SERVER`;
-        btn.style.background = "linear-gradient(135deg, #10B981, #059669)";
-        btn.style.boxShadow = "0 4px 14px rgba(16, 185, 129, 0.35)";
+        btn.textContent = "Start scanning";
+        btn.className = "btn btn-primary";
       }
 
-      safeSetText("valCameraLink", "STANDBY");
-      safeSetStyle("valCameraLink", "color", "var(--text-dim)");
-      safeSetText("valWandLink", "STANDBY");
-      safeSetStyle("valWandLink", "color", "var(--text-dim)");
+      safeSetText("valCameraLink", "Standby");
+      safeSetStyle("valCameraLink", "color", "var(--muted)");
+      safeSetText("valWandLink", "Off");
+      safeSetStyle("valWandLink", "color", "var(--muted)");
 
-      log("Edge AI Co-Processor paused.", "warn");
+      log("Scanning paused.", "warn");
     }
 
     async function pollMeshNow() {
-      log("Manually auditing ESP32-CAM hardware & SD slot...", "ai");
+      log("Checking ESP32-CAM hardware and SD slot...");
       await checkCameraForNewScan();
     }
 
@@ -1185,14 +1034,14 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
         if (!res.ok) return;
         const status = await res.json();
 
-        // 1. Camera Gateway Link
+        // 1. Camera gateway link
         const camEl = document.getElementById("valCameraLink");
         if (camEl) {
-          camEl.innerText = "ONLINE (AP)";
-          camEl.style.color = "var(--accent-emerald)";
+          camEl.innerText = "Online (AP)";
+          camEl.className = "v good";
         }
 
-        // 2. MicroSD Card Detection & Verification
+        // 2. MicroSD card detection and verification
         const sdEl = document.getElementById("valSdStatus");
         const sdCard = document.getElementById("sdAuditCard");
         const sdDot = document.getElementById("sdBadgeDot");
@@ -1202,44 +1051,44 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
         if (status.sd_ready) {
           const capText = status.sd_capacity_mb ? `${Math.round(status.sd_capacity_mb/1024*10)/10} GB` : "FAT32";
           if (sdEl) {
-            sdEl.innerText = `READY (${capText})`;
-            sdEl.style.color = "var(--accent-emerald)";
+            sdEl.innerText = `Ready (${capText})`;
+            sdEl.className = "v good";
           }
-          if (sdCard) sdCard.style.borderColor = "rgba(16, 185, 129, 0.3)";
-          if (sdDot) { sdDot.style.color = "var(--accent-emerald)"; }
-          if (sdTitle) { sdTitle.innerText = `MicroSD Card: Detected & Mounted (${capText})`; }
+          if (sdCard) sdCard.style.borderColor = "rgba(76, 195, 138, 0.4)";
+          if (sdDot) { sdDot.style.background = "var(--ok)"; }
+          if (sdTitle) { sdTitle.innerText = `SD card: detected and mounted (${capText})`; }
           if (sdDetail) {
-            sdDetail.innerText = "Camera filesystem active. Offline MobileNetV3 weights & WASM assets available. All shutter scans saved to /scans/.";
+            sdDetail.innerText = "Camera filesystem active. Shutter scans are saved to /scans/ on the card.";
           }
           if (!modelReady && !isModelLoading) {
             initTFLite(0);
           }
         } else {
           if (sdEl) {
-            sdEl.innerText = "NOT DETECTED";
-            sdEl.style.color = "var(--accent-rose)";
+            sdEl.innerText = "Not detected";
+            sdEl.className = "v bad";
           }
-          if (sdCard) sdCard.style.borderColor = "rgba(244, 63, 94, 0.4)";
-          if (sdDot) { sdDot.style.color = "var(--accent-rose)"; }
-          if (sdTitle) { sdTitle.innerText = "MicroSD Card Slot: Card Not Detected"; }
+          if (sdCard) sdCard.style.borderColor = "rgba(229, 72, 77, 0.4)";
+          if (sdDot) { sdDot.style.background = "var(--bad)"; }
+          if (sdTitle) { sdTitle.innerText = "SD card: not detected in camera slot"; }
           if (sdDetail) {
-            sdDetail.innerHTML = "<b style='color: var(--accent-rose)'>Card missing in camera slot.</b> Ensure a FAT32 Class-10 TF card is inserted, then tap RE-CHECK HARDWARE.";
+            sdDetail.innerText = "No card in the camera slot. Insert a FAT32 Class-10 TF card, then tap Re-check.";
           }
         }
 
-        // 3. Wand Controller Connectivity
+        // 3. Wand controller connectivity
         const wandEl = document.getElementById("valWandLink");
         if (wandEl) {
           if (status.wand_connected) {
-            wandEl.innerText = "CONNECTED";
-            wandEl.style.color = "var(--accent-emerald)";
+            wandEl.innerText = "Connected";
+            wandEl.className = "v good";
           } else {
-            wandEl.innerText = "WAND OFF";
-            wandEl.style.color = "var(--text-dim)";
+            wandEl.innerText = "Off";
+            wandEl.className = "v";
           }
         }
 
-        // 4. Ingest Ambient Telemetry
+        // 4. Ingest ambient telemetry
         if (status.telemetry_available) {
           currentTelemetry = {
             humidity: status.humidity,
@@ -1249,7 +1098,7 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
           currentTelemetry = null;
         }
 
-        // 5. New Shutter Scan Discovery
+        // 5. New shutter scan discovery
         if (status.scan_count && status.scan_count > lastProcessedScanId) {
           if (isRunning) {
             await processScanAndRespond(status.scan_count);
@@ -1257,15 +1106,15 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
         }
       } catch (err) {
         if (!isRunning) {
-          safeSetText("valCameraLink", "DISCONNECTED");
-          safeSetStyle("valCameraLink", "color", "var(--accent-rose)");
+          safeSetText("valCameraLink", "Not connected");
+          safeSetStyle("valCameraLink", "color", "var(--muted)");
         }
       }
     }
 
     async function processScanAndRespond(scanId) {
       lastProcessedScanId = scanId;
-      log(`New Shutter Capture detected: Scan #${scanId}`, "ai");
+      log(`New shutter capture: scan #${scanId}`, "ai");
 
       const t0 = performance.now();
 
@@ -1289,14 +1138,14 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
           placeholder.style.display = "none";
         }
 
-        log(`Scan #${scanId} loaded into RAM. Running neural inference...`, "ai");
+        log(`Scan #${scanId} loaded. Running inference...`, "ai");
         const diag = await runEdgeInference(img);
         const elapsed = Math.round(performance.now() - t0);
 
         updateMetricsAndUI(diag, elapsed, scanId);
         playAudioChime();
 
-        log(`Diagnosis: ${diag.crop} - ${diag.disease} (${diag.confidence}%, H=${diag.entropy}) in ${elapsed}ms`, "ok");
+        log(`Diagnosis: ${diag.crop} - ${diag.disease} (${diag.confidence}%, H=${diag.entropy}) in ${elapsed} ms`, "ok");
         log(`Advisory: ${diag.organic}`);
 
         const setUrl = `${CAMERA_DIAG_SET_URL}?scan_id=${scanId}&crop=${encodeURIComponent(diag.crop)}&disease=${encodeURIComponent(diag.disease)}&confidence=${diag.confidence}&status=${encodeURIComponent(diag.status)}&organic=${encodeURIComponent(diag.organic)}&chemical=${encodeURIComponent(diag.chemical)}`;
@@ -1304,25 +1153,34 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
         try {
           const syncRes = await fetch(setUrl);
           if (syncRes.ok) {
-            log(`>> TELEMETRY SYNCED TO CONTROLLER WAND OLED [Scan #${scanId}] <<`, "ok");
+            log(`Result synced to wand display (scan #${scanId}).`, "ok");
           } else {
-            log(`[SYNC REJECTED] HTTP ${syncRes.status}`, "warn");
+            log(`Wand sync rejected: HTTP ${syncRes.status}`, "warn");
           }
         } catch (syncErr) {
           log(`Failed to sync to wand: ${syncErr.message}`, "err");
         }
 
       } catch (err) {
-        log(`Failed to process Scan #${scanId}: ${err.message}`, "err");
+        log(`Failed to process scan #${scanId}: ${err.message}`, "err");
       }
     }
 
     async function runEdgeInference(imgElement) {
       const cvs = document.getElementById("offscreenCanvas");
       const ctx = cvs.getContext("2d", { willReadFrequently: true });
-      ctx.drawImage(imgElement, 0, 0, 128, 128);
 
-      // 1. Biological Chlorophyll Foliar & Non-Leaf / Selfie Screening Check
+      // 1. Aspect-ratio preserving center-square crop to 128x128
+      // Keeps leaf geometry consistent with how the model was trained.
+      const nw = imgElement.naturalWidth || imgElement.width || 128;
+      const nh = imgElement.naturalHeight || imgElement.height || 128;
+      const side = Math.min(nw, nh);
+      const sx = Math.floor((nw - side) / 2);
+      const sy = Math.floor((nh - side) / 2);
+      ctx.clearRect(0, 0, 128, 128);
+      ctx.drawImage(imgElement, sx, sy, side, side, 0, 0, 128, 128);
+
+      // 2. Foliar screening and glare rejection gate
       const frameData = ctx.getImageData(0, 0, 128, 128);
       const data = frameData.data;
       let totalPixels = 128 * 128;
@@ -1330,22 +1188,24 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
       let necroticLesionPixels = 0;
       let humanSkinPixels = 0;
       let darkVoidPixels = 0;
+      let glarePixels = 0;
+      let neutralPixels = 0;
 
       for (let i = 0; i < data.length; i += 4) {
         const r = data[i];
         const g = data[i + 1];
         const b = data[i + 2];
 
-        // A. Chlorophyll foliar tissue (green must be competitive with red and higher than blue)
-        if (g > 32 && g >= r * 0.90 && g > b * 1.02) {
+        // A. True foliar chlorophyll (green dominant and elevated above blue)
+        if (g > 35 && g > r && g > b) {
           greenChlorophyllPixels++;
         }
-        // B. Fungal necrotic tissue (blight spots - dark brown/olive with bounded red/green balance)
-        else if (r > 40 && g > 30 && b < 110 && r >= g && (r - g) < 50 && (r + g) > (2.2 * b)) {
+        // B. Fungal necrotic tissue (dark brown/olive blight lesion)
+        else if (r > 40 && g > 30 && b < 110 && r >= g && (r - g) < 45 && (r + g) > (2.2 * b)) {
           necroticLesionPixels++;
         }
 
-        // C. Biometric Human Skin Tone Filter (Selfie / Face / Hand detection)
+        // C. Human skin tone filter
         if (r > 95 && g > 40 && b > 20 && r > g && g > b && (r - g) > 12 && (r - b) > 20) {
           humanSkinPixels++;
         }
@@ -1354,56 +1214,82 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
         if (r < 30 && g < 30 && b < 30) {
           darkVoidPixels++;
         }
+
+        // E. Flash glare / overexposure
+        if (r > 225 && g > 225 && b > 225) {
+          glarePixels++;
+        }
+
+        // F. Neutral grey indoor surface (table, wall, floor)
+        if (Math.abs(r - g) < 18 && Math.abs(g - b) < 18 && Math.abs(r - b) < 22) {
+          neutralPixels++;
+        }
       }
 
       const greenRatio = greenChlorophyllPixels / totalPixels;
       const skinRatio = humanSkinPixels / totalPixels;
       const voidRatio = darkVoidPixels / totalPixels;
+      const glareRatio = glarePixels / totalPixels;
+      const neutralRatio = neutralPixels / totalPixels;
       const totalFoliarRatio = (greenChlorophyllPixels + necroticLesionPixels) / totalPixels;
 
-      // 1. Reject Human Face / Selfie / Hand
+      // Filter 1: reject human skin
       if (skinRatio > 0.12 && greenRatio < 0.08) {
         return {
           crop: "Invalid",
           disease: "No Leaf Detected",
-          pathogen: "Non-Botanical Subject: Human face / skin detected in frame",
+          pathogen: "Human skin or hand detected in frame",
           confidence: "0.0",
           status: "UNCERTAIN",
-          organic: "KRISHI-DRISHTI is strictly calibrated for Solanaceae foliar pathology.",
-          chemical: "Position optical shroud over a tomato or potato crop leaf.",
+          organic: "This scanner is calibrated only for tomato and potato leaves.",
+          chemical: "Position the shroud over a tomato or potato crop leaf.",
           entropy: "0.00"
         };
       }
 
-      // 2. Reject Lens Cap / Complete Darkness
+      // Filter 2: reject lens cap / complete darkness
       if (voidRatio > 0.75) {
         return {
           crop: "Invalid",
           disease: "No Leaf Detected",
-          pathogen: "Excessive darkness / Lens cap or closed shroud detected",
+          pathogen: "Frame too dark (lens cap or closed shroud)",
           confidence: "0.0",
           status: "UNCERTAIN",
-          organic: "Remove lens cap and ensure target leaf is adequately illuminated.",
-          chemical: "Position wand 10cm from leaf surface and re-scan.",
+          organic: "Remove the lens cap and make sure the leaf is lit.",
+          chemical: "Hold the wand about 10 cm from the leaf and re-scan.",
           entropy: "0.00"
         };
       }
 
-      // 3. Reject Ambient Surfaces, Backgrounds & Non-Plant Objects (requires minimum chlorophyll)
-      if (greenRatio < 0.06 || totalFoliarRatio < 0.12) {
+      // Filter 3: reject severe overexposure / flash glare
+      if (glareRatio > 0.30) {
         return {
           crop: "Invalid",
           disease: "No Leaf Detected",
-          pathogen: "Frame does not contain plant foliage or leaf canopy",
+          pathogen: "Frame overexposed by flash or reflection",
           confidence: "0.0",
           status: "UNCERTAIN",
-          organic: "Target camera directly at symptomatic Solanaceae foliage.",
-          chemical: "Position wand 10cm from leaf surface and re-scan.",
+          organic: "Avoid aiming at reflective surfaces or close-range white objects.",
+          chemical: "Keep the shroud 8 to 10 cm from the leaf and re-scan.",
           entropy: "0.00"
         };
       }
 
-      // 2. Genuine MobileNetV3 Float16 WASM Inference
+      // Filter 4: reject non-plant surfaces and backgrounds
+      if (totalFoliarRatio < 0.15 || (neutralRatio > 0.50 && greenRatio < 0.15)) {
+        return {
+          crop: "Invalid",
+          disease: "No Leaf Detected",
+          pathogen: "No plant foliage found in frame",
+          confidence: "0.0",
+          status: "UNCERTAIN",
+          organic: "Aim the camera at tomato or potato foliage.",
+          chemical: "Hold the wand about 10 cm from the leaf and re-scan.",
+          entropy: "0.00"
+        };
+      }
+
+      // 3. MobileNetV3 float16 WASM inference
       let probs = [];
       if (modelReady && tfliteModel) {
         let tfImg = null;
@@ -1423,22 +1309,22 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
         return {
           crop: "System Notice",
           disease: "AI Engine Unavailable",
-          pathogen: "MobileNetV3 TFLite model is not ready in browser",
+          pathogen: "The TFLite model is not ready in the browser",
           confidence: "0.0",
           status: "UNCERTAIN",
-          organic: "Ensure phone is connected to wand Wi-Fi and model is loaded.",
-          chemical: "Consult local Krishi Vigyan Kendra (KVK) agronomist.",
+          organic: "Make sure this device is connected to the wand Wi-Fi and the model has loaded.",
+          chemical: "Consult a local Krishi Vigyan Kendra (KVK) agronomist.",
           entropy: "0.00"
         };
       }
 
-      // 3. Shannon Entropy Calculation: H = -sum(p * ln(p))
+      // 4. Shannon entropy: H = -sum(p * ln(p))
       let entropy = 0.0;
       for (const p of probs) {
         if (p > 1e-6) entropy -= p * Math.log(p);
       }
 
-      // 4. Argmax
+      // 5. Argmax
       let maxIdx = 0;
       let maxProb = probs[0];
       for (let i = 1; i < probs.length; i++) {
@@ -1449,19 +1335,19 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
       }
       const confPercent = (maxProb * 100).toFixed(1);
 
-      // Decision margin calculation (top1 - top2)
+      // Decision margin (top1 - top2)
       const sortedProbs = probs.slice().sort((a, b) => b - a);
       const margin = sortedProbs[0] - (sortedProbs.length > 1 ? sortedProbs[1] : 0.0);
 
-      // 5. Scientific Multi-Tier Uncertainty Gating & Advisory
+      // 6. Gating and advisory
       const match = KB_CLASSES[maxIdx];
       let chemRec = match.chemical;
-      // Microclimate-to-Diagnosis Cross-Gating
+      // Microclimate cross-gating: late blight spores need high humidity
       if (match.disease.includes("Late Blight") && currentTelemetry && currentTelemetry.humidity > 0 && currentTelemetry.humidity < 85.0) {
-        chemRec = `WITHHELD: Low RH (${Math.round(currentTelemetry.humidity)}%). Spores dormant under dry canopy (requires RH >= 85%). Suppressing fungicide; inspect for abiotic chlorosis.`;
+        chemRec = `Withheld: relative humidity is ${Math.round(currentTelemetry.humidity)}%. Late blight spores stay dormant below 85% RH. Fungicide suppressed; inspect for abiotic chlorosis instead.`;
       }
 
-      // Tier 1: High-Confidence Definitive Diagnosis
+      // Tier 1: high-confidence diagnosis
       if (maxProb >= 0.50 && entropy <= 1.45 && margin >= 0.12) {
         return {
           crop: match.crop,
@@ -1475,29 +1361,29 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
         };
       }
 
-      // Tier 2: Suspected Diagnosis with Active Gating (e.g. real-world noisy/shaded photos at 30-50% conf)
+      // Tier 2: suspected diagnosis, chemical withheld
       if (maxProb >= 0.30 || margin >= 0.05) {
         return {
           crop: match.crop,
-          disease: `${match.disease} (Suspected / Ambiguous)`,
-          pathogen: `${match.pathogen} [Early lesion / low contrast sample]`,
+          disease: match.disease,
+          pathogen: `${match.pathogen} (early lesion or low contrast sample)`,
           confidence: confPercent,
           status: "UNCERTAIN",
-          organic: `Foliar symptoms suggest suspected ${match.crop} ${match.disease} (${confPercent}%). Prune isolated symptomatic leaflets; ensure canopy airflow.`,
-          chemical: `WITHHELD (Low Confidence ${confPercent}%): Do not spray chemical fungicides without secondary symptom confirmation or agronomist review. Retake photo under direct sunlight at 10cm.`,
+          organic: `Symptoms suggest possible ${match.crop} ${match.disease} (${confPercent}%). Prune isolated symptomatic leaflets and keep the canopy ventilated.`,
+          chemical: `Withheld (low confidence, ${confPercent}%). Do not spray without a second confirming symptom or an agronomist review. Retake the photo in direct sunlight at 10 cm.`,
           entropy: entropy.toFixed(2)
         };
       }
 
-      // Tier 3: Out-of-Distribution or Non-Target Rejection (< 30% confidence)
+      // Tier 3: out-of-distribution or non-target rejection
       return {
         crop: "Uncertain",
-        disease: "Low Confidence / Ambiguous",
+        disease: "Low Confidence",
         pathogen: "Ambiguous foliar pattern or non-target species",
         confidence: confPercent,
         status: "UNCERTAIN",
-        organic: "Hold wand steady at 10cm distance from leaf.",
-        chemical: "Ensure uniform solar illumination without shadow or blurry focus.",
+        organic: "Hold the wand steady about 10 cm from the leaf.",
+        chemical: "Retake under uniform sunlight without shadow or blur.",
         entropy: entropy.toFixed(2)
       };
     }
@@ -1519,50 +1405,40 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
 
     function updateMetricsAndUI(diag, latency, scanId) {
       totalScansProcessed++;
-      safeSetText("valScanCount", totalScansProcessed);
+      safeSetText("valScanCount", String(totalScansProcessed));
       safeSetText("valLatency", `${latency} ms`);
-      safeSetHTML("scanTimestamp", `SCAN #${scanId} &bull; ${new Date().toLocaleTimeString()} (${latency}ms)`);
+      safeSetHTML("scanTimestamp", `Scan #${scanId} &middot; ${new Date().toLocaleTimeString()} &middot; ${latency} ms`);
 
       safeSetText("diagPrimary", `${diag.crop}: ${diag.disease}`);
-      safeSetText("diagPathogen", `Pathogen: ${diag.pathogen}`);
-      
-      const confEl = document.getElementById("diagConfidence");
-      if (confEl) {
-        confEl.innerText = `Confidence: ${diag.confidence}% | Entropy: ${diag.entropy} | Latency: ${latency}ms | Status: ${diag.status}`;
-        if (diag.status === "INFECTED") {
-          confEl.style.color = "var(--accent-rose)";
-          confEl.style.background = "var(--accent-rose-dim)";
-          confEl.style.borderColor = "rgba(244, 63, 94, 0.3)";
-        } else if (diag.status === "WARNING") {
-          confEl.style.color = "var(--accent-amber)";
-          confEl.style.background = "var(--accent-amber-dim)";
-          confEl.style.borderColor = "rgba(245, 158, 11, 0.3)";
-        } else if (diag.status === "UNCERTAIN") {
-          confEl.style.color = "var(--accent-cyan)";
-          confEl.style.background = "rgba(6, 182, 212, 0.15)";
-          confEl.style.borderColor = "rgba(6, 182, 212, 0.3)";
-        } else {
-          confEl.style.color = "var(--accent-emerald)";
-          confEl.style.background = "var(--accent-emerald-dim)";
-          confEl.style.borderColor = "rgba(16, 185, 129, 0.3)";
-        }
+      safeSetText("diagPathogen", diag.pathogen);
+
+      const gateEl = document.getElementById("diagGate");
+      if (gateEl) {
+        const s = diag.status;
+        if (s === "INFECTED")       gateEl.innerHTML = `<span class="gate gate-infected">INFECTED</span>`;
+        else if (s === "WARNING")   gateEl.innerHTML = `<span class="gate gate-warning">WARNING</span>`;
+        else if (s === "HEALTHY")   gateEl.innerHTML = `<span class="gate gate-healthy">HEALTHY</span>`;
+        else                        gateEl.innerHTML = `<span class="gate gate-uncertain">${s}</span>`;
       }
 
+      safeSetText("diagConf", `${diag.confidence}%`);
+      safeSetText("diagEntropy", diag.entropy);
+
       safeSetText("rxBio", diag.organic);
-      safeSetText("rxChem", `Chemical: ${diag.chemical}`);
+      safeSetText("rxChem", diag.chemical);
     }
 
     async function simulateFieldScan() {
       const demoScanId = (lastProcessedScanId || 0) + 1;
       lastProcessedScanId = demoScanId;
-      log(`[DEMO] Triggering test scan #${demoScanId} on sample leaf...`, "ai");
-      await testRealLeaf('/sample_leaves/late_blight_512.jpg', 'Field Demo Sample: Late Blight');
+      log(`Demo: running scan #${demoScanId} on the bundled late blight sample.`, "ai");
+      await testRealLeaf('/sample_leaves/late_blight_512.jpg', 'Bundled late blight sample');
     }
 
     async function testRealLeaf(url, labelName) {
       const demoScanId = (lastProcessedScanId || 0) + 1;
       lastProcessedScanId = demoScanId;
-      log(`[EXHIBITION] Loading real leaf image: ${labelName}...`, "ai");
+      log(`Loading sample: ${labelName}`, "ai");
 
       try {
         const img = new Image();
@@ -1589,7 +1465,7 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
 
         updateMetricsAndUI(diag, latency, demoScanId);
         playAudioChime();
-        log(`[NEURAL VERIFIED] ${diag.crop}: ${diag.disease} (${diag.confidence}%, H=${diag.entropy}) in ${latency}ms`, "ok");
+        log(`Diagnosis: ${diag.crop}: ${diag.disease} (${diag.confidence}%, H=${diag.entropy}) in ${latency} ms`, "ok");
         return diag;
       } catch (err) {
         log(`Error diagnosing ${labelName}: ${err.message}`, "err");
@@ -1604,7 +1480,7 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
 
       const demoScanId = (lastProcessedScanId || 0) + 1;
       lastProcessedScanId = demoScanId;
-      log(`[CUSTOM PHOTO] Loading: ${file.name} (${Math.round(file.size/1024)} KB)...`, "ai");
+      log(`Loading uploaded photo: ${file.name} (${Math.round(file.size/1024)} KB)`, "ai");
 
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -1627,7 +1503,7 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
 
             updateMetricsAndUI(diag, latency, demoScanId);
             playAudioChime();
-            log(`[CUSTOM DIAGNOSIS] ${diag.crop}: ${diag.disease} (${diag.confidence}%, H=${diag.entropy}) in ${latency}ms`, "ok");
+            log(`Diagnosis: ${diag.crop}: ${diag.disease} (${diag.confidence}%, H=${diag.entropy}) in ${latency} ms`, "ok");
           };
           img.onerror = () => {
             log(`Failed to decode uploaded image: ${file.name}`, "err");
@@ -1660,11 +1536,10 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
       } catch (e) {}
     }
 
-    // Auto-initialize TFLite and Hardware Status Watchdog on page load
+    // Auto-initialize TFLite and the hardware watchdog on page load
     function initHardwareWatchdog() {
-      // Immediate hardware detection (MicroSD & SoftAP Gateway)
       checkCameraForNewScan();
-      // Continuous background hardware polling every 1200ms when server in standby
+      // Continuous background hardware polling every 1200 ms while in standby
       setInterval(() => {
         if (!isRunning) {
           checkCameraForNewScan();
@@ -1687,6 +1562,7 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
     });
   </script>
 </body>
+</html>
 </html>)rawliteral";
 
 // --------------------------------------------------
@@ -1939,29 +1815,51 @@ static uint64_t cachedSdCardSizeMB = 0;
 static uint8_t* lastRamFrameBuf = nullptr;
 static size_t lastRamFrameLen = 0;
 
-bool initialiseSD() {
+bool tryMountSD(bool quiet) {
   if (sdReady && cachedSdCardSizeMB > 0) return true;
   SD_MMC.end();
   delay(10);
-  Serial.println("[SD] Mounting MicroSD in 1-bit mode (20MHz)...");
+  if (!quiet) Serial.println("[SD] Mounting MicroSD in 1-bit mode (20MHz)...");
   if (!SD_MMC.begin("/sdcard", true, false, 20000, 5)) {
-    Serial.println("[SD] 20MHz mount failed, retrying at 10MHz...");
+    if (!quiet) Serial.println("[SD] 20MHz mount failed, retrying at 10MHz...");
     SD_MMC.end();
     delay(10);
     if (!SD_MMC.begin("/sdcard", true, false, 10000, 5)) {
-      Serial.println("[SD WARN] MicroSD card not mounted (insert Class 10 card)");
+      if (!quiet) Serial.println("[SD WARN] MicroSD card not mounted (insert Class 10 card)");
       return false;
     }
   }
   uint8_t cardType = SD_MMC.cardType();
   if (cardType == CARD_NONE) {
-    Serial.println("[SD] No card in slot");
+    if (!quiet) Serial.println("[SD] No card in slot");
     SD_MMC.end();
     return false;
   }
   cachedSdCardSizeMB = SD_MMC.cardSize() / (1024ULL * 1024ULL);
   Serial.printf("[SD] MicroSD Fast Mounted! Capacity: %llu MB\n", cachedSdCardSizeMB);
   return true;
+}
+
+bool initialiseSD() {
+  return tryMountSD(false);
+}
+
+// --------------------------------------------------
+// SD HOT-PLUG: detect a card inserted after boot
+// --------------------------------------------------
+static const uint32_t SD_HOTPLUG_RETRY_MS = 5000;
+static uint32_t lastSdRetryMs = 0;
+
+void pollSdHotplug() {
+  if (sdReady) return;
+  uint32_t now = millis();
+  if (now - lastSdRetryMs < SD_HOTPLUG_RETRY_MS) return;
+  lastSdRetryMs = now;
+  if (tryMountSD(true)) {
+    sdReady = true;
+    findNextScanNumber();
+    Serial.println("[SD HOTPLUG] Card detected at runtime, mounted without reset");
+  }
 }
 
 // --------------------------------------------------
@@ -2369,5 +2267,6 @@ void setup() {
 // --------------------------------------------------
 void loop() {
   server.handleClient();
+  pollSdHotplug();
   delay(2);
 }

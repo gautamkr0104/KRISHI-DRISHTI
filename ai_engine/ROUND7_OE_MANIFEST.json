@@ -1,0 +1,63 @@
+{
+  "manifest_version": "7.0-round7-outlier-exposure",
+  "generated_at": "2026-11-16T13:09:02Z",
+  "base": "round-6 head (397cba9d lineage), backbone frozen",
+  "ood_weight": 2.0,
+  "ood_rows": 1536,
+  "ood_sources": [
+    "1000002591.jpg",
+    "Gautam.jpg",
+    "IMG_20260803_213930_901.jpg",
+    "IMG_20260803_213942_802.jpg",
+    "IMG_20260808_061634_122.jpg",
+    "IMG_20260811_193652_646.jpg",
+    "whatsapp_leaf.jpeg",
+    "internet_tea_leaf_ood_01.jpg",
+    "internet_tea_leaf_ood_02.jpg",
+    "internet_tomato_septoria_ood_01.jpg",
+    "green_chart_paper_full.jpg",
+    "scan_000004.jpg",
+    "scan_000005.jpg",
+    "scan_000006.jpg",
+    "scan_000007.jpg"
+  ],
+  "temperature": "round-6 baked T=0.46 kept (no refit)",
+  "guard_floors": {
+    "pv": 0.978,
+    "bench_raw": 58,
+    "bench_strict": 58,
+    "scans": "25/25 raw+gate",
+    "fresh100": 655
+  },
+  "best_epoch": 3,
+  "final_metrics": {
+    "pv": 0.9881,
+    "bench": 59,
+    "strict": 59,
+    "scan": 25,
+    "scan_gate": 24,
+    "scan_gate_d": 23,
+    "scan_fails": [
+      "scan024"
+    ],
+    "ood_rej": 1525,
+    "ood_total": 1536,
+    "src_rej": 58,
+    "src_total": 60,
+    "src_fails": [
+      "internet_tomato_sept(v1)",
+      "scan_000005.jpg(v2)"
+    ],
+    "must_rej": 28,
+    "must_total": 28,
+    "must_fails": [],
+    "fresh": 664
+  },
+  "round7_tflite_sha256": "a05ded79e3f78895938e4d43ae72e536d75cdbee8dc11ac5b5ad3b3f16915afe",
+  "gate": {
+    "conf": 0.5,
+    "entropy": 1.2,
+    "margin": 0.12
+  },
+  "io_contract": "Float32 [1,128,128,3] raw [0,255] -> [1,6] softmax (unchanged)"
+}

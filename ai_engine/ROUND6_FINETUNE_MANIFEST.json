@@ -1,0 +1,39 @@
+{
+  "manifest_version": "6.0-round6-web10k",
+  "generated_at": "2026-11-16T06:01:01Z",
+  "base_model": "krishi_drishti_base.keras (round-5 lineage 5de439ef)",
+  "trained_on": {
+    "harvest10k_weak_labeled": 5649,
+    "webtest100_burned": 102,
+    "web_supplements": 41,
+    "audited_scans": 25,
+    "pv_replay_per_class": 200
+  },
+  "held_out_never_trained": [
+    "fresh100 (100 images)",
+    "benchmark-60",
+    "PV valid",
+    "OOD chart/palm"
+  ],
+  "round6_tflite_sha256": "397cba9daf0f38a33c84340350960f92a7511fc2d3e6088eaa981fa92a046727",
+  "temperature": 0.46,
+  "guard": {
+    "bench_floor_raw": 58,
+    "pv_floor": 0.978,
+    "best_epoch": 26,
+    "best_bench_raw": 59,
+    "best_pv": 0.9895
+  },
+  "final_metrics": {
+    "benchmark60_raw_tflite": 59,
+    "fresh100_raw_tflite": 666,
+    "audited_scan_agreement_tflite": 25
+  },
+  "gate_sweep_best": {
+    "conf": 0.65,
+    "entropy": 1.2,
+    "margin": 0.08
+  },
+  "wall_time_seconds": 102.3,
+  "io_contract": "Float32 [1,128,128,3] raw [0,255] -> [1,6] softmax (unchanged)"
+}

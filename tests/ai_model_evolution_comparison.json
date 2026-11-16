@@ -1,0 +1,44 @@
+{
+  "Round 1 (Baseline v1)": {
+    "benchmark_60": {
+      "raw": {
+        "total": 60,
+        "raw_correct": 0,
+        "raw_acc": 0.0,
+        "accepted_total": 60,
+        "accepted_correct": 0,
+        "accepted_acc": 0.0,
+        "gated_count": 0
+      },
+      "gated": {
+        "total": 60,
+        "raw_correct": 0,
+        "raw_acc": 0.0,
+        "accepted_total": 59,
+        "accepted_correct": 0,
+        "accepted_acc": 0.0,
+        "gated_count": 1
+      }
+    },
+    "sd_scans": {
+      "raw": {
+        "non_leaf_total": 17,
+        "non_leaf_rejected": 0,
+        "ood_rejection_pct": 0.0,
+        "leaf_total": 27,
+        "leaf_accepted": 27
+      },
+      "gated": {
+        "non_leaf_total": 17,
+        "non_leaf_rejected": 6,
+        "ood_rejection_pct": 35.294117647058826,
+        "leaf_total": 27,
+        "leaf_accepted": 12
+      }
+    },
+    "ood_challenges": {
+      "internet_tea_leaf_ood_01.jpg": {
+        "status": "ACCEPTABLE",
+        "prediction": "Late Blight",
+        "confidence": 0.829761803150177,
+        "entropy": 
