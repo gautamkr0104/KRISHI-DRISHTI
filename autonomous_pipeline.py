@@ -183,7 +183,7 @@ def bench_strict(d):
 
 
 def ood_reject(d):
-    """Chart papers (synthesized, seed 7) + 4 archived palm scans. Returns rejected/total."""
+    """Chart papers (synthesized, seed 7) + 4 archived palm scans + real bedsheet photo. Returns rejected/total."""
     rng = np.random.default_rng(7)
     tmp = Path(r"C:\Users\DELL\AppData\Local\Temp\opencode\webtest")
     tmp.mkdir(parents=True, exist_ok=True)
@@ -215,6 +215,10 @@ def ood_reject(d):
     arch = TESTS_DIR / "sd_card_scans_archive_r3"
     for n in (4, 5, 6, 7):
         tests.append((arch / f"scan_{n:06d}.jpg", "reject"))
+    # real-world bug photo: people on a green floral bedsheet
+    bedsheet = Path(r"C:\Users\DELL\AppData\Local\Temp\opencode\whatsapp_leaf.jpeg")
+    if bedsheet.exists():
+        tests.append((bedsheet, "reject"))
     rejected = 0
     for p, _ in tests:
         res = d.run_inference(Image.open(p))
