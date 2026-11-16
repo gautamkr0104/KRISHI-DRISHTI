@@ -408,18 +408,20 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html><!DOCTYPE html
       padding: 6px 12px;
       font: 600 12.5px var(--font-sans);
       color: var(--ink);
-      background: var(--surface-2);
+      background: rgba(255, 255, 255, 0.07);
       -webkit-backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.4);
       backdrop-filter: blur(var(--glass-blur-soft)) saturate(1.4);
-      border: 1px solid rgba(255, 255, 255, 0.10);
+      border: 1px solid rgba(255, 255, 255, 0.16);
       border-radius: 6px;
       cursor: pointer;
       transition: background-color 120ms ease, border-color 120ms ease;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        0 2px 8px rgba(0, 0, 0, 0.22);
     }
 
-    .btn:hover { background: rgba(38, 47, 42, 0.72); border-color: rgba(255, 255, 255, 0.16); }
-    .btn:active { background: rgba(28, 34, 31, 0.72); }
+    .btn:hover { background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.26); }
+    .btn:active { background: rgba(255, 255, 255, 0.05); }
 
     .btn:focus-visible {
       outline: 2px solid var(--accent);
@@ -427,22 +429,22 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html><!DOCTYPE html
     }
 
     .btn-primary {
-      background: #2b6e3c;
-      border-color: #35814a;
+      background: rgba(70, 167, 88, 0.38);
+      border-color: rgba(126, 208, 154, 0.42);
       color: #f2fbf4;
     }
 
-    .btn-primary:hover { background: #327d46; border-color: #3f9255; }
-    .btn-primary:active { background: #276136; }
+    .btn-primary:hover { background: rgba(70, 167, 88, 0.52); border-color: rgba(126, 208, 154, 0.60); }
+    .btn-primary:active { background: rgba(55, 132, 71, 0.50); }
 
     .btn-paused {
-      background: #7d5416;
-      border-color: #8f6320;
+      background: rgba(240, 161, 62, 0.30);
+      border-color: rgba(240, 161, 62, 0.45);
       color: #fdf6e9;
     }
 
-    .btn-paused:hover { background: #8d5f19; }
-    .btn-paused:active { background: #6f4a13; }
+    .btn-paused:hover { background: rgba(240, 161, 62, 0.42); }
+    .btn-paused:active { background: rgba(125, 84, 22, 0.55); }
 
     .btn-small {
       padding: 3px 8px;
