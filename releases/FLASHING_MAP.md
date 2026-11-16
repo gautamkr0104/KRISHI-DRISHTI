@@ -1,4 +1,4 @@
-# KRISHI-DRISHTI v2.2 EDGE :: Firmware Binary Flashing Map
+# KRISHI-DRISHTI v2.3 EDGE :: Firmware Binary Flashing Map
 
 This guide outlines the exact memory offsets and flashing commands for both the **ESP32-CAM** optical gateway and the **ESP32 Controller Wand**.
 
