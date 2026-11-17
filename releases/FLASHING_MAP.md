@@ -1,4 +1,4 @@
-# KRISHI-DRISHTI v2.4 EDGE :: Firmware Binary Flashing Map
+# KRISHI-DRISHTI v2.5 EDGE :: Firmware Binary Flashing Map
 
 This guide outlines the exact memory offsets and flashing commands for both the **ESP32-CAM** optical gateway and the **ESP32 Controller Wand**.
 
@@ -102,4 +102,4 @@ The script reformats the card FAT32, re-extracts `SD_CARD_KRISHI_DRISHTI_READY.z
 3. If the PC ever reports the card read-only or asks you to scan/fix, stop and run the recovery script instead of clicking through disk repair dialogs.
 4. The card image in `SD_CARD_KRISHI_DRISHTI_READY.zip` is always the source of truth — the physical card is disposable and rebuildable in under a minute.
 >
-> **v2.4 firmware changes:** camera — boot watchdog (TG1) kept out of the radio-bringup path, double `<!DOCTYPE>` removed from the embedded dashboard; wand — Wi-Fi recovery escalates to a full state-machine restart after 3 failed reconnect attempts, splash link window 1.5s → 6s.
+> **v2.5 firmware changes:** camera — dashboard pre-filter no longer rejects terminal necrotic blight as "human skin" (brown dying tissue satisfies the skin chromaticity rule; a lesion-texture + darkness + necrosis-dominance exemption now lets genuine haulm frames reach the OE-trained model); wand — reconnect polling window halved to 4 s (worst-case OLED freeze after a camera reboot cut from ~16 s to ~8 s).

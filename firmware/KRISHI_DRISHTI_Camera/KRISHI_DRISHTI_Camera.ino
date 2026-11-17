@@ -1,6 +1,6 @@
 /*
   ==============================================================================
-  KRISHI-DRISHTI (कृषि-दृष्टि) - Official Camera Unit Firmware v2.4
+  KRISHI-DRISHTI (कृषि-दृष्टि) - Official Camera Unit Firmware v2.5
   Target Hardware: AI-Thinker ESP32-CAM (ESP-32S) + ESP32-CAM-MB Programmer Shield
   Optics: OV5640 / OV2640 Dual-Support Auto-Detection (UXGA 1600x1200)
   Storage: Onboard MicroSD in SD_MMC 1-Bit Mode (DMA Accelerated)
@@ -1321,6 +1321,19 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html><html lang="en
       let glarePixels = 0;
       let neutralPixels = 0;
 
+      // Luminance plane for the brown-tissue texture metric (used by the
+      // skin filter to distinguish smooth human skin from shriveled,
+      // lesion-textured terminal necrosis - which satisfies the skin
+      // chromaticity rule but is genuine plant tissue).
+      const lumArr = new Float32Array(totalPixels);
+      for (let p = 0; p < totalPixels; p++) {
+        const q = p * 4;
+        lumArr[p] = (data[q] + data[q + 1] + data[q + 2]) / 3.0;
+      }
+      let brownPixels = 0;
+      let brownGradSum = 0.0;
+      let brownLumSum = 0.0;
+
       for (let i = 0; i < data.length; i += 4) {
         const r = data[i];
         const g = data[i + 1];
@@ -1338,6 +1351,22 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html><html lang="en
         // C. Human skin tone filter
         if (r > 95 && g > 40 && b > 20 && r > g && g > b && (r - g) > 12 && (r - b) > 20) {
           humanSkinPixels++;
+        }
+
+        // Brown-tissue texture accumulation (necrotic OR skin chromaticity):
+        // smooth skin has low local luminance gradient; shriveled necrotic
+        // blight tissue has high gradient from lesions and vein collapse.
+        if ((r > 95 && g > 40 && b > 20 && r > g && g > b && (r - g) > 12 && (r - b) > 20) ||
+            (r > 40 && g > 30 && b < 110 && r >= g && (r - g) < 45 && (r + g) > (2.2 * b))) {
+          const px = i / 4;
+          const row = (px / 128) | 0;
+          const col = px % 128;
+          let gsum = 0.0;
+          if (col > 0) gsum += Math.abs(lumArr[px] - lumArr[px - 1]);
+          if (row > 0) gsum += Math.abs(lumArr[px] - lumArr[px - 128]);
+          brownGradSum += gsum;
+          brownLumSum += lumArr[px];
+          brownPixels++;
         }
 
         // D. Peripheral dark void / lens cap
@@ -1362,9 +1391,19 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html><html lang="en
       const glareRatio = glarePixels / totalPixels;
       const neutralRatio = neutralPixels / totalPixels;
       const totalFoliarRatio = (greenChlorophyllPixels + necroticLesionPixels) / totalPixels;
+      const necRatio = necroticLesionPixels / totalPixels;
+      const brownGradMean = brownPixels > 100 ? brownGradSum / brownPixels : 0.0;
+      const brownLumMean = brownPixels > 100 ? brownLumSum / brownPixels : 255.0;
+
+      // A frame dominated by textured, dark, necrotic plant tissue is a
+      // genuine (possibly terminal) blight haulm: brown tissue satisfies the
+      // skin chromaticity rule, but smooth human skin does not show the
+      // lesion/vein texture. Exempt such frames from the skin reject and let
+      // the OE-trained model decide (it withholds genuinely unknown frames).
+      const necroticDominant = necRatio > 0.30 && brownGradMean > 18 && brownLumMean < 135;
 
       // Filter 1: reject human skin
-      if (skinRatio > 0.12 && greenRatio < 0.08) {
+      if (skinRatio > 0.12 && greenRatio < 0.08 && !necroticDominant) {
         return {
           crop: "Invalid",
           disease: "No Leaf Detected",
@@ -2362,7 +2401,7 @@ void setup() {
   digitalWrite(FLASH_LED_PIN, LOW);
 
   Serial.println("\n========================================");
-  Serial.println("  KRISHI-DRISHTI :: ESP32-CAM v2.4");
+  Serial.println("  KRISHI-DRISHTI :: ESP32-CAM v2.5");
   Serial.println("  Offline-First Edge Agritech Platform");
   Serial.println("========================================");
 

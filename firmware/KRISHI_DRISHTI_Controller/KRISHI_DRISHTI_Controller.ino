@@ -1,6 +1,6 @@
 /*
   ==============================================================================
-  KRISHI-DRISHTI (Krishi-Drishti) - Farmer-Friendly Controller Wand Firmware v2.4
+  KRISHI-DRISHTI (Krishi-Drishti) - Farmer-Friendly Controller Wand Firmware v2.5
   Target Hardware: ESP32 DevKit V1 + SSD1306 OLED (128x64 I2C) + DHT11
   Networking: Connects as Wi-Fi Station to SoftAP "KRISHI-DRISHTI" @ 192.168.4.1
   Author: Gautam Kumar / KRISHI-DRISHTI Project
@@ -328,7 +328,7 @@ void renderPage4_Status() {
 
   display.setTextSize(1);
   display.setCursor(0, 12);
-  display.print("Firmware: v2.4 Simple");
+  display.print("Firmware: v2.5 Simple");
 
   display.setCursor(0, 22);
   display.print("WiFi    : ");
@@ -398,11 +398,13 @@ void ensureWiFiConnected() {
     renderActivePage();
   }
 
-  // Non-blocking reconnect: check every 8s without thrashing the Wi-Fi driver.
+  // Non-blocking reconnect: check every 4s (halves the worst-case OLED
+  // freeze after a camera reboot vs the previous 8s window) without
+  // thrashing the Wi-Fi driver.
   // After 3 failed reconnect attempts the association state can be wedged
   // (radio never joined since boot), so escalate to a full state-machine
   // restart instead of retrying reconnect() forever.
-  if (lastWifiCheckMs == 0 || millis() - lastWifiCheckMs > 8000) {
+  if (lastWifiCheckMs == 0 || millis() - lastWifiCheckMs > 4000) {
     lastWifiCheckMs = millis();
     wifiRetryCount++;
     if (wifiRetryCount >= 3) {
@@ -675,7 +677,7 @@ void setup() {
   delay(150);
 
   Serial.println("\n========================================");
-  Serial.println("  KRISHI-DRISHTI :: Controller Wand v2.4");
+  Serial.println("  KRISHI-DRISHTI :: Controller Wand v2.5");
   Serial.println("  Farmer-Friendly Edge Telemetry Core");
   Serial.println("========================================");
   Serial.flush();
@@ -719,7 +721,7 @@ void setup() {
     display.print("Plant Health Wand");
 
     display.setCursor(19, 36);
-    display.print("Smart Wand v2.4");
+    display.print("Smart Wand v2.5");
 
     display.setCursor(10, 49);
     display.print("Linking to Cam...");

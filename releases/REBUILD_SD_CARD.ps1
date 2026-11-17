@@ -20,7 +20,7 @@ param([string]$DriveLetter = "E")
 
 $ErrorActionPreference = "Stop"
 $zipPath   = Join-Path $PSScriptRoot "SD_CARD_KRISHI_DRISHTI_READY.zip"
-$ModelSha  = "F48FC157CFE31C5BE979B9912433B7D7CF776F3B8743B4717DE1C9B2DC5408F1"  # round-8 deployed
+$ModelSha  = "A2A4C9F6134EC0DE4B7C0654CE367A19AFD86D730942D754EEA5AB2A96186404"  # round-9 deployed
 
 "=== KRISHI-DRISHTI SD rebuild ==="
 
