@@ -85,5 +85,21 @@ esptool.py --chip esp32 --port COM_PORT --baud 460800 --before default_reset --a
 4. Insert the card into the ESP32-CAM slot. The camera will automatically detect the card in under 1 second on boot!
 
 > **Model build:** `krishi_drishti_model.tflite` sha256 prefix `f48fc157cfe31c5b` (round-8 internet-hardened OE, 2026-11-17). Previous build: `a05ded79e3f78895` (round-7), archived as `krishi_drishti_model_round7_prev.tflite`.
+
+### SD Card Recovery (corruption / RAW filesystem / SD FAIL on boot)
+
+If the card ever shows an unrecognized filesystem (a USB bus drop during a write corrupts the FAT) or the camera reports `SD FAIL`, rebuild it with one command from an **elevated** PowerShell:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File releases\REBUILD_SD_CARD.ps1 -DriveLetter E
+```
+
+The script reformats the card FAT32, re-extracts `SD_CARD_KRISHI_DRISHTI_READY.zip`, and verifies the model SHA-256 against the deployed build. It refuses to touch any disk that is not a small (≤32GB) USB removable device, so it cannot format your hard drives.
+
+**Preventing corruption — always follow these rules:**
+1. **Never unplug the card while a write is in progress.** This is the only realistic way the FAT gets corrupted; a clean unplug never damages a healthy card.
+2. Use **Safely Remove Hardware** (system tray) or close all Explorer windows on the card before pulling it.
+3. If the PC ever reports the card read-only or asks you to scan/fix, stop and run the recovery script instead of clicking through disk repair dialogs.
+4. The card image in `SD_CARD_KRISHI_DRISHTI_READY.zip` is always the source of truth — the physical card is disposable and rebuildable in under a minute.
 >
 > **v2.4 firmware changes:** camera — boot watchdog (TG1) kept out of the radio-bringup path, double `<!DOCTYPE>` removed from the embedded dashboard; wand — Wi-Fi recovery escalates to a full state-machine restart after 3 failed reconnect attempts, splash link window 1.5s → 6s.
