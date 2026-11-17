@@ -1,0 +1,57 @@
+﻿{
+    "manifest_version":  "9.2-round9c-redteam",
+    "generated_at":  "2026-11-17T03:39:08Z",
+    "base":  "round-7 head lineage, backbone frozen, T=0.46 baked kept; round-8d recipe + mined look-alike hard negatives + adversarial ring synth + blur robustness",
+    "new_tflite_sha256":  "638f9c2e237b54c4e86f2bdd941c702b19b8169f7e01e0c7649289d7863ee7c6",
+    "harvest":  {
+                    "ood_sources":  320,
+                    "pos_kept_after_agreement":  24
+                },
+    "round9_additions":  {
+                             "mined_leaky_hard_negatives":  222,
+                             "mined_already_held":  170,
+                             "r9_baseline_leakage":  222,
+                             "r9c_leakage":  199,
+                             "ring_cards_accepted_of_30":  12,
+                             "banknote_accepted_of_20":  3,
+                             "dense_fabric_accepted_of_20":  0,
+                             "blur_tier1_correct":  "75/75",
+                             "vignette_tier1_correct":  "50/50"
+                         },
+    "best_epoch":  3,
+    "final_metrics":  {
+                          "pv":  0.9863,
+                          "bench":  59,
+                          "strict":  58,
+                          "scan":  25,
+                          "scan_gate":  24,
+                          "scan_fails":  [
+                                             "scan022"
+                                         ],
+                          "src_rej":  1839,
+                          "src_total":  2964,
+                          "must_rej":  84,
+                          "must_total":  84,
+                          "must_fails":  [
+
+                                         ],
+                          "fresh":  661
+                      },
+    "gate":  {
+                 "conf":  0.5,
+                 "entropy":  1.2,
+                 "margin":  0.12
+             },
+    "io_contract":  "Float32 [1,128,128,3] raw [0,255] -\u003e [1,6] softmax (unchanged)",
+    "deployment_decision":  {
+                                "decision":  "retained_round9_deployed",
+                                "decided_at":  "2026-11-17T09:11:36.6093323+05:30",
+                                "rationale":  [
+                                                  "round-9c improves the mined viral classes (TYLCV 16-\u003e11/16, ToMV 19-\u003e11/19) and adds banknote/dense-fabric withholding (3/20 + 0/20 accepted) plus full shroud-vignette robustness (50/50 tier-1 correct at 0.40/0.65 falloff)",
+                                                  "but general look-alike tier-1 leakage REGRESSED 157/222 (round-9) -\u003e 199/222 (round-9c) and adversarial-ring cards regressed 8/30 -\u003e 12/30 accepted",
+                                                  "general leakage is the core safety metric (drives wrong fungicide advice), so round-9 stays deployed",
+                                                  "round-9d launched to combine 9c\u0027s new generators (vignette, banknote, dense fabric) with restored look-alike hard-negative pressure (w_aug 0.6-\u003e1.1, canonical 1.0-\u003e1.5, ring group 0.9-\u003e1.1)"
+                                              ],
+                                "floors_check":  "all floors pass (PV 0.9863 \u003e= 0.978, strict 58 \u003e= 58, must-reject 84/84, tflite scan gate 25/25, fresh 661 \u003e= 655) - retained on comparative grounds only"
+                            }
+}
