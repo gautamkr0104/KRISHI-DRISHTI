@@ -52,6 +52,14 @@
                                                   "general leakage is the core safety metric (drives wrong fungicide advice), so round-9 stays deployed",
                                                   "round-9d launched to combine 9c\u0027s new generators (vignette, banknote, dense fabric) with restored look-alike hard-negative pressure (w_aug 0.6-\u003e1.1, canonical 1.0-\u003e1.5, ring group 0.9-\u003e1.1)"
                                               ],
-                                "floors_check":  "all floors pass (PV 0.9863 \u003e= 0.978, strict 58 \u003e= 58, must-reject 84/84, tflite scan gate 25/25, fresh 661 \u003e= 655) - retained on comparative grounds only"
+                                "floors_check":  "all floors pass (PV 0.9863 \u003e= 0.978, strict 58 \u003e= 58, must-reject 84/84, tflite scan gate 25/25, fresh 661 \u003e= 655) - retained on comparative grounds only",
+                                "outcome":  {
+                                                "round9d":  "FAILED - w_aug 1.1/canonical 1.5: strict 57/60 (floor 58) in all 12 epochs, scan022 rejected in all epochs, no eligible epoch",
+                                                "round9e":  "FAILED - mid-point w_aug 0.85/canonical 1.2: strict 57/60 and scan022 rejected in all 12 epochs, no eligible epoch",
+                                                "conclusion":  "6-class softmax Pareto frontier confirmed empirically: any look-alike OE pressure above 9c\u0027s dial (0.6/1.0) breaks bench-strict and scan022; 9c itself only held 58 marginally while regressing general leakage 157-\u003e199",
+                                                "line_closed":  true,
+                                                "final_model":  "round-9 (a2a4c9f6134ec0de) remains deployed - final for the 6-class head",
+                                                "future_direction":  "further OOD gains require architecture change (7th \u0027unknown/viral\u0027 class or Tier-2 triage path), not OE weight tuning; viral-lookalike pre-filter triage rule only if calibrated offline against real TYLCV/target-spot frames like the skin fix"
+                                            }
                             }
 }
