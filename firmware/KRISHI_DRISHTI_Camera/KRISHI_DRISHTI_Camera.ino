@@ -1,6 +1,6 @@
 /*
   ==============================================================================
-  KRISHI-DRISHTI (कृषि-दृष्टि) - Official Camera Unit Firmware v2.5
+  KRISHI-DRISHTI (कृषि-दृष्टि) - Official Camera Unit Firmware v2.5.1
   Target Hardware: AI-Thinker ESP32-CAM (ESP-32S) + ESP32-CAM-MB Programmer Shield
   Optics: OV5640 / OV2640 Dual-Support Auto-Detection (UXGA 1600x1200)
   Storage: Onboard MicroSD in SD_MMC 1-Bit Mode (DMA Accelerated)
@@ -1400,7 +1400,11 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html><html lang="en
       // skin chromaticity rule, but smooth human skin does not show the
       // lesion/vein texture. Exempt such frames from the skin reject and let
       // the OE-trained model decide (it withholds genuinely unknown frames).
-      const necroticDominant = necRatio > 0.30 && brownGradMean > 18 && brownLumMean < 135;
+      // v2.5.1.1: threshold lowered 0.30 -> 0.25 (calibrated: people seeds stay
+      // 100% rejected because smooth skin fails grad>18 & lum<135; blight
+      // frames 40/40 pass; partial-necrosis field frames at nec 0.267-0.285
+      // that were missed at 0.30 now reach the model).
+      const necroticDominant = necRatio > 0.25 && brownGradMean > 18 && brownLumMean < 135;
 
       // Filter 1: reject human skin
       if (skinRatio > 0.12 && greenRatio < 0.08 && !necroticDominant) {
@@ -2401,7 +2405,7 @@ void setup() {
   digitalWrite(FLASH_LED_PIN, LOW);
 
   Serial.println("\n========================================");
-  Serial.println("  KRISHI-DRISHTI :: ESP32-CAM v2.5");
+  Serial.println("  KRISHI-DRISHTI :: ESP32-CAM v2.5.1");
   Serial.println("  Offline-First Edge Agritech Platform");
   Serial.println("========================================");
 

@@ -1,4 +1,4 @@
-# KRISHI-DRISHTI v2.5 EDGE :: Firmware Binary Flashing Map
+# KRISHI-DRISHTI v2.5.1 EDGE :: Firmware Binary Flashing Map
 
 This guide outlines the exact memory offsets and flashing commands for both the **ESP32-CAM** optical gateway and the **ESP32 Controller Wand**.
 
@@ -103,3 +103,5 @@ The script reformats the card FAT32, re-extracts `SD_CARD_KRISHI_DRISHTI_READY.z
 4. The card image in `SD_CARD_KRISHI_DRISHTI_READY.zip` is always the source of truth — the physical card is disposable and rebuildable in under a minute.
 >
 > **v2.5 firmware changes:** camera — dashboard pre-filter no longer rejects terminal necrotic blight as "human skin" (brown dying tissue satisfies the skin chromaticity rule; a lesion-texture + darkness + necrosis-dominance exemption now lets genuine haulm frames reach the OE-trained model); wand — reconnect polling window halved to 4 s (worst-case OLED freeze after a camera reboot cut from ~16 s to ~8 s).
+>
+> **v2.5.1 firmware change:** camera — necrotic-dominance threshold lowered `necRatio > 0.30` → `> 0.25` after red-team round-3 field calibration: partial-necrosis terminal blight frames at nec 0.267–0.285 were still caught by the skin rule at 0.30. Offline sweep confirms people seeds stay 100% rejected at 0.25 (smooth skin fails the `grad > 18` and `lum < 135` conditions regardless of threshold), blight frames pass 40/40, and the cost is 7 additional textured brown OOD frames released to the model's second line. Wand unchanged from v2.5.

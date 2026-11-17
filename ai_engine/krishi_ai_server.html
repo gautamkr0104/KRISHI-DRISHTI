@@ -1324,7 +1324,11 @@
       // skin chromaticity rule, but smooth human skin does not show the
       // lesion/vein texture. Exempt such frames from the skin reject and let
       // the OE-trained model decide (it withholds genuinely unknown frames).
-      const necroticDominant = necRatio > 0.30 && brownGradMean > 18 && brownLumMean < 135;
+      // v2.5.1: threshold lowered 0.30 -> 0.25 (calibrated: people seeds stay
+      // 100% rejected because smooth skin fails grad>18 & lum<135; blight
+      // frames 40/40 pass; partial-necrosis field frames at nec 0.267-0.285
+      // that were missed at 0.30 now reach the model).
+      const necroticDominant = necRatio > 0.25 && brownGradMean > 18 && brownLumMean < 135;
 
       // Filter 1: reject human skin
       if (skinRatio > 0.12 && greenRatio < 0.08 && !necroticDominant) {

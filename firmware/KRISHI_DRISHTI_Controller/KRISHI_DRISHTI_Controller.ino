@@ -1,6 +1,6 @@
 /*
   ==============================================================================
-  KRISHI-DRISHTI (Krishi-Drishti) - Farmer-Friendly Controller Wand Firmware v2.5
+  KRISHI-DRISHTI (Krishi-Drishti) - Farmer-Friendly Controller Wand Firmware v2.5.1
   Target Hardware: ESP32 DevKit V1 + SSD1306 OLED (128x64 I2C) + DHT11
   Networking: Connects as Wi-Fi Station to SoftAP "KRISHI-DRISHTI" @ 192.168.4.1
   Author: Gautam Kumar / KRISHI-DRISHTI Project
@@ -328,7 +328,7 @@ void renderPage4_Status() {
 
   display.setTextSize(1);
   display.setCursor(0, 12);
-  display.print("Firmware: v2.5 Simple");
+  display.print("Firmware: v2.5.1 Simple");
 
   display.setCursor(0, 22);
   display.print("WiFi    : ");
@@ -677,7 +677,7 @@ void setup() {
   delay(150);
 
   Serial.println("\n========================================");
-  Serial.println("  KRISHI-DRISHTI :: Controller Wand v2.5");
+  Serial.println("  KRISHI-DRISHTI :: Controller Wand v2.5.1");
   Serial.println("  Farmer-Friendly Edge Telemetry Core");
   Serial.println("========================================");
   Serial.flush();
@@ -721,7 +721,7 @@ void setup() {
     display.print("Plant Health Wand");
 
     display.setCursor(19, 36);
-    display.print("Smart Wand v2.5");
+    display.print("Smart Wand v2.5.1");
 
     display.setCursor(10, 49);
     display.print("Linking to Cam...");
