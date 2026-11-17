@@ -1,0 +1,57 @@
+{
+  "manifest_version": "9.1-round9b-must-rescue",
+  "generated_at": "2026-11-17T02:25:49Z",
+  "base": "round-7 head lineage, backbone frozen, T=0.46 baked kept; round-8d recipe + mined look-alike hard negatives + adversarial ring synth + blur robustness",
+  "new_tflite_sha256": "a2a4c9f6134ec0de4b7c0654ce367a19afd86d730942d754eea5ab2a96186404",
+  "harvest": {
+    "ood_sources": 320,
+    "pos_kept_after_agreement": 27
+  },
+  "round9_additions": {
+    "mined_leaky_hard_negatives": 224,
+    "mined_already_held": 64,
+    "r8_baseline_leakage": 224,
+    "r9_leakage": 157,
+    "ring_cards_accepted_of_30": 8,
+    "blur_tier1_correct": "75/75"
+  },
+  "best_epoch": 11,
+  "final_metrics": {
+    "pv": 0.9874,
+    "bench": 59,
+    "strict": 58,
+    "scan": 25,
+    "scan_gate": 24,
+    "scan_fails": [
+      "scan022"
+    ],
+    "src_rej": 1841,
+    "src_total": 2548,
+    "must_rej": 84,
+    "must_total": 84,
+    "must_fails": [],
+    "fresh": 669
+  },
+  "gate": {
+    "_comment": "Two different gates exist by design; the dashboard HTML is authoritative at runtime.",
+    "dashboard_tier1_gate": {
+      "conf_min": 0.5,
+      "entropy_max": 1.45,
+      "margin_min": 0.12,
+      "where": "krishi_ai_server.html runEdgeInference() tier 1"
+    },
+    "training_strict_gate": {
+      "conf_min": 0.5,
+      "entropy_max": 1.2,
+      "margin_min": 0.12,
+      "where": "offline selection metric only (bench strict pass, OOD rejection training eval); stricter than tier-1 on purpose"
+    }
+  },
+  "known_limitations": [
+    "6-class closed-world head: tomato look-alike diseases (septoria leaf spot ~26/31, bacterial spot ~31/39, target spot ~27/36, leaf mold ~27/38 mined images) still pass tier-1; round-9 cut the mined leakage 30% (224->157) but eliminating it requires a class-set redesign, not fine-tuning.",
+    "Synthetic flat-green cards with drawn necrotic rings: round-9 withholds ~22/30 fresh ring cards, but a perfectly drawn low-noise ring card can still pass.",
+    "Blur robustness is now a strength (75/75 real scans tier-1 correct up to 3.0 px Gaussian), but extreme defocus (>3px) remains untested territory.",
+    "Agronomic safety for off-target crops beyond the 6 classes relies on OE withholding plus the physical shroud."
+  ],
+  "io_contract": "Float32 [1,128,128,3] raw [0,255] -> [1,6] softmax (unchanged)"
+}
