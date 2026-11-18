@@ -16,6 +16,7 @@ venv/
 *.ckpt
 *f16.tflite
 *fp32.tflite
+ai_engine/krishi_drishti_model_round*.tflite
 
 # OS generated files
 .DS_Store
@@ -38,7 +39,7 @@ releases/*.zip
 uploading_documents/*.zip
 *.zip
 
-# Competition & School Exhibition Documents
+# Archive & Internal Submission Documents
 uploading_documents/
 templates/
 *.pptx
