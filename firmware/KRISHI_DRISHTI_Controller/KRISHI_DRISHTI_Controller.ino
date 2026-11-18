@@ -709,7 +709,7 @@ void triggerRealScan() {
     captureUrl += "?temp=" + String(currentTemp, 1) + "&hum=" + String(currentHum, 1);
   }
   http.begin(captureUrl);
-  http.setTimeout(8000);
+  http.setTimeout(12000); // 12s timeout accommodates 5s camera flash cycle + SD write
   int httpCode = http.GET();
 
   if (httpCode != 200) {
