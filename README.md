@@ -95,8 +95,7 @@ KRISHI-DRISHTI/
     ├── System_Architecture_Report.md# In-depth architectural & pathological specification
     ├── Wiring_Schematic_Pinout.md  # Detailed circuit schematics and pin connection tables
     ├── Two_Leaf_Repeatability_Demonstration_Protocol.md # 50-condition multi-factor physical demo protocol
-    ├── NIF_Patent_Application_Docket.md # Formal patent documentation (Form 1, 2, 8, 9, 18)
-    └── KRISHI_DRISHTI_Exhibition_Presentation.pptx # Professional science exhibition slide deck
+    └── NIF_Patent_Application_Docket.md # Formal patent documentation (Form 1, 2, 8, 9, 18)
 ```
 
 ---

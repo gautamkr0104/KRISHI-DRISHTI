@@ -37,3 +37,17 @@ ai_engine/round8_harvest/
 releases/*.zip
 uploading_documents/*.zip
 *.zip
+
+# Competition & School Exhibition Documents
+uploading_documents/
+templates/
+*.pptx
+*NOC*
+*projreport*
+*STUDENT_PROJECT_REPORT*
+*Field_Survey*
+*Exhibition*
+ENVIRONMENT.json
+AGENTS.md
+CLAUDE.md
+Build_All_Docs.bat

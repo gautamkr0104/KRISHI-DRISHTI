@@ -88,13 +88,9 @@ C:\Users\DELL\krishi_pdf_env\Scripts\python.exe ai_engine/export_and_evaluate.py
 
 ---
 
-## 4. Release & Document Compilation Pipeline
+## 4. Release Pipeline
 
-To rebuild all exhibition documents, PDFs, DOCX, presentation decks, and both distribution ZIPs:
-```powershell
-C:\Users\DELL\krishi_pdf_env\Scripts\python.exe scratch/build_and_sync_all.py
-```
-This generates:
-1. `uploading_documents/KRISHI-DRISHTI-Final-v3.0.zip` (Full 68MB master distribution)
-2. `uploading_documents/KRISHI-DRISHTI-Audit-Docs-and-Code.zip` (Lightweight 15.8MB AI auditor package)
-3. Synchronizes all submission PDFs into `uploading_documents/` and `docs/`.
+Precompiled firmware binaries and SD card packages are generated in `releases/`:
+1. `releases/KRISHI_DRISHTI_Camera_Firmware_v2.5.1.zip` (ESP32-CAM optical gateway firmware)
+2. `releases/KRISHI_DRISHTI_Controller_Firmware_v2.5.1.zip` (ESP32 Controller Wand firmware)
+3. `releases/SD_CARD_KRISHI_DRISHTI_READY.zip` (100% plug-and-play offline FAT32 filesystem bundle)
