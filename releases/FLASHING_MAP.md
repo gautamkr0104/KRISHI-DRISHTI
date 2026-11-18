@@ -38,17 +38,17 @@ esptool.py --chip esp32 --port COM_PORT --baud 460800 --before default_reset --a
 
 ## 2. ESP32 Controller Wand (Telemetry & OLED Wand)
 
-* **Chip:** ESP32-WROOM-32
+* **Chip:** ESP32-WROOM-32 / ESP32-D0WD-V3 (DOIT DevKit V1)
 * **Flash Size:** 4MB
-* **Flash Mode:** `dio` | **Baud Rate:** `460800`
+* **Flash Mode:** `dio` | **Flash Frequency:** `40m` | **Baud Rate:** `460800`
 
 ### Binary Flash Address Allocation Table:
 | Binary File | Flash Address | Partition / Purpose | Description |
 | :--- | :--- | :--- | :--- |
-| `KRISHI_DRISHTI_Controller.ino.bootloader.bin` | `0x1000` | Bootloader | Second-stage bootloader |
+| `KRISHI_DRISHTI_Controller.ino.bootloader.bin` | `0x1000` | Bootloader | Second-stage bootloader (40MHz SPI) |
 | `KRISHI_DRISHTI_Controller.ino.partitions.bin` | `0x8000` | Partition Table | Memory layout |
 | `boot_app0.bin` | `0xe000` | Otadata | Boot slot descriptor |
-| `KRISHI_DRISHTI_Controller.ino.bin` | `0x10000` | `app0` (Application) | Main Wand firmware (DHT22, SSD1306, ESP-NOW) |
+| `KRISHI_DRISHTI_Controller.ino.bin` | `0x10000` | `app0` (Application) | Main Wand firmware (Farmer UX, Certainty Gate, SSD1306, ESP-NOW) |
 | **`KRISHI_DRISHTI_Controller.ino.merged.bin`** | **`0x0000`** | **Full Flash Image** | **Unified all-in-one image (Recommended)** |
 
 ### Flashing Commands (Controller Wand):
@@ -56,8 +56,9 @@ esptool.py --chip esp32 --port COM_PORT --baud 460800 --before default_reset --a
 # Option A: Single Unified Image (Recommended)
 esptool.py --chip esp32 --port COM_PORT --baud 460800 write_flash -z 0x0000 KRISHI_DRISHTI_Controller.ino.merged.bin
 
-# Option B: Multi-File Flashing
+# Option B: Multi-File Flashing (40MHz Flash Clock)
 esptool.py --chip esp32 --port COM_PORT --baud 460800 --before default_reset --after hard_reset write_flash -z \
+  --flash_mode dio --flash_freq 40m --flash_size 4MB \
   0x1000  KRISHI_DRISHTI_Controller.ino.bootloader.bin \
   0x8000  KRISHI_DRISHTI_Controller.ino.partitions.bin \
   0xe000  boot_app0.bin \

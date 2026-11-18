@@ -75,16 +75,33 @@ String diagChemical = "No chemical intervention needed";
 // --------------------------------------------------
 // EMBEDDED EDGE AI SERVER DAEMON (SERVED AT /)
 // --------------------------------------------------
-const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html><html lang="en">
+const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0e1210">
   <title>KRISHI-DRISHTI</title>
 
-  <!-- Bundled offline TensorFlow.js and TFLite WASM runtimes -->
-  <script src="/vendor/tf.min.js" onerror="if (window.log) log('Failed to load /vendor/tf.min.js', 'err');"></script>
-  <script src="/vendor/tf-tflite.min.js" onerror="if (window.log) log('Failed to load /vendor/tf-tflite.min.js', 'err');"></script>
+  <!-- Early boot error logger -->
+  <script>
+    window._bootLogs = [];
+    window._earlyLog = function(msg, kind = 'info') {
+      if (typeof window.log === 'function') {
+        window.log(msg, kind);
+      } else {
+        window._bootLogs.push({ msg, kind, time: new Date().toLocaleTimeString() });
+      }
+    };
+    window.onerror = function(msg, src, lin, col, err) {
+      const srcName = src ? src.split('/').pop() : 'inline';
+      window._earlyLog(`Script error: ${msg} (${srcName}:${lin})`, 'err');
+    };
+  </script>
+
+  <!-- Bundled offline TensorFlow.js and TFLite WASM runtimes with defer for clean streaming -->
+  <script defer src="/vendor/tf.min.js" onerror="window._earlyLog('Failed to download /vendor/tf.min.js over Wi-Fi', 'err');"></script>
+  <script defer src="/vendor/tf-tflite.min.js" onerror="window._earlyLog('Failed to download /vendor/tf-tflite.min.js over Wi-Fi', 'err');"></script>
 
   <style>
     :root {
@@ -986,12 +1003,15 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html><html lang="en
       }
     ];
 
-    function log(msg, type = "info") {
+    let modelLoadAttempts = 0;
+    let modelInitScheduled = false;
+
+    function _appendLog(msg, type = "info", customTime = null) {
       const term = document.getElementById("terminal");
       if (!term) return;
       const d = document.createElement("div");
       d.className = "log-line";
-      const timeStr = new Date().toLocaleTimeString();
+      const timeStr = customTime || new Date().toLocaleTimeString();
       let tagHtml = `<span class="log-tag log-tag-info">INFO</span>`;
       if (type === "ok")   tagHtml = `<span class="log-tag log-tag-ok">OK</span>`;
       if (type === "err")  tagHtml = `<span class="log-tag log-tag-err">ERROR</span>`;
@@ -1002,56 +1022,133 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html><html lang="en
       term.scrollTop = term.scrollHeight;
     }
 
+    function log(msg, type = "info") {
+      // Drain early boot logs if any queued before DOM ready
+      if (window._bootLogs && window._bootLogs.length > 0) {
+        const queue = window._bootLogs.splice(0);
+        for (const item of queue) {
+          _appendLog(item.msg, item.kind, item.time);
+        }
+      }
+      _appendLog(msg, type);
+    }
+
+    function ensureScriptLoaded(src, checkFn, timeoutMs = 25000) {
+      return new Promise((resolve, reject) => {
+        if (checkFn()) {
+          resolve();
+          return;
+        }
+
+        const t0 = Date.now();
+        const checkInterval = setInterval(() => {
+          if (checkFn()) {
+            clearInterval(checkInterval);
+            resolve();
+          } else if (Date.now() - t0 > timeoutMs) {
+            clearInterval(checkInterval);
+            // If still missing after timeout, attempt direct script injection
+            log(`Script wait timeout for ${src}. Attempting direct script injection...`, "warn");
+            const s = document.createElement("script");
+            s.src = src + (src.includes("?") ? "&" : "?") + "t=" + Date.now();
+            s.onload = () => {
+              if (checkFn()) resolve();
+              else reject(new Error(`Script ${src} loaded but namespace export check failed`));
+            };
+            s.onerror = () => reject(new Error(`Failed to load ${src} over Wi-Fi`));
+            document.head.appendChild(s);
+          }
+        }, 300);
+      });
+    }
+
     async function initTFLite(retryCount = 0) {
       if (modelReady || isModelLoading) return;
       isModelLoading = true;
+      modelInitScheduled = false;
+      modelLoadAttempts = retryCount;
 
       const engineEl = document.getElementById("valEngine");
       if (engineEl) {
-        engineEl.innerText = "Loading model";
+        engineEl.innerText = "Loading runtime";
         engineEl.className = "v warn";
       }
 
       try {
-        log("Loading TFLite WASM runtime...");
+        log("Checking TensorFlow.js & TFLite WebAssembly runtimes...", "ai");
 
-        // Resolve TFLite API: try standalone global first, then tf namespace
+        // Wait for tf.min.js
+        await ensureScriptLoaded("/vendor/tf.min.js", () => typeof tf !== "undefined", 20000);
+
+        // Wait for tf-tflite.min.js
+        await ensureScriptLoaded("/vendor/tf-tflite.min.js", () => {
+          return (typeof tflite !== "undefined" && tflite.setWasmPath) ||
+                 (typeof tf !== "undefined" && tf.tflite && tf.tflite.setWasmPath);
+        }, 20000);
+
+        // Resolve TFLite API
         let tfliteApi = null;
         if (typeof tflite !== 'undefined' && tflite.setWasmPath) {
           tfliteApi = tflite;
-          tfliteApi.setWasmPath('/vendor/');
         } else if (typeof tf !== 'undefined' && tf.tflite && tf.tflite.setWasmPath) {
           tfliteApi = tf.tflite;
           await tf.setBackend('wasm');
           await tf.ready();
-          tfliteApi.setWasmPath('/vendor/');
         } else {
-          throw new Error("TFLite runtime not loaded. Check /vendor/tf.min.js and /vendor/tf-tflite.min.js");
+          throw new Error("TFLite runtime not loaded. Verify /vendor/tf-tflite.min.js");
         }
+
+        tfliteApi.setWasmPath('/vendor/');
+        log("TFLite WASM runtime initialized.", "ok");
 
         if (engineEl) {
           engineEl.innerText = "Loading model";
           engineEl.className = "v warn";
         }
 
-        tfliteModel = await tfliteApi.loadTFLiteModel('/krishi_drishti_model.tflite');
+        log("Streaming model weights: /krishi_drishti_model.tflite...", "ai");
+        const modelRes = await fetch('/krishi_drishti_model.tflite?v=round9', { cache: 'no-cache' });
+        if (!modelRes.ok) throw new Error(`HTTP ${modelRes.status} (${modelRes.statusText}) loading model file`);
+        const modelBuffer = await modelRes.arrayBuffer();
+
+        // Validate FlatBuffer magic header ('TFL3' at offset 4)
+        if (modelBuffer.byteLength < 8) {
+          throw new Error(`Corrupted model payload: only ${modelBuffer.byteLength} bytes received`);
+        }
+        const bView = new Uint8Array(modelBuffer);
+        const magic = String.fromCharCode(bView[4], bView[5], bView[6], bView[7]);
+        if (magic !== 'TFL3') {
+          throw new Error(`Invalid model header: expected 'TFL3', got '${magic}' (${modelBuffer.byteLength} bytes). Payload was not uncompressed FlatBuffer.`);
+        }
+
+        tfliteModel = await tfliteApi.loadTFLiteModel(modelBuffer);
         modelReady = true;
         isModelLoading = false;
+        modelInitScheduled = false;
 
         if (engineEl) {
           engineEl.innerText = "Ready";
           engineEl.className = "v good";
         }
-        log("Model loaded. Ready for inference.", "ok");
+        log("Neural engine ready for offline leaf diagnosis.", "ok");
       } catch (err) {
-        isModelLoading = false;
         if (engineEl) {
           engineEl.innerText = "Unavailable";
           engineEl.className = "v bad";
         }
-        log(`Model load failed: ${err.message}. Retrying...`, "err");
+        log(`Model load failed: ${err.message}`, "err");
+
         if (retryCount < 3) {
-          setTimeout(() => initTFLite(retryCount + 1), 3000);
+          const delaySec = (retryCount + 1) * 4;
+          log(`Retrying engine initialization in ${delaySec}s (attempt ${retryCount + 2}/4)...`, "warn");
+          modelInitScheduled = true;
+          setTimeout(() => {
+            isModelLoading = false;
+            initTFLite(retryCount + 1);
+          }, delaySec * 1000);
+        } else {
+          isModelLoading = false;
+          log("Automated retries exhausted. Check Wi-Fi connection to KRISHI-DRISHTI, then tap Re-check.", "err");
         }
       }
     }
@@ -1150,13 +1247,19 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html><html lang="en
 
     async function pollMeshNow() {
       log("Checking ESP32-CAM hardware and SD slot...");
+      if (!modelReady && !isModelLoading) {
+        log("Manual trigger: resetting model load sequence...", "ai");
+        modelLoadAttempts = 0;
+        modelInitScheduled = false;
+        initTFLite(0);
+      }
       await checkCameraForNewScan();
     }
 
     async function checkCameraForNewScan() {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 750);
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
 
         const res = await fetch(CAMERA_STATUS_URL, { signal: controller.signal });
         clearTimeout(timeoutId);
@@ -1190,7 +1293,7 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html><html lang="en
           if (sdDetail) {
             sdDetail.innerText = "Camera filesystem active. Shutter scans are saved to /scans/ on the card.";
           }
-          if (!modelReady && !isModelLoading) {
+          if (!modelReady && !isModelLoading && !modelInitScheduled && modelLoadAttempts < 3) {
             initTFLite(0);
           }
         } else {
@@ -1400,7 +1503,7 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html><html lang="en
       // skin chromaticity rule, but smooth human skin does not show the
       // lesion/vein texture. Exempt such frames from the skin reject and let
       // the OE-trained model decide (it withholds genuinely unknown frames).
-      // v2.5.1.1: threshold lowered 0.30 -> 0.25 (calibrated: people seeds stay
+      // v2.5.1: threshold lowered 0.30 -> 0.25 (calibrated: people seeds stay
       // 100% rejected because smooth skin fails grad>18 & lum<135; blight
       // frames 40/40 pass; partial-necrosis field frames at nec 0.267-0.285
       // that were missed at 0.30 now reach the model).
@@ -1712,31 +1815,35 @@ const char AI_SERVER_HTML[] PROGMEM = R"rawliteral(<!DOCTYPE html><html lang="en
     // Auto-initialize TFLite and the hardware watchdog on page load
     function initHardwareWatchdog() {
       checkCameraForNewScan();
-      // Continuous background hardware polling every 1200 ms while in standby
+      // Continuous background hardware polling every 1500 ms while in standby
       setInterval(() => {
         if (!isRunning) {
+          // If model or runtime is currently streaming over Wi-Fi, back off to avoid TCP contention
+          if (isModelLoading) return;
           checkCameraForNewScan();
         }
-      }, 1200);
+      }, 1500);
     }
 
     if (document.readyState === 'loading') {
       window.addEventListener("DOMContentLoaded", () => {
-        initTFLite(0);
         initHardwareWatchdog();
+        initTFLite(0);
       });
     } else {
-      initTFLite(0);
       initHardwareWatchdog();
+      initTFLite(0);
     }
     window.addEventListener("load", () => {
-      if (!modelReady && typeof tflite !== 'undefined') initTFLite(0);
+      if (!modelReady && !isModelLoading && !modelInitScheduled) {
+        initTFLite(0);
+      }
       checkCameraForNewScan();
     });
   </script>
 </body>
 </html>
-</html>)rawliteral";
+)rawliteral";
 
 // --------------------------------------------------
 // EMBEDDED LEAF PHOTO GALLERY & VIEWFINDER (SERVED AT /gallery)
@@ -2379,14 +2486,32 @@ void handleStaticFile() {
     server.send(503, "text/plain", "SD offline - Insert MicroSD card in ESP32-CAM slot");
     return;
   }
+
+  // Fast transparent GZIP acceleration ONLY for scripts, wasm, and text (never for raw binary tflite model)
+  bool allowGz = path.endsWith(".js") || path.endsWith(".wasm") || path.endsWith(".json") || path.endsWith(".html") || path.endsWith(".css");
+  String pathGz = path + ".gz";
+  if (allowGz && server.hasHeader("Accept-Encoding") && server.header("Accept-Encoding").indexOf("gzip") >= 0 && SD_MMC.exists(pathGz.c_str())) {
+    File f = SD_MMC.open(pathGz.c_str(), FILE_READ);
+    server.sendHeader("Access-Control-Allow-Origin", "*");
+    server.sendHeader("Cache-Control", "public, max-age=86400");
+    // Note: streamFile() detects .gz extension on f.name() and sends Content-Encoding: gzip automatically.
+    // Do NOT call server.sendHeader("Content-Encoding", "gzip") here to prevent duplicate headers in Chrome.
+    server.streamFile(f, contentType);
+    f.close();
+    Serial.printf("[HTTP] Served GZIP: %s\n", pathGz.c_str());
+    return;
+  }
+
   if (SD_MMC.exists(path.c_str())) {
     File f = SD_MMC.open(path.c_str(), FILE_READ);
     server.sendHeader("Access-Control-Allow-Origin", "*");
     server.sendHeader("Cache-Control", "public, max-age=86400");
     server.streamFile(f, contentType);
     f.close();
+    Serial.printf("[HTTP] Served RAW: %s\n", path.c_str());
     return;
   }
+  Serial.printf("[HTTP 404] Not Found: %s\n", path.c_str());
   server.send(404, "text/plain", "404 Not Found");
 }
 
@@ -2422,6 +2547,9 @@ void setup() {
   Serial.println(WiFi.softAPIP());
 
   // Web routes
+  const char *headerKeys[] = {"Accept-Encoding", "User-Agent"};
+  server.collectHeaders(headerKeys, 2);
+
   server.on("/", HTTP_GET, handleRoot);
   server.on("/ai", HTTP_GET, handleRoot);
   server.on("/gallery", HTTP_GET, handleGallery);

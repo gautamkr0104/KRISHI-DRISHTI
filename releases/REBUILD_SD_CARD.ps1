@@ -58,7 +58,7 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 "=== verify deployed model ==="
 $h = (Get-FileHash "$DriveLetter`:\krishi_drishti_model.tflite" -Algorithm SHA256).Hash
 if ($h -ne $ModelSha) { throw "MODEL HASH MISMATCH: $h (expected $ModelSha)" }
-"model sha256 OK: $($h.Substring(0,16)) (round-8 deployed build)"
+"model sha256 OK: $($h.Substring(0,16)) (round-9 deployed build)"
 
 "=== card root ==="
 Get-ChildItem "$DriveLetter`:\" -Force | ForEach-Object { "$($_.Mode)  $($_.Length)  $($_.Name)" }
