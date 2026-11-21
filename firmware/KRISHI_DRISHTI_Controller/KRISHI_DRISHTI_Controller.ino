@@ -197,8 +197,9 @@ void renderPage0_ReadyToScan() {
   if (dhtConnected) {
     char envBuf[24];
     const char* rStr = "Safe";
-    if (microclimateTracker.getRiskLevel() == RISK_LEVEL_HIGH_LATE) rStr = "Blight!";
+    if (microclimateTracker.getRiskLevel() == RISK_LEVEL_HIGH_LATE || microclimateTracker.getRiskLevel() == RISK_LEVEL_INCUBATING_LATE) rStr = "Blight!";
     else if (microclimateTracker.getRiskLevel() == RISK_LEVEL_MODERATE_EARLY) rStr = "Warm";
+    else if (microclimateTracker.getRiskLevel() == RISK_LEVEL_MONITOR) rStr = "Monitor";
     snprintf(envBuf, sizeof(envBuf), "%.0fC | %.0f%%RH [%s]", currentTemp, currentHum, rStr);
     display.print(envBuf);
   } else {
@@ -522,6 +523,7 @@ void ensureWiFiConnected() {
       WiFi.mode(WIFI_OFF);
       delay(100);
       WiFi.mode(WIFI_STA);
+      WiFi.config(WAND_STATIC_IP, WAND_GATEWAY, WAND_SUBNET, WAND_DNS);
       WiFi.begin(AP_SSID, AP_PASS);
       WiFi.setTxPower(WIFI_POWER_8_5dBm);
       wifiRetryCount = 0;
@@ -709,7 +711,7 @@ void triggerRealScan() {
     captureUrl += "?temp=" + String(currentTemp, 1) + "&hum=" + String(currentHum, 1);
   }
   http.begin(captureUrl);
-  http.setTimeout(12000); // 12s timeout accommodates 5s camera flash cycle + SD write
+  http.setTimeout(6000); // 6s timeout accommodates fast camera flash cycle + SD write
   int httpCode = http.GET();
 
   if (httpCode != 200) {
@@ -856,6 +858,7 @@ void setup() {
   Serial.println("[INIT] Step 2: Wi-Fi Radio Bringup..."); Serial.flush();
   WiFi.mode(WIFI_STA);
   Serial.println("[INIT] Wi-Fi Mode: STA initialized."); Serial.flush();
+  WiFi.config(WAND_STATIC_IP, WAND_GATEWAY, WAND_SUBNET, WAND_DNS);
   Serial.printf("[WIFI] Connecting to SoftAP: '%s'...\n", AP_SSID); Serial.flush();
   WiFi.begin(AP_SSID, AP_PASS);
   WiFi.setTxPower(WIFI_POWER_8_5dBm);

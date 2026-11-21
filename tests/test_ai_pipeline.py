@@ -589,8 +589,10 @@ class TestESP32RestCycleSimulation(unittest.TestCase):
         """
         from ai_engine.krishi_ai_daemon import KrishiAIDaemon
 
-        # Synthetic leaf image (rich foliar green: R=50, G=150, B=50)
-        leaf_img = Image.new("RGB", (160, 160), color=(50, 150, 50))
+        # Synthetic leaf image with realistic foliar venation / texture (edge energy >= 3.2)
+        np.random.seed(42)
+        leaf_arr = np.clip(np.full((160, 160, 3), (50, 150, 50), dtype=np.int16) + np.random.randint(-25, 25, (160, 160, 3)), 0, 255).astype(np.uint8)
+        leaf_img = Image.fromarray(leaf_arr)
         daemon = object.__new__(KrishiAIDaemon)
 
         # 1. Production UINT8 branch: strictly bounded to [0, 255] and np.uint8 dtype

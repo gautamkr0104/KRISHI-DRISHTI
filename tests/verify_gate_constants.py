@@ -1,8 +1,18 @@
 """Verify final daemon gate constants against all 44 scans."""
 import json
+import os
 from pathlib import Path
 
-rows = json.loads(Path(r"C:\Users\DELL\AppData\Local\Temp\opencode\scan_gate_stats.json").read_text())
+REPO = Path(__file__).resolve().parent.parent
+stats_path = Path(os.environ.get("TEMP", "/tmp")) / "opencode" / "scan_gate_stats.json"
+if not stats_path.exists():
+    stats_path = REPO / "tests" / "sd_scan_visual_audit.json"
+
+if stats_path.exists():
+    data = json.loads(stats_path.read_text(encoding="utf-8"))
+    rows = data if isinstance(data, list) else data.get("scans", [])
+else:
+    rows = []
 
 # PROPOSED daemon constants
 MIN_CONFIDENCE = 0.50

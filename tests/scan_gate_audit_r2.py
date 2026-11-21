@@ -27,8 +27,11 @@ CLASS = ["Tomato___Late_blight", "Tomato___Early_blight", "Tomato___healthy",
          "Potato___Late_blight", "Potato___Early_blight", "Potato___healthy"]
 
 rows = []
+archive_dir = REPO / "tests" / "sd_card_scans_archive_r3"
 for n in range(1, 45):
     p = Path(f"E:/scan_{n:06d}.jpg")
+    if not p.exists():
+        p = archive_dir / f"scan_{n:06d}.jpg"
     if not p.exists():
         continue
     arr = np.asarray(Image.open(p).convert("RGB").resize((128, 128), Image.BILINEAR), dtype=np.float32)

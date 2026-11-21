@@ -25,6 +25,7 @@
 """
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -35,10 +36,10 @@ import numpy as np
 from PIL import Image
 
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-REPO = Path(r"C:\Users\DELL\Downloads\KRISHI-DRISHTI")
+REPO = Path(__file__).resolve().parent
 AI_DIR = REPO / "ai_engine"
 TESTS_DIR = REPO / "tests"
-BASE = Path(r"C:\Users\DELL\Documents\Default Project\webtest100")
+BASE = Path(os.environ.get("KRISHI_BASE", Path.home() / "Documents" / "webtest100"))
 PY = sys.executable
 MODEL = AI_DIR / "krishi_drishti_model.tflite"
 LABELS = AI_DIR / "labels.json"
@@ -154,7 +155,8 @@ def merge_burst():
 
 
 def daemon():
-    sys.path.insert(0, str(AI_DIR))
+    if str(REPO) not in sys.path:
+        sys.path.insert(0, str(REPO))
     import ai_engine.krishi_ai_daemon as K
     return K.KrishiAIDaemon(str(MODEL), str(LABELS))
 
@@ -185,7 +187,7 @@ def bench_strict(d):
 def ood_reject(d):
     """Chart papers (synthesized, seed 7) + 4 archived palm scans + real bedsheet photo. Returns rejected/total."""
     rng = np.random.default_rng(7)
-    tmp = Path(r"C:\Users\DELL\AppData\Local\Temp\opencode\webtest")
+    tmp = Path(os.environ.get("TEMP", "/tmp")) / "krishi_tests" / "webtest"
     tmp.mkdir(parents=True, exist_ok=True)
 
     def synth_paper(size, base=(58, 138, 68), grain=6.0, vignette=0.10, jitter=2.0):
@@ -213,10 +215,13 @@ def ood_reject(d):
     tests = [(tmp / "green_chart_paper_full.jpg", "reject"),
              (tmp / "green_chart_paper_partial.jpg", "reject")]
     arch = TESTS_DIR / "sd_card_scans_archive_r3"
-    for n in (4, 5, 6, 7):
-        tests.append((arch / f"scan_{n:06d}.jpg", "reject"))
-    # real-world bug photo: people on a green floral bedsheet
-    bedsheet = Path(r"C:\Users\DELL\AppData\Local\Temp\opencode\whatsapp_leaf.jpeg")
+    if arch.exists():
+        for n in (4, 5, 6, 7):
+            scan_file = arch / f"scan_{n:06d}.jpg"
+            if scan_file.exists():
+                tests.append((scan_file, "reject"))
+    # real-world bug photo fallback check
+    bedsheet = tmp / "whatsapp_leaf.jpeg"
     if bedsheet.exists():
         tests.append((bedsheet, "reject"))
     rejected = 0

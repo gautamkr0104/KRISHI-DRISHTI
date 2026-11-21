@@ -10,7 +10,11 @@ echo.
 set PORT=COM5
 if not "%~1"=="" set PORT=%~1
 
-set ESPTOOL="C:\Users\DELL\AppData\Local\Arduino15\packages\esp32\tools\esptool_py\5.3.1\esptool.exe"
+set ESPTOOL="%LOCALAPPDATA%\Arduino15\packages\esp32\tools\esptool_py\5.3.1\esptool.exe"
+if not exist %ESPTOOL% (
+    where esptool.exe >nul 2>nul
+    if %ERRORLEVEL% equ 0 set ESPTOOL=esptool.exe
+)
 set BUILD_DIR=firmware\KRISHI_DRISHTI_Controller\build\esp32.esp32.esp32
 
 if not exist %ESPTOOL% (

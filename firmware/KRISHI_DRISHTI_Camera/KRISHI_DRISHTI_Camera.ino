@@ -2232,18 +2232,19 @@ void handleCapture() {
 
   diagnosisReady = false; // Reset diagnosis flag for newly captured leaf
 
-  // 3. Timed Flash Illumination & Capture Sequence
-  // Farmer requests: Flash lights up immediately -> 2s steady hold -> take photo -> 2s post-hold -> flash off (~5s total)
+  // 3. Timed Flash Illumination & Capture Sequence (Optimized pulse: ~200ms settling, immediate cutoff to prevent thermal/brownout stress)
   digitalWrite(FLASH_LED_PIN, HIGH);
-  Serial.println("[CAPTURE] Flash illuminated. Steadying aim & sensor exposure settling (2000 ms)...");
-  delay(2000);
+  Serial.println("[CAPTURE] Flash illuminated. Settling sensor exposure (200 ms)...");
+  delay(200);
 
   // Flush any pre-exposure frame so sensor AEC/AGC adapts to full flash illumination
   camera_fb_t* stale_fb = esp_camera_fb_get();
   if (stale_fb) esp_camera_fb_return(stale_fb);
 
   camera_fb_t* fb = esp_camera_fb_get();
-  Serial.println("[CAPTURE] Frame captured.");
+  // Turn flash OFF immediately after capture to eliminate thermal & power rail stress
+  digitalWrite(FLASH_LED_PIN, LOW);
+  Serial.println("[CAPTURE] Frame captured. Flash turned OFF.");
 
   if (!fb) {
     digitalWrite(FLASH_LED_PIN, LOW);
@@ -2297,11 +2298,7 @@ void handleCapture() {
 
   esp_camera_fb_return(fb);
 
-  // 6. Hold flash ON post-capture for roughly 2.5 seconds (Total illumination ~5.0s)
-  Serial.println("[CAPTURE] Post-capture flash hold (2500 ms)...");
-  delay(2500);
-  digitalWrite(FLASH_LED_PIN, LOW);
-  Serial.println("[CAPTURE] Flash OFF. Illumination cycle complete (~5s total).");
+  // Flash cycle completed during capture - no post-capture delay needed
 
   String body = "{\"status\":\"success\",\"scan_id\":" + String(scanCounter);
   body += ",\"filename\":\"" + String(filename) + "\",\"bytes\":" + String(lastRamFrameLen);

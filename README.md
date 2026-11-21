@@ -25,16 +25,16 @@ Instead of relying on cloud APIs or expensive 5G connectivity, KRISHI-DRISHTI us
 |                        KRISHI-DRISHTI SYSTEM TRIAD                       |
 |                                                                          |
 |  [ Handheld Wand ]      ==== Wi-Fi ====>    [ AI-Thinker ESP32-CAM ]     |
-|  ESP32 DevKit V1                            5MP OV5640 Sensor + Flash    |
+|  ESP32 DevKit V1                            OV2640 / OV5640 Sensor+Flash |
 |  SSD1306 OLED Display                       8GB MicroSD Storage (SD_MMC) |
 |  DHT11 Canopy Sensor                        SoftAP: 192.168.4.1          |
 |  1 Active-Low Button (GPIO 27)                        ||                 |
 |         ^                                             || (Local Wi-Fi)   |
 |         ||                                            \/                 |
 |         +=========== Diagnosis Payload ========= [ Pocket AI Engine ]   |
-|                      synced in < 15 ms           Any Phone (Android/iOS) |
-|                                                  MobileNetV3 WASM Model  |
-|                                                  100% Offline (No Data)  |
+|                      synced via local HTTP mesh      Any Phone (Android) |
+|                      (1s poll, <15ms payload)        MobileNetV3 WASM/py |
+|                                                      100% Offline        |
 +--------------------------------------------------------------------------+
 ```
 
@@ -69,9 +69,11 @@ KRISHI-DRISHTI/
 ├── .gitignore                      # Git ignore rules for Arduino & Python
 ├── firmware/
 │   ├── KRISHI_DRISHTI_Camera/
-│   │   └── KRISHI_DRISHTI_Camera.ino       # Camera unit firmware v2.2 (Write Verification + SDMMC Static Serving)
+│   │   └── KRISHI_DRISHTI_Camera.ino       # Camera unit firmware v2.5.1 (SDMMC + Static Serving)
 │   └── KRISHI_DRISHTI_Controller/
-│       └── KRISHI_DRISHTI_Controller.ino   # Controller wand firmware v2.2 (Real Wi-Fi + OLED + DHT11)
+│       ├── KRISHI_DRISHTI_Controller.ino   # Controller wand firmware v2.5.1 (Wi-Fi + OLED + DHT11)
+│       ├── MicroclimateTracker.h           # Canopy risk epidemiology tracker
+│       └── MicroclimateTracker.cpp         # Accumulated microclimate hours state machine
 ├── ai_engine/
 │   ├── krishi_drishti_model.tflite # Float16 Quantized MobileNetV3-Small (2.03 MB, Float32 I/O)
 │   ├── krishi_ai_server.html       # Offline browser AI engine & live telemetry dashboard
@@ -89,13 +91,13 @@ KRISHI-DRISHTI/
 │   ├── run_all_tests.py            # Master cross-platform test runner
 │   ├── benchmark_60_specimens_report.json # Full 60-specimen empirical benchmark results
 │   └── tflite_model_verification_audit.json # Cryptographic audit log (SHA-256, tensor shapes, latencies)
-├── Run_Tests.bat                   # 1-Click test execution batch script for Windows
-├── Launch_NIF_Assistant.bat        # 1-Click launch for NIF patent documentation
+├── Flash_ESP32_CAM.bat             # 1-Click flasher for ESP32-CAM
+├── Flash_ESP32_Controller.bat      # 1-Click flasher for ESP32 Controller
+├── Start_AI_Server.bat             # Local server launcher for browser AI engine
 └── docs/
     ├── System_Architecture_Report.md# In-depth architectural & pathological specification
     ├── Wiring_Schematic_Pinout.md  # Detailed circuit schematics and pin connection tables
-    ├── Two_Leaf_Repeatability_Demonstration_Protocol.md # 50-condition multi-factor physical demo protocol
-    └── NIF_Patent_Application_Docket.md # Formal patent documentation (Form 1, 2, 8, 9, 18)
+    └── Two_Leaf_Repeatability_Demonstration_Protocol.md # Physical demonstration protocol
 ```
 
 ---
