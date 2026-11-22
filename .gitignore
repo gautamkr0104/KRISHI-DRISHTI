@@ -48,6 +48,9 @@ templates/
 *STUDENT_PROJECT_REPORT*
 *Field_Survey*
 *Exhibition*
+*Evidence_Dossier*
+*Mentor_Recommendation*
+.vscode/
 ENVIRONMENT.json
 AGENTS.md
 CLAUDE.md
