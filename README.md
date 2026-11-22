@@ -25,7 +25,7 @@ Instead of relying on cloud APIs or expensive 5G connectivity, KRISHI-DRISHTI us
 |                        KRISHI-DRISHTI SYSTEM TRIAD                       |
 |                                                                          |
 |  [ Handheld Wand ]      ==== Wi-Fi ====>    [ AI-Thinker ESP32-CAM ]     |
-|  ESP32 DevKit V1                            OV2640 2MP Sensor + Flash    |
+|  ESP32 DevKit V1                            OV2640 / OV5640 Sensor+Flash |
 |  SSD1306 OLED Display                       8GB MicroSD Storage (SD_MMC) |
 |  DHT11 Canopy Sensor                        SoftAP: 192.168.4.1          |
 |  1 Active-Low Button (GPIO 27)                        ||                 |
@@ -139,7 +139,7 @@ Trained on the **Dual-Domain Pure Solanaceae Corpus** (7,710 total training reco
 1. **Pathogen Match $\\neq$ Exact Classification:** *Phytophthora infestans* incites Late Blight in both Tomato and Potato. When a tomato late blight leaf is predicted as potato late blight, the biological pathogen family matches, but the discrete 6-class prediction is incorrect. Exact 6-class accuracy (53/60 = 88.33%) is strictly reported separately from pathogen correlation (54/60 = 90.00%).
 2. **Optical Shroud as an Image Acquisition Mechanism:** The 3D-printed 8–10 cm cylindrical shroud stabilizes macro focal distance and suppresses oblique shadows, but it does **not** serve as an out-of-distribution biological filter. Non-crop alien leaves (e.g., tea foliage) can still satisfy foliar ratio checks and require multi-modal uncertainty gating.
 3. **Microclimate Advisory vs. Proof of Absence:** The DHT11 telemetry provides a simplified environmental risk advisory (based on Wallin / Hyre microclimate principles). An instantaneous $\\text{RH} < 85\%$ suppresses unneeded chemical sprays, but does not biologically prove pathogen absence.
-4. **Physical Field Validation Milestone:** The ultimate benchmark of KRISHI-DRISHTI is testing on images captured directly by the ESP32-CAM OV2640 wand in local agricultural plots (protocol defined in `tests/hardware_field_captures/FIELD_VALIDATION_PROTOCOL.md`).
+4. **Physical Field Validation Milestone:** The ultimate benchmark of KRISHI-DRISHTI is testing on images captured directly by the ESP32-CAM OV5640 wand in local agricultural plots (protocol defined in `tests/hardware_field_captures/FIELD_VALIDATION_PROTOCOL.md`).
 
 ---
 
