@@ -132,7 +132,7 @@ def main():
             test_crop_hashes.append({"fn": s["filename"], "dhashes": dhashes, "sha256": s["sha256"]})
 
     # 2. Assemble Pure Dual-Domain Training Dataset with Hard Assertions
-    pv_train_dir = Path(r"C:\Users\DELL\.cache\kagglehub\datasets\vipoooool\new-plant-diseases-dataset\versions\2\New Plant Diseases Dataset(Augmented)\New Plant Diseases Dataset(Augmented)\train")
+    pv_train_dir = Path.home() / ".cache" / "kagglehub" / "datasets" / "vipoooool" / "new-plant-diseases-dataset" / "versions" / "2" / "New Plant Diseases Dataset(Augmented)" / "New Plant Diseases Dataset(Augmented)" / "train"
     if not pv_train_dir.exists():
         pv_train_dir = REPO_ROOT / "ai_engine" / "PlantVillage_Train"
 

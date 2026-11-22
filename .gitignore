@@ -51,4 +51,5 @@ templates/
 ENVIRONMENT.json
 AGENTS.md
 CLAUDE.md
+.cursorrules
 Build_All_Docs.bat

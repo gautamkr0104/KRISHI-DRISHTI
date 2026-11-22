@@ -64,7 +64,7 @@ def main():
 
     holdout_hashes = set(item["sha256"] for item in test_specimens)
 
-    plantdoc_dir = Path(r"C:\Users\DELL\.cache\PlantDoc_Solanaceae")
+    plantdoc_dir = Path.home() / ".cache" / "PlantDoc_Solanaceae"
     if not plantdoc_dir.exists():
         plantdoc_dir = REPO_ROOT / "ai_engine" / "PlantDoc_Solanaceae"
 

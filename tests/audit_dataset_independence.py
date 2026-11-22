@@ -106,7 +106,7 @@ def main():
         assert count == 10, f"Class {c} has {count} specimens, expected 10"
 
     # Training and Validation Collision Scan
-    kaggle_base = Path(r"C:\Users\DELL\.cache\kagglehub\datasets\vipoooool\new-plant-diseases-dataset\versions\2\New Plant Diseases Dataset(Augmented)\New Plant Diseases Dataset(Augmented)")
+    kaggle_base = Path.home() / ".cache" / "kagglehub" / "datasets" / "vipoooool" / "new-plant-diseases-dataset" / "versions" / "2" / "New Plant Diseases Dataset(Augmented)" / "New Plant Diseases Dataset(Augmented)"
     kaggle_available = kaggle_base.exists()
 
     exact_train_matches = []
