@@ -1,16 +1,18 @@
-# Arduino IDE & Build Artifacts
+# Arduino IDE & ESP-IDF build artifacts
 *.bin
 *.hex
 *.elf
 build/
 .arduino15/
 
-# Python & AI Artifacts
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
 venv/
 .env
+
+# Training checkpoints (regenerate with ai_engine/train_model*.py)
 *.h5
 *.keras
 *.ckpt
@@ -23,36 +25,17 @@ ai_engine/krishi_drishti_model_round*.tflite
 Thumbs.db
 Desktop.ini
 
-# Competition / Temporary drafts
-*draft*
-
-
+# Local scratch work
 scratch/
+*draft*
+*.bak
 tests/internet_test_images/
 ai_engine/_web10k_feature_cache/
 ai_engine/round8_harvest/
 
-*.bak
-
-# Precompiled release archives (hosted on GitHub Releases)
-releases/*.zip
-uploading_documents/*.zip
+# Release archives (distributed via GitHub Releases)
 *.zip
 
-# Archive & Internal Submission Documents
-uploading_documents/
-templates/
-*.pptx
-*NOC*
-*projreport*
-*STUDENT_PROJECT_REPORT*
-*Field_Survey*
-*Exhibition*
-*Evidence_Dossier*
-*Mentor_Recommendation*
+# Local editor / tooling state
 .vscode/
 ENVIRONMENT.json
-AGENTS.md
-CLAUDE.md
-.cursorrules
-Build_All_Docs.bat

@@ -97,24 +97,25 @@ The 7,710 training records reconcile into exactly 6,965 unique SHA-256 image has
 2. **Canopy Data Augmentation:** Real-time affine transformations (`RandomFlip`, `RandomRotation(0.12)`, `RandomZoom(0.08)`, `RandomContrast(0.08)`) simulating field flutter and outdoor sun glare.
 3. **Stage 1 (Head Warmup):** 2 epochs with frozen backbone using Adam ($	ext{lr} = 10^{-3}$), training dense classification layer with Dropout (0.25).
 4. **Stage 2 (Deep Fine-Tuning):** 2 epochs unfreezing top 25 convolutional layers ($	ext{lr} = 10^{-4}$) to adapt high-level visual representations directly to foliar lesions.
-5. **Float16 Quantization:** Post-Training Quantization (PTQ) reducing weights to IEEE 754 half-precision float16 (reducing model footprint from 4.02 MB to **2.03 MB** / 2,123,856 bytes, SHA-256: `be71ededc29f19f69ab98b63bebf281c6a1d88f468b6dc1a2a2dac655f406aaa`), with standard Float32 input/output interfaces (`[1, 128, 128, 3]` raw pixels and `[1, 6]` probabilities with built-in Softmax), achieving **3.94 ms** inference on host CPU reference interpreter (benchmark mean: **4.94 ms** with XNNPACK; target ~12–15 ms on smartphone mobile CPU engineering estimate, budget < 40 ms).
+5. **Float16 Quantization:** Post-Training Quantization (PTQ) reduces weights to IEEE 754 half-precision float16 (**2.03 MB** / 2,123,856 bytes for the shipped model, SHA-256: `a2a4c9f6134ec0de4b7c0654ce367a19afd86d730942d754eea5ab2a96186404`), with standard Float32 input/output interfaces (`[1, 128, 128, 3]` raw pixels and `[1, 6]` probabilities with built-in Softmax). Measured inference latency is **5.57 ms mean** on the host-PC CPU reference interpreter with XNNPACK across the 60-specimen benchmark; mobile-edge latency has not been measured on device.
 
 ### 6.3 Empirical Performance Metrics
 | Metric | Benchmark Result | Practical Agricultural Significance |
 | :--- | :--- | :--- |
-| **Training Convergence Accuracy** | **91.80%** | Robust feature representation on diverse foliar lesions |
-| **Validation Set Accuracy** | **88.74%** | Evaluated on 2,850 unseen independent validation images |
-| **Validation Macro F1 Score** | **0.8863** | Balanced performance across all 6 Solanaceae categories |
-| **Potato Early Blight F1** | **0.9665** | Precision: 98.09%, Recall: 95.26% |
-| **Potato Healthy Tissue F1** | **0.9824** | Precision: 98.46%, Recall: 98.03% |
-| **Tomato Healthy Tissue F1** | **0.9531** | Precision: 91.57%, Recall: 99.38% |
-| **60-Specimen Botanical Benchmark** | **88.33% Strict / 92.98% Accepted** | Strict 6-class exact match: 53/60 (88.33%); Accepted predictions: 53/57 (92.98% coverage, 3 gated UNCERTAIN; 54/60 90.0% pathogen match reported separately) |
-| **PlantDoc Held-Out Unseen Test Partition** | **33.33% Raw $
-ightarrow$ 55.36% Accepted** | Hash-level 80/20 holdout manifest (`PLANTDOC_HOLDOUT_MANIFEST.json`). Genuinely unseen test partition (93 unique images, 100% excluded from training, 0 duplicate hashes): 33.33% raw accuracy (31/93), 55.36% diagnostic accuracy on accepted frames (31/56, 37 frames gated UNCERTAIN); Full domain adaptation corpus (487 images): 43.12% raw (210/487) / 66.25% accepted (210/317) |
-| **Field Night-Flash & OOD Audit** | **1/6 In-Domain (16.7%) / 3/4 OOD Gated (75.0%)** | Real unshielded torch flash creates specular central hotspots confused with necrotic margins (4/6 misdiagnosed). 3/4 alien non-crop leaves (Hibiscus) safely intercepted by dark-void gating |
+| **Validation Set Accuracy** | **88.74%** | 2,529 / 2,850 held-out validation images (`ai_engine/model_evaluation_report.json`) |
+| **Validation Macro F1 Score** | **0.8863** | Unweighted mean of the six per-class F1 scores below |
+| **Tomato Late Blight** | P 92.15% / R 65.87% / **F1 0.7683** | Weakest class; roughly a third of late-blight tissue is predicted as potato late blight |
+| **Tomato Early Blight** | P 94.96% / R 74.58% / **F1 0.8355** | Confused mainly with tomato late blight and healthy tissue |
+| **Tomato Healthy** | P 91.57% / R 99.38% / **F1 0.9531** | High recall; 20 healthy frames offered to blight classes |
+| **Potato Late Blight** | P 68.92% / R 98.76% / **F1 0.8119** | High recall, low precision; absorbs tomato late-blight frames |
+| **Potato Early Blight** | P 98.09% / R 95.26% / **F1 0.9665** | Most reliable blight class |
+| **Potato Healthy** | P 98.46% / R 98.03% / **F1 0.9824** | Most reliable class overall |
+| **60-Specimen Botanical Benchmark** | **95.00% Strict / 98.28% Accepted** | 57/60 strict 6-class match; 57/58 accepted-frame accuracy (96.67% coverage, 2 frames gated UNCERTAIN); pathogen-family match 57/60 reported separately |
+| **PlantDoc Held-Out Unseen Test Partition** | **22.58% Raw $ightarrow$ 60.00% Accepted** | Hash-level holdout manifest (`PLANTDOC_HOLDOUT_MANIFEST.json`). 93 unseen images (100% excluded from training, 0 duplicate hashes): 21/93 raw accuracy, 21/35 accepted-frame accuracy, 58 frames gated UNCERTAIN; full adaptation corpus (487 images): 32.44% raw (158/487) / 73.49% accepted (158/215) |
+| **Field Night-Flash & OOD Audit** | **1/6 In-Domain (16.7%) / 4/4 OOD Gated (100%)** | Unshielded torch flash creates specular central hotspots confused with necrotic margins (5/6 misdiagnosed or gated). All 4 alien non-crop leaves (Hibiscus) safely intercepted by dark-void gating |
 | **Exploratory Open-Web Specimens** | **15 Wikimedia Commons Images** | Evaluated on unencountered internet photography. Demonstrates shadow susceptibility on healthy potato and high-confidence false acceptance on alien tea leaf (87.0%) |
 | **Model Size (Quantized TFLite)** | **2.03 MB (2,123,856 bytes)** | Universal: Fully cached in RAM on any low-RAM smartphone (1GB+ RAM, Android/iOS) |
-| **Edge Inference Latency** | **4.94 ms Mean (Host CPU Reference)** | Benchmark mean: 4.94 ms on Host CPU (Intel i5 with XNNPACK, range: 4.43–5.33 ms); Target Mobile Edge: ~12–15 ms (Tested on Cortex-A55 baseline, budget < 40 ms) |
+| **Edge Inference Latency** | **5.57 ms Mean (Host CPU Reference)** | 60-specimen benchmark mean on host CPU (Intel i5 with XNNPACK), `tests/benchmark_60_specimens_report.json`; mobile-edge latency not yet measured on device |
 
 ### 6.4 Scientific Uncertainty & Plausibility Gating
 To prevent misleading predictions when pointed at bare soil, weeds, or hands:
@@ -127,7 +128,7 @@ To prevent misleading predictions when pointed at bare soil, weeds, or hands:
 #### A. Pathogen Family Match vs. Discrete 6-Class Classification
 In botanical pathology, Late Blight on both Tomato (*Solanum lycopersicum*) and Potato (*Solanum tuberosum*) is incited by the exact same oomycete water mold, ***Phytophthora infestans***. Similarly, Early Blight on both crops is incited by the fungus ***Alternaria solani***. 
 * Consequently, when a tomato late blight leaf exhibits characteristic water-soaked olive lesions and the neural network predicts `Potato Late Blight`, the system has successfully recognized the **underlying biological pathogen family** (*Phytophthora infestans*).
-* **Strict Scientific Standard:** In KRISHI-DRISHTI's 6-class discrete taxonomy, crop host and disease constitute distinct output classes. Therefore, **pathogen matches are never counted toward exact 6-class classification accuracy**. They are reported strictly as biological pathogen correlations (e.g., 53/60 strict vs. 54/60 pathogen match).
+* **Strict Scientific Standard:** In KRISHI-DRISHTI's 6-class discrete taxonomy, crop host and disease constitute distinct output classes. Therefore, **pathogen matches are never counted toward exact 6-class classification accuracy**. They are reported strictly as biological pathogen correlations (e.g., 57/60 strict vs. 57/60 pathogen match on the current model).
 
 #### B. The Optical Shroud is a Physical Acquisition Constraint, Not an OOD Shield
 The 3D-printed cylindrical optical shroud (8–10 cm depth) performs two critical optical functions:
@@ -153,69 +154,26 @@ The definitive proof of KRISHI-DRISHTI's real-world diagnostic reliability canno
 
 ---
 
-## 7. Technical Defense & System Architecture Q&A Strategy
-
-### Q1: "Where did you learn your coding? Did you just copy-paste this from YouTube or GitHub?"
-> **Student Defense:**  
-> *"Respected Sir/Ma'am, I learned standard C++ and Python syntax through tutorials and official documentation. However, **KRISHI-DRISHTI is an original multi-tier systems architecture** designed specifically to overcome hardware limitations:  
-> 1. In `KRISHI_DRISHTI_Camera.ino`, the Edge AI server daemon is embedded directly into ESP32 flash memory (`PROGMEM`) and static files are streamed from SDMMC, overcoming Android 13's Scoped Storage restriction (`ERR_ACCESS_DENIED`) and allowing offline browser inference.  
-> 2. The Controller wand uses non-blocking polling and FreeRTOS-compatible timing for SSD1306 I2C telemetry, decoupling camera captures from sensor reads to prevent Watchdog Timer (WDT) resets. **Wi-Fi association is fully non-blocking**: the wand calls `WiFi.begin()` every 5 seconds with static IP (192.168.4.2) first, then auto-falls back to DHCP if static assignment fails — the NEXT button (GPIO 26) remains responsive throughout association.  
-> 3. Wi-Fi RF transmit power is set to 8.5 dBm for stable USB-powered wand-to-camera SoftAP link, with hardware brownout protection disabled during Wi-Fi PLL lock to prevent resets under load.  
-> 4. The machine learning pipeline uses two-stage fine-tuning with canopy-specific augmentation on 7,710 dual-domain records representing 6,965 unique image files (6,600 clean PlantVillage + 1,110 clean PlantDoc outdoor, documented in TRAINING_RUN_MANIFEST.json) and evaluates against PlantDoc field images, with Shannon entropy gating to reject non-leaf frames."*
-
-### Q2: "Is Late Blight caused by a fungus?"
-> **Student Defense:**  
-> *"Historically, Late Blight was classified as a fungus, but modern botanical taxonomy classifies its causal agent, **Phytophthora infestans**, as an **Oomycete** (water mold in the kingdom Stramenopila). This distinction is critical because true fungi have chitinous cell walls, whereas Oomycetes have cell walls composed of cellulose and $eta$-glucans. Consequently, standard fungal chitin-inhibiting fungicides are ineffective against Late Blight, requiring oomycete-specific active ingredients like Metalaxyl, Cymoxanil, or copper compounds."*
-
-### Q3: "Why not run the neural network directly on the ESP32 microchip?"
-> **Student Defense:**  
-> *"An ESP32-S has 520 KB of internal SRAM and ~4 MB external PSRAM running at 240 MHz without hardware vector or NEON SIMD acceleration. Running a convolutional backbone like MobileNet directly on the microcontroller causes two major hardware failures:  
-> 1. Frame buffer starvation: The OV5640 5MP camera DMA channels compete with neural tensor allocations in PSRAM, leading to memory heap fragmentation and kernel panics.  
-> 2. Latency: Inference takes over 3.8 seconds per frame on an MCU, draining battery power.  
-> By delegating inference to the farmer's pocket smartphone over local Wi-Fi SoftAP, we achieve a **3.94 to 4.94-millisecond host reference inference time (~12–15 ms on budget smartphone CPUs)** on the phone's CPU while keeping the wand lightweight, ultra-low power, and total unit BOM of ₹1,480 (strictly under ₹1,500)."*
-
-### Q4: "Why do you distinguish Pathogen Family Correlation from Exact 6-Class Classification?"
-> **Student Defense:**  
-> *"In our 6-class neural taxonomy, Tomato Late Blight and Potato Late Blight are distinct discrete classes. While both diseases are incited by the exact same oomycete organism (*Phytophthora infestans*) and produce identical water-soaked necrotic lesions, treating a cross-crop prediction as a full classification pass would be scientifically dishonest. Therefore, we report exact 6-class accuracy (53/60 = 88.33%) strictly separated from biological pathogen correlation (54/60 = 90.00%)."*
-
-### Q5: "Does the 3D-printed optical shroud guarantee protection against out-of-distribution (non-crop) leaves?"
-> **Student Defense:**  
-> *"No, and claiming so would be scientifically inaccurate. The shroud is a physical image acquisition constraint: it fixes the camera-to-leaf working distance (8–10 cm) at the sensor's optical sweet spot and blocks harsh diagonal sun shadows. However, an out-of-distribution green leaf (such as tea or ornamental ficus) still possesses green chlorophyll and leaf vein morphology that can fool a 6-class foliar vision model into a high-confidence false positive. Gating requires multi-modal verification: visual entropy, foliar area ratios, and microclimate context."*
-
-### Q6: "Can a single DHT11 sensor reading of RH < 85% prove that Late Blight is not present?"
-> **Student Defense:**  
-> *"No. Standard botanical epidemiology models like Wallin and Hyre require cumulative temperature-humidity wetness hours to predict pathogen sporulation. A single DHT11 snapshot cannot prove disease absence. Instead, KRISHI-DRISHTI uses microclimate telemetry as a **conservative agronomic risk advisory**: if visual screening detects Late Blight lesions but canopy humidity is below 85%, the system suppresses urgent chemical fungicide recommendations, preventing the farmer from spraying expensive systemic chemicals due to a shadow artifact."*
-
-### Q7: "Why didn't you train your model on tens of thousands of free images downloaded from the web?"
-> **Student Defense:**  
-> *"In machine learning, data quality, label integrity, and sensor domain alignment far outweigh raw uncurated quantity. Public web scrapes suffer from 15–30% crowdsourced label noise, severe background shortcut learning (hands, flowerpots, horizons), and benchmark contamination. Furthermore, our edge budget is MobileNetV3-Small (2.03 MB), which has ~930k parameters. Overloading a lightweight edge model with high-noise internet data causes capacity saturation and degrades generalization. We prioritize curated, cryptographically audited domain data with strict zero-leakage holdout isolation."*
-
-### Q8: "What is your next major empirical milestone to validate real-world readiness?"
-> **Student Defense:**  
-> *"Our defining next milestone is physical field validation: evaluating hundreds of foliar images captured directly by the KRISHI-DRISHTI ESP32-CAM wand with optical shroud in local agricultural plots across North India. Benchmarking the model on images produced by its own optical sensor under authentic ambient field conditions is the ultimate test of edge agritech readiness."*
-
----
-
-## 8. Source-Available Architecture
+## 7. Source-Available Architecture
 All source code, CAD files, schematics, and model weights are released freely under the **Source-Available License** on GitHub:  
 **Repository:** [https://github.com/gautamkr0104/KRISHI-DRISHTI](https://github.com/gautamkr0104/KRISHI-DRISHTI)
 
 ---
 
-## 9. Wi-Fi Connectivity & Network Resilience
+## 8. Wi-Fi Connectivity & Network Resilience
 
 The Controller wand (ESP32 DevKit V1) operates as a Wi-Fi Station associating to the Camera unit's SoftAP (`KRISHI-DRISHTI` @ 192.168.4.1). The connection pipeline was hardened across three firmware revisions:
 
-### 9.1 Transmit Power
-Wi-Fi RF transmit power was set to `8.5 dBm` — a stable level for USB-powered ESP32 operation that avoids TG1WDT watchdog resets during Wi-Fi radio bringup. Higher power levels (13–19.5 dBm) caused crashes on USB power, so 8.5 dBm was retained for reliability. Hardware brownout protection is suppressed during Wi-Fi PLL lock (`WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0)`) to prevent resets under radio load. Hardware brownout protection is suppressed during Wi-Fi PLL lock (`WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0)`) to prevent resets under radio load.
+### 8.1 Transmit Power
+Wi-Fi RF transmit power was set to `8.5 dBm` — a stable level for USB-powered ESP32 operation that avoids TG1WDT watchdog resets during Wi-Fi radio bringup. Higher power levels (13–19.5 dBm) caused crashes on USB power, so 8.5 dBm was retained for reliability. Hardware brownout protection is suppressed during Wi-Fi PLL lock (`WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0)`) to prevent resets under radio load.
 
-### 9.2 Static IP with DHCP Fallback
+### 8.2 Static IP with DHCP Fallback
 The controller requests static IP `192.168.4.2` (gateway `192.168.4.1`) for deterministic addressing. Because ESP32 static-IP assignment can fail on SoftAP links, the firmware retries with DHCP if static association does not complete within the retry window. The wand cycles between static-IP and DHCP attempts every 5 seconds until linked.
 
-### 9.3 Fully Non-Blocking Association
-Wi-Fi association is entirely non-blocking: `ensureWiFiConnected()` calls `WiFi.begin()` every 5 seconds and returns immediately, letting the ESP32 Wi-Fi driver handle association in the background. The NEXT button (GPIO 26) remains responsive and cycles OLED pages even while the wand is still linking to the camera — the user is never locked out of the UI during connection attempts.
+### 8.3 Fully Non-Blocking Association
+Wi-Fi association is entirely non-blocking: `ensureWiFiConnected()` calls `WiFi.begin()` every 5 seconds and returns immediately, letting the ESP32 Wi-Fi driver handle association in the background. The multifunction button on GPIO 27 remains responsive and cycles OLED pages even while the wand is still linking to the camera, so the user is never locked out of the UI during connection attempts.
 
-### 9.4 Connection State Machine
+### 8.4 Connection State Machine
 - **WL_CONNECTED:** `wifiConnected = true`, OLED shows `CAM LINKED! [OK]` or `CAM LINKED! [DHCP]`
 - **Disconnected:** `wifiConnected = false`, OLED shows `Linking to Cam...`, background retries continue every 5s
-- **Standby Mode:** If camera is out of range after all retries, OLED shows `Camera not in range`; wand remains usable in demo/offline mode
+- **Standby Mode:** If the camera is out of range after all retries, the OLED shows `Camera not in range`; environmental telemetry (DHT11) and page navigation remain available

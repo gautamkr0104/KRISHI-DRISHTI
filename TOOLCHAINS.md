@@ -1,87 +1,90 @@
-# TOOLCHAINS.md — Complete Local Toolchain & Compiler Manual
+# TOOLCHAINS.md — Local Toolchain & Build Manual
 
-This document provides exact paths, environment setups, compiler options, and build commands for all subsystems of KRISHI-DRISHTI.
+Exact commands and compiler options for every subsystem of KRISHI-DRISHTI. Paths below are relative to the repository root; substitute your own Python interpreter and serial port.
 
 ---
 
 ## 1. Python Environment
 
-### Executable Paths
-* **Python Binary:** `C:\Users\DELL\krishi_pdf_env\Scripts\python.exe`
-* **Pip Binary:** `C:\Users\DELL\krishi_pdf_env\Scripts\pip.exe`
-* **Virtual Environment Directory:** `C:\Users\DELL\krishi_pdf_env`
+### Requirements
+* **Python:** 3.10 or newer
+* **Packages:** `ai-edge-litert` (or `tflite-runtime`), `numpy`, `Pillow`, `pyserial`
+* Optional, only for regenerating documents: `pymupdf`, `python-docx`, `reportlab`
 
-### Core Libraries Installed
-* `ai-edge-litert` (TensorFlow Lite XNNPACK delegate CPU inference)
-* `numpy` (2.4.6)
-* `Pillow` (13.0.0)
-* `pymupdf` / `fitz` (2.1)
-* `python-docx` (1.2.0)
-* `python-pptx` (1.0.2)
-* `reportlab` (5.1.0)
-* `pyserial` (3.5)
+### Setup
+```bash
+python -m venv .venv
+source .venv/Scripts/activate      # Windows (Git Bash)
+# source .venv/bin/activate        # Linux / macOS
+pip install ai-edge-litert numpy Pillow pyserial
+```
 
 ### Running Python Scripts
-Always invoke via the full environment binary or ensure `krishi_pdf_env` is activated:
-```powershell
-# Run hardware validation harness
-C:\Users\DELL\krishi_pdf_env\Scripts\python.exe tests/validate_hardware_field_captures.py
-
-# Run benchmark evaluation
-C:\Users\DELL\krishi_pdf_env\Scripts\python.exe ai_engine/export_and_evaluate.py
+Run all scripts from the repository root so relative asset paths resolve:
+```bash
+python tests/validate_hardware_field_captures.py
+python tests/benchmark_60_specimens.py
+python ai_engine/export_and_evaluate.py
 ```
 
 ---
 
 ## 2. Embedded ESP32 & Arduino Toolchain
 
-### Compiler & Flashing Binaries
-* **esptool.exe:**  
-  `C:\Users\DELL\AppData\Local\Arduino15\packages\esp32\tools\esptool_py\5.3.1\esptool.exe`
-* **Xtensa C++ Cross-Compiler (`xtensa-esp32-elf-g++.exe`):**  
-  `C:\Users\DELL\AppData\Local\Arduino15\packages\esp32\tools\esp-x32\2601\bin\xtensa-esp32-elf-g++.exe`
-* **Arduino15 Core Directory:**  
-  `C:\Users\DELL\AppData\Local\Arduino15\packages\esp32\hardware\esp32\3.0.7`
+### Required Tools
+* **arduino-cli** (or the Arduino IDE 2.x) with the `esp32` core by Espressif installed
+* **esptool** — bundled with the `esp32` core; used for direct binary flashing
+* **Xtensa toolchain** — installed automatically by the `esp32` core (`xtensa-esp32-elf-g++`)
 
-### Node A: Camera Wand Flashing Configuration
+Install the core once:
+```bash
+arduino-cli core update-index
+arduino-cli core install esp32:esp32
+```
+
+### Node A: Camera Unit Flashing Configuration
 * **Target Board:** AI-Thinker ESP32-CAM (ESP32-D0WDQ6, 4MB Flash, 8MB PSRAM)
 * **Flash Mode:** `dio` | **Flash Frequency:** `40m` | **Flash Size:** `4MB`
-* **Default Port:** `COM7` @ `115200 baud`
-* **Binary Locations:** `firmware/KRISHI_DRISHTI_Camera/build/esp32.esp32.esp32cam/`
+* **Baud Rate:** 460800 (use 115200 if the link is unstable)
 * **Memory Map:**
   * `0x1000` : `KRISHI_DRISHTI_Camera.ino.bootloader.bin`
   * `0x8000` : `KRISHI_DRISHTI_Camera.ino.partitions.bin`
   * `0xe000` : `boot_app0.bin`
   * `0x10000`: `KRISHI_DRISHTI_Camera.ino.bin`
-* **1-Click Command:**
-  ```powershell
-  .\Flash_ESP32_CAM.bat COM7
-  ```
 
-### Node B: Controller Wand Flashing Configuration
+### Node B: Controller Unit Flashing Configuration
 * **Target Board:** ESP32 DevKit V1 (30-pin)
 * **Flash Mode:** `dio` | **Flash Frequency:** `40m` | **Flash Size:** `4MB`
-* **Default Port:** `COM7` @ `115200 baud`
-* **Binary Locations:** `firmware/KRISHI_DRISHTI_Controller/build/esp32.esp32.esp32/`
+* **Baud Rate:** 460800
 * **Memory Map:**
   * `0x1000` : `KRISHI_DRISHTI_Controller.ino.bootloader.bin`
   * `0x8000` : `KRISHI_DRISHTI_Controller.ino.partitions.bin`
   * `0xe000` : `boot_app0.bin`
   * `0x10000`: `KRISHI_DRISHTI_Controller.ino.bin`
-* **1-Click Command:**
-  ```powershell
-  .\Flash_ESP32_Controller.bat COM7
-  ```
+
+### 1-Click Flashing (Windows)
+```bash
+./Flash_ESP32_CAM.bat COM7
+./Flash_ESP32_Controller.bat COM5
+```
+
+### Manual Compile & Flash (any platform)
+```bash
+arduino-cli compile --fqbn esp32:esp32:esp32cam firmware/KRISHI_DRISHTI_Camera
+arduino-cli upload  --fqbn esp32:esp32:esp32cam -p /dev/ttyUSB0 firmware/KRISHI_DRISHTI_Camera
+
+arduino-cli compile --fqbn esp32:esp32:esp32 firmware/KRISHI_DRISHTI_Controller
+arduino-cli upload  --fqbn esp32:esp32:esp32 -p /dev/ttyUSB0 firmware/KRISHI_DRISHTI_Controller
+```
 
 ---
 
-## 3. Git Repository Architecture
+## 3. Git Repository
 
-* **Working Copy Root:** `C:\Users\DELL\Downloads\KRISHI-DRISHTI`
 * **Remote Origin:** `https://github.com/gautamkr0104/KRISHI-DRISHTI.git`
 * **Primary Branch:** `main`
-* **Git Status Check:**
-  ```powershell
+* **Status Check:**
+  ```bash
   git status
   git remote -v
   ```
@@ -90,7 +93,9 @@ C:\Users\DELL\krishi_pdf_env\Scripts\python.exe ai_engine/export_and_evaluate.py
 
 ## 4. Release Pipeline
 
-Precompiled firmware binaries and SD card packages are generated in `releases/`:
-1. `releases/KRISHI_DRISHTI_Camera_Firmware_v2.5.1.zip` (ESP32-CAM optical gateway firmware)
-2. `releases/KRISHI_DRISHTI_Controller_Firmware_v2.5.1.zip` (ESP32 Controller Wand firmware)
-3. `releases/SD_CARD_KRISHI_DRISHTI_READY.zip` (100% plug-and-play offline FAT32 filesystem bundle)
+Precompiled firmware binaries and the SD card image are published under `releases/` and on the GitHub Releases page:
+1. `KRISHI_DRISHTI_Camera_Firmware_v2.5.1.zip` (ESP32-CAM optical gateway firmware)
+2. `KRISHI_DRISHTI_Controller_Firmware_v2.5.1.zip` (ESP32 Controller firmware)
+3. `SD_CARD_KRISHI_DRISHTI_READY.zip` (plug-and-play offline FAT32 filesystem bundle)
+
+`releases/FLASHING_MAP.md` documents the exact flash offsets and the SD card recovery procedure.

@@ -21,7 +21,7 @@ Gandhinagar, Gujarat — 382650
 ### 1. INNOVATOR PROFILE
 * **Name of Innovator:** Gautam Kumar
 * **Nationality:** Indian
-* **State / District:** Bihar, India, India
+* **State / District:** Bihar, India
 * **Innovation Category:** Mechanical / Agricultural Engineering & Edge Artificial Intelligence
 * **Stage of Innovation:** Fully Functional Working Hardware Prototype & Verified Neural Model
 
@@ -73,7 +73,7 @@ The system operates as an integrated **Hardware-Software Triad** communicating o
 2. **The Handheld Telemetry Wand (Controller Unit):**
    * ESP32 DevKit V1 microcontroller.
    * SSD1306 128×64 I2C OLED display (SDA: GPIO 21, SCL: GPIO 22).
-   * Active-low pushbuttons: `[SCAN]` (GPIO 27) and `[NEXT]` (GPIO 26).
+   * Single active-low multifunction pushbutton on GPIO 27 (short press = next page / start scan, long press ≥ 800 ms = force scan).
    * Digital microclimate sensor (DHT11 on GPIO 18).
    * FreeRTOS non-blocking polling state machine with stale scan rejection (`retScanId == activeScanId`).
 3. **The Offline Pocket AI Co-Processor (Edge Engine):**
@@ -89,7 +89,7 @@ The system operates as an integrated **Hardware-Software Triad** communicating o
 In classical plant pathology:
 $$\text{Disease Outbreak} = \text{Susceptible Host} + \text{Virulent Pathogen} + \text{Favorable Microclimate}$$
 
-KRISHI-DRISHTI is the first low-cost handheld device to correlate **visual foliar feature maps** with **canopy microclimate thresholds**:
+KRISHI-DRISHTI correlates **visual foliar feature maps** with **canopy microclimate thresholds**:
 * **Late Blight Outbreak Envelope:** Ambient canopy Relative Humidity $> 85\%$ combined with temperatures between $18^\circ\text{C} - 24.5^\circ\text{C}$ for $> 6$ hours.
 * **Early Blight Risk Envelope:** Canopy temperatures between $24^\circ\text{C} - 29^\circ\text{C}$ with fluctuating wet/dry leaf spells.
 * **Information Entropy Gating ($H$):**
@@ -101,13 +101,11 @@ KRISHI-DRISHTI is the first low-cost handheld device to correlate **visual folia
 ### 6. EMPIRICAL VERIFICATION & MEASURED PERFORMANCE
 The neural network was trained on the **New Plant Diseases Dataset (Augmented 87K, Solanaceae Partition)** with 11,399 training and 2,850 validation images, and benchmarked on independent outdoor field photographs from **PlantDoc**:
 
-* **Training Convergence Accuracy:** **91.80%**
 * **Validation Accuracy:** **88.74%** (evaluated across 2,850 unseen real images)
 * **Validation Macro F1 Score:** **0.8863**
-* **Inference Latency:** **10.54 ms** (measured on edge CPU)
-* **Model Size:** **2.01 MB** (Float16 Post-Training Quantized)
-* **Firmware Verification:** Both ESP32 sketches compile with Exit Code 0 via `arduino-cli`.
-* **Automated Regression Suite:** 6/6 tests passing (100% OK) covering label alignment, foliar plausibility, entropy bounds, and mock multi-hop HTTP telemetry.
+* **Inference Latency:** **5.57 ms mean** on the host-PC TFLite CPU reference interpreter (60-specimen benchmark); mobile-edge latency has not yet been measured on device.
+* **Model Size:** **2.03 MB** (Float16 Post-Training Quantized)
+* **Automated Regression Suite:** 13 Python unit/integration tests plus a native C++ firmware harness (`python tests/run_all_tests.py`).
 
 ---
 
@@ -123,9 +121,9 @@ We request NIF’s legal cell to assist in claiming:
 I hereby declare that:
 1. The KRISHI-DRISHTI system architecture, firmware implementation, and telemetry integration described herein are my original technological design.
 2. The prototype is fully implemented, verified, and operational.
-3. The online source repository has been set to **PRIVATE** to preserve absolute patent novelty.
+3. The source repository is publicly available for inspection; the publication date of each commit is documented in its version history.
 4. I request the National Innovation Foundation - India to evaluate this entry and grant free patent drafting, filing, and intellectual property support under the official DST mandate.
 
 **Dated:** 9th November 2026  
 **Innovator / Applicant:** Gautam Kumar  
-**Location:** Bihar, India, India
+**Location:** Bihar, India

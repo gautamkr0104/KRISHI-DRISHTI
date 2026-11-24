@@ -4,7 +4,7 @@ KRISHI-DRISHTI :: Cross-Platform Test & Verification Master Runner
 Executes all validation suites across Windows, Linux, and macOS:
 1. Unit & Integration Suite (13 tests, including end-to-end REST telemetry & stale cache reset)
 2. Production Daemon 8-Specimen & Gating Audit (8/8 canonical targets)
-3. Reproducible 60-Specimen Botanical Benchmark (90.0% strict exact match)
+3. Reproducible 60-Specimen Botanical Benchmark (strict exact match, read from report)
 4. Real-World Field Night-Flash & OOD Botanical Audit (6 In-Domain, 4 OOD challenges)
 5. Cryptographic & Perceptual Dataset Overlap Audit (60/60 SHA-256 + dHash analysis)
 6. PlantDoc Outdoor Benchmark (Historical 487-image empirical evaluation)
@@ -158,31 +158,31 @@ def main():
     print("  [PASS - Fresh]    1. Automated Unit & Integration Suite (13/13 Tests, end-to-end REST telemetry & gating)")
 
     daemon_audit = os.path.join(REPO_ROOT, "tests", "tflite_model_verification_audit.json")
-    daemon_str = "8/8 Canonical Specimens Verified Accurate (100.0%)"
+    daemon_str = "daemon verification audit not found"
     if os.path.exists(daemon_audit):
         try:
             with open(daemon_audit, "r", encoding="utf-8") as df:
                 ddata = json.load(df)
                 sm = ddata.get("sample_evaluations_summary", {})
-                daemon_str = f"{sm.get('verified_correct', 8)}/{sm.get('total_tested', 8)} Canonical Specimens Verified ({sm.get('accuracy_pct', 100.0):.1f}%)"
+                daemon_str = f"{sm.get('verified_correct', 0)}/{sm.get('total_tested', 0)} Canonical Specimens Verified ({sm.get('accuracy_pct', 0.0):.1f}%)"
         except Exception:
             pass
     print(f"  [PASS - Fresh]    2. Production Daemon Verification Audit ({daemon_str})")
 
     bench_json = os.path.join(REPO_ROOT, "tests", "benchmark_60_specimens_report.json")
-    bench_str = "56/60, 93.33% Strict Six-Class Match"
+    bench_str = "60-specimen benchmark report not found"
     if os.path.exists(bench_json):
         try:
             with open(bench_json, "r", encoding="utf-8") as bf:
                 bdata = json.load(bf)
                 acc = bdata.get("strict_6class_accuracy", {})
-                bench_str = f"{acc.get('exact_matches', 56)}/{acc.get('total_evaluated', 60)}, {acc.get('accuracy_pct', 93.33):.2f}% Strict Six-Class Match"
+                bench_str = f"{acc.get('exact_matches', 0)}/{acc.get('total_evaluated', 60)}, {acc.get('accuracy_pct', 0.0):.2f}% Strict Six-Class Match"
         except Exception:
             pass
     print(f"  [PASS - Fresh]    3. Reproducible 60-Specimen Botanical Benchmark ({bench_str})")
 
     field_audit = os.path.join(REPO_ROOT, "tests", "field_test_images_audit.json")
-    field_str = "5/6 In-Domain Leaves Verified (83.3%), 4 OOD specimens evaluated"
+    field_str = "field test audit not found"
     if os.path.exists(field_audit):
         try:
             with open(field_audit, "r", encoding="utf-8") as ff:
